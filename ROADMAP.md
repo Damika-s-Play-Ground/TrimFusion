@@ -55,7 +55,11 @@ complete slice per run. `npm run build` must pass before every commit.
 ## P3 — Health
 
 - [ ] Add prettier + eslint config + scripts.
-- [ ] Real unit tests for `extractVideoId` and trim/time logic.
+- [x] Real unit tests for `extractVideoId` (17 cases: youtu.be, /shorts, /embed, /live,
+      watch?v, extra params, no-protocol, bare id, whitespace, and null cases). Added a
+      `test:ci` script (`ng test --watch=false --browsers=ChromeHeadless`). Also repaired
+      the stale scaffold `app.component.spec.ts` (referenced a removed `title`). 18/18 pass.
+      TODO: trim/time (`formatTime`) tests once that logic is extracted/testable.
 - [ ] GitHub Actions CI (build + test).
 - [ ] Prune unused deps (jquery, admin-lte, ion-rangeslider if unused). NOTE: the
       initial bundle is 5.86 MB (mostly admin-lte + bootstrap CSS), so the angular.json
@@ -94,3 +98,8 @@ complete slice per run. `npm run build` must pass before every commit.
   iframe for `<youtube-player>`) too large to land safely in one autonomous run. Build:
   PASS. Next up: P0 real video duration OR P3 unit tests for `extractVideoId` (pure fn,
   already exported) — tests are the lower-risk high-value slice if karma/Chrome runs.
+- _run 5_: P3 — added 17 `extractVideoId` unit tests + `test:ci` headless script; fixed
+  the stale scaffold `app.component.spec.ts` (removed assertions on a deleted `title`
+  property) that was blocking the whole suite. Build: PASS. Tests: 18/18 PASS
+  (ChromeHeadless). Next up: P3 GitHub Actions CI running `build` + `test:ci` — the
+  headless script makes this a clean next slice.
