@@ -121,6 +121,16 @@ export class RenderingPageComponent implements OnDestroy {
   ];
   selectedOutput: TrimOutput = 'video';
 
+  // Playback-speed presets (video export only) and mute toggle.
+  readonly speedPresets: { label: string; value: number }[] = [
+    { label: '0.5× (slow)', value: 0.5 },
+    { label: 'Normal', value: 1 },
+    { label: '1.5×', value: 1.5 },
+    { label: '2× (fast)', value: 2 },
+  ];
+  selectedSpeed = 1;
+  muteAudio = false;
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -186,6 +196,8 @@ export class RenderingPageComponent implements OnDestroy {
         endSeconds: this.endSeconds,
         aspectRatio: this.selectedAspect,
         output: this.selectedOutput,
+        speed: this.selectedSpeed,
+        mute: this.muteAudio,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

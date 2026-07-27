@@ -104,11 +104,16 @@ export class FfmpegTrimService {
       endSeconds: number;
       aspectRatio?: number | null;
       output?: TrimOutput;
+      speed?: number;
+      mute?: boolean;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
     const { startSeconds, endSeconds, aspectRatio, onProgress } = options;
     const output: TrimOutput = options.output ?? 'video';
+    // Speed (video export only); clamp to ffmpeg's atempo-friendly range.
+    const speed = Math.min(2, Math.max(0.5, options.speed ?? 1));
+    const mute = !!options.mute;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
     // Cropping only applies to visual outputs.
@@ -121,10 +126,12 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      outExt = crop ? 'mp4' : inExt;
+      // Re-encode (crop or speed change) always yields MP4/H.264.
+      outExt = crop || speed !== 1 ? 'mp4' : inExt;
     }
+    const videoReencoded = crop || speed !== 1;
     const mimeByOutput: Record<TrimOutput, string> = {
-      video: crop ? 'video/mp4' : file.type || 'video/mp4',
+      video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
       gif: 'image/gif',
     };
@@ -153,24 +160,39 @@ export class FfmpegTrimService {
         'scale=480:-2:flags=lanczos',
       ].join(',');
       args.push('-vf', filters);
-    } else if (crop) {
-      args.push(
-        '-vf',
-        this.cropToAspectFilter(aspectRatio as number),
-        '-c:v',
-        'libx264',
-        '-preset',
-        'veryfast',
-        '-crf',
-        '23',
-        '-c:a',
-        'aac',
-        '-movflags',
-        '+faststart'
-      );
     } else {
-      // Fast, lossless stream copy.
-      args.push('-c', 'copy');
+      // Video output. Re-encode only when we must (crop or speed change);
+      // otherwise a fast, lossless stream copy.
+      const changeSpeed = speed !== 1;
+      const needsReencode = crop || changeSpeed;
+      if (needsReencode) {
+        const vfilters: string[] = [];
+        if (crop) {
+          vfilters.push(this.cropToAspectFilter(aspectRatio as number));
+        }
+        if (changeSpeed) {
+          vfilters.push(`setpts=${(1 / speed).toFixed(6)}*PTS`);
+        }
+        if (vfilters.length) {
+          args.push('-vf', vfilters.join(','));
+        }
+        args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23');
+        if (mute) {
+          args.push('-an');
+        } else {
+          if (changeSpeed) {
+            args.push('-af', `atempo=${speed.toFixed(3)}`);
+          }
+          args.push('-c:a', 'aac');
+        }
+        args.push('-movflags', '+faststart');
+      } else if (mute) {
+        // Drop audio, copy the video stream (fast).
+        args.push('-an', '-c', 'copy');
+      } else {
+        // Fast, lossless stream copy.
+        args.push('-c', 'copy');
+      }
     }
     args.push(outputName);
     await ffmpeg.exec(args);

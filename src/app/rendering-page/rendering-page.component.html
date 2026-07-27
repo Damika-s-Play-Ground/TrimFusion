@@ -195,6 +195,40 @@
                     </option>
                   </select>
                 </div>
+                <div
+                  class="speed-group mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <label for="speedSelect" class="form-label d-block mb-1">
+                    Playback speed
+                  </label>
+                  <select
+                    id="speedSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedSpeed"
+                    [disabled]="trimming"
+                    aria-label="Playback speed"
+                  >
+                    <option *ngFor="let s of speedPresets" [ngValue]="s.value">
+                      {{ s.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="mute-group form-check mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <input
+                    id="muteCheck"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="muteAudio"
+                    [disabled]="trimming"
+                  />
+                  <label for="muteCheck" class="form-check-label">
+                    Remove audio (mute)
+                  </label>
+                </div>
                 <button
                   mat-flat-button
                   color="warn"

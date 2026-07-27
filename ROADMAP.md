@@ -67,8 +67,12 @@ own small slice (all operate on the uploaded local file):
       TODO (nice-to-have): live preview of the target frame before export.
 - [ ] **Frame-accurate trim toggle**: option to re-encode (`-ss` after `-i`, libx264)
       for exact cuts instead of keyframe-aligned `-c copy`.
-- [ ] **Extract audio** (MP3) and **mute** (drop audio) options.
-- [ ] **Playback speed** (0.5×–2×) and **resolution/scale** presets (1080p/720p/480p).
+- [x] **Extract audio** (MP3) — shipped via the "Export as" selector. **Mute** (drop
+      audio) — shipped as a "Remove audio" checkbox on the video export path
+      (`-an`, fast copy when no other re-encode is needed).
+- [x] **Playback speed** (0.5×/1×/1.5×/2×) for video export via `setpts` + `atempo`
+      (re-encodes to MP4/H.264). — [ ] **resolution/scale** presets (1080p/720p/480p)
+      still to do.
 - [x] **Grab a still frame** (PNG): "Grab current frame" button captures the frame shown
       in the uploaded-video player to a canvas and downloads it as PNG (named with the
       timestamp). No ffmpeg needed; instant.
@@ -255,3 +259,9 @@ own small slice (all operate on the uploaded local file):
   lint clean, build PASS (2.29 MB), tests 18/18. NOTE: disk is still 99% full (~3.9 GB
   free) — the loop's per-run ng-serve/headless-Chrome/install churn eats space; consider
   pausing the loop or freeing more disk. Next up: P1.5 mute/speed tools or dark/light.
+- _run 20_: P1.5 — added **playback speed** (0.5×/1×/1.5×/2× via setpts+atempo, video
+  export) and a **mute** ("Remove audio") toggle. Extended `FfmpegTrimService` options
+  (speed/mute) and the video branch (re-encode only when needed; MP4 output). Skipped
+  dev-server/screenshots to conserve disk. Lint clean, build PASS (2.30 MB), tests 18/18.
+  Runtime (speed/atempo/mute) not verified headless. Next up: resolution/scale presets,
+  dark/light toggle, or a11y lint rules.
