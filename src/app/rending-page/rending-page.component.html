@@ -42,6 +42,14 @@
                   </button>
                 </span>
               </div>
+              <div
+                *ngIf="errorMessage"
+                class="alert alert-danger py-2"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ errorMessage }}
+              </div>
               <div class="video-container">
                 <iframe
                   *ngIf="embedUrl"
@@ -88,10 +96,12 @@
                 mat-flat-button
                 color="warn"
                 (click)="cropVideo()"
+                [disabled]="!videoId"
                 class="crop-button"
+                title="Real client-side trimming is coming soon. For now this opens the source video on YouTube."
               >
-                <mat-icon>content_cut</mat-icon>
-                CROP
+                <mat-icon>open_in_new</mat-icon>
+                OPEN ON YOUTUBE
               </button>
             </div>
           </div>
