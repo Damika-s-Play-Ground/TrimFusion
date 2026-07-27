@@ -80,8 +80,11 @@ complete slice per run. `npm run build` must pass before every commit.
 
 ## P4 — Deploy
 
-- [ ] Static build to GitHub Pages or Vercel.
-- [ ] Live demo link in README.
+- [x] Static build to GitHub Pages via Actions (`.github/workflows/deploy.yml`): builds
+      with `--base-href /TrimFusion/`, adds an SPA `404.html` fallback, and publishes on
+      push to `nextlevel`. Pages enabled with source = GitHub Actions.
+- [x] Live demo link in README → https://damika-s-play-ground.github.io/TrimFusion/
+      (verify the first deploy run goes green before advertising widely).
 
 ---
 
@@ -130,3 +133,9 @@ complete slice per run. `npm run build` must pass before every commit.
   Bootstrap 5, so the duplicate CSS loads interact with cascade order — needs visual QA,
   not a blind autonomous edit. Format: clean. Build: PASS (2.27 MB). Tests: 18/18 PASS.
   Next up: P3 eslint (@angular-eslint) config + lint script + CI step.
+- _run 9_: P4 — DEPLOY. Confirmed nothing was live (Pages 404) and CI was green on
+  GitHub. Added `deploy.yml` (GitHub Pages via Actions: prod build with
+  `--base-href /TrimFusion/`, SPA `404.html`, deploy on push to nextlevel), enabled Pages
+  (source = Actions), and added the live-demo link to the README with an honest status
+  note. Local prod build: PASS. Live URL: https://damika-s-play-ground.github.io/TrimFusion/
+  Next up: verify the deploy run is green + the site loads; then P3 eslint or P1 ffmpeg.

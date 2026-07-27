@@ -1,6 +1,10 @@
 # TrimFusion
 
+**🔗 Live demo: https://damika-s-play-ground.github.io/TrimFusion/**
+
 TrimFusion is a user-friendly web tool designed to enhance your video viewing experience. With the power to view YouTube videos directly within the interface, users can effortlessly cut and trim videos to their preferred lengths. Download the cropped videos in various formats and enjoy a sleek and intuitive design.
+
+> **Status:** Actively being built up from a design mock into a working trimmer. Today you can paste a YouTube link, preview it, and set a start/end range that drives the embedded player (`?start=&end=`). Real client-side clip export (via ffmpeg.wasm) is on the roadmap — until then the action button opens the source video on YouTube. See [ROADMAP.md](./ROADMAP.md).
 
 <!-- ![TrimFusion Screenshot](screenshot.png)   Include a screenshot of your app here -->
 
