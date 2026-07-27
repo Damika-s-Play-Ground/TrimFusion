@@ -140,6 +140,9 @@ export class RenderingPageComponent implements OnDestroy {
   ];
   selectedScale: number | null = null;
 
+  // Frame-accurate cut (re-encode) vs. fast keyframe-aligned copy.
+  preciseCut = false;
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -208,6 +211,7 @@ export class RenderingPageComponent implements OnDestroy {
         speed: this.selectedSpeed,
         mute: this.muteAudio,
         scaleHeight: this.selectedScale,
+        preciseCut: this.preciseCut,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

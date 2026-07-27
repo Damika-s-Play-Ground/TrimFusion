@@ -65,8 +65,9 @@ own small slice (all operate on the uploaded local file):
       Reels), 1:1, 4:5 — via a centered ffmpeg `crop` (even-dim safe) + libx264 re-encode
       to MP4. Selector on the upload path; "Original" keeps the fast `-c copy` trim.
       TODO (nice-to-have): live preview of the target frame before export.
-- [ ] **Frame-accurate trim toggle**: option to re-encode (`-ss` after `-i`, libx264)
-      for exact cuts instead of keyframe-aligned `-c copy`.
+- [x] **Frame-accurate trim toggle**: "Precise cut" checkbox re-encodes with output
+      seeking (`-ss` after `-i`, libx264) for exact cuts instead of keyframe-aligned
+      `-c copy`. Composes with crop/speed/scale.
 - [x] **Extract audio** (MP3) — shipped via the "Export as" selector. **Mute** (drop
       audio) — shipped as a "Remove audio" checkbox on the video export path
       (`-an`, fast copy when no other re-encode is needed).
@@ -271,3 +272,8 @@ own small slice (all operate on the uploaded local file):
   the P1.5 editing toolkit. Lint clean, build PASS (2.30 MB), tests 18/18. Disk-safe run.
   Next up: dark/light toggle, a11y lint rules, or an in-browser verification pass of the
   ffmpeg export paths. Roadmap is now largely exhausted — mostly optional polish remains.
+- _run 22_: P1.5 — added a **"Precise cut" (frame-accurate)** toggle: re-encodes with
+  output seeking (`-ss` after `-i`) instead of keyframe-aligned copy; composes with
+  crop/speed/scale. This clears the LAST P1.5 item — the editing toolkit is fully done.
+  Lint clean, build PASS (2.30 MB), tests 18/18. Only optional polish remains
+  (dark/light toggle, a11y lint, in-browser QA of ffmpeg paths).

@@ -107,11 +107,15 @@ export class FfmpegTrimService {
       speed?: number;
       mute?: boolean;
       scaleHeight?: number | null;
+      preciseCut?: boolean;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
     const { startSeconds, endSeconds, aspectRatio, onProgress } = options;
     const output: TrimOutput = options.output ?? 'video';
+    // Frame-accurate cut (video export only): re-encode with output seeking
+    // instead of keyframe-aligned stream copy.
+    const precise = output === 'video' && !!options.preciseCut;
     // Speed (video export only); clamp to ffmpeg's atempo-friendly range.
     const speed = Math.min(2, Math.max(0.5, options.speed ?? 1));
     const mute = !!options.mute;
@@ -132,10 +136,10 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      // Re-encode (crop, speed, or scale) always yields MP4/H.264.
-      outExt = crop || speed !== 1 || scaleHeight ? 'mp4' : inExt;
+      // Re-encode (crop, speed, scale, or precise cut) always yields MP4/H.264.
+      outExt = crop || speed !== 1 || scaleHeight || precise ? 'mp4' : inExt;
     }
-    const videoReencoded = crop || speed !== 1 || !!scaleHeight;
+    const videoReencoded = crop || speed !== 1 || !!scaleHeight || precise;
     const mimeByOutput: Record<TrimOutput, string> = {
       video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
@@ -148,14 +152,11 @@ export class FfmpegTrimService {
 
     await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-    const args = [
-      '-ss',
-      String(start),
-      '-i',
-      inputName,
-      '-t',
-      String(duration),
-    ];
+    // Fast seek (-ss before -i) is keyframe-aligned; precise cut uses output
+    // seeking (-ss after -i) so the clip starts exactly on `start`.
+    const args = precise
+      ? ['-i', inputName, '-ss', String(start), '-t', String(duration)]
+      : ['-ss', String(start), '-i', inputName, '-t', String(duration)];
     if (output === 'audio') {
       // Strip video, encode audio to MP3.
       args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
@@ -170,7 +171,7 @@ export class FfmpegTrimService {
       // Video output. Re-encode only when we must (crop or speed change);
       // otherwise a fast, lossless stream copy.
       const changeSpeed = speed !== 1;
-      const needsReencode = crop || changeSpeed || !!scaleHeight;
+      const needsReencode = crop || changeSpeed || !!scaleHeight || precise;
       if (needsReencode) {
         const vfilters: string[] = [];
         if (crop) {

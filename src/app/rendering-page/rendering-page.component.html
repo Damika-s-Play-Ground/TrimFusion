@@ -248,6 +248,21 @@
                     Remove audio (mute)
                   </label>
                 </div>
+                <div
+                  class="precise-group form-check mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <input
+                    id="preciseCheck"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="preciseCut"
+                    [disabled]="trimming"
+                  />
+                  <label for="preciseCheck" class="form-check-label">
+                    Precise cut (frame-accurate, slower)
+                  </label>
+                </div>
                 <button
                   mat-flat-button
                   color="warn"
