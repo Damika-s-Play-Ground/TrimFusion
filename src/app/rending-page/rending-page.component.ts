@@ -80,14 +80,17 @@ export function extractVideoId(input: string): string | null {
   styleUrls: ['./rending-page.component.scss'],
 })
 export class RendingPageComponent {
-  value = [30000, 70000];
   youtubeUrl: string = '';
   embedUrl: string = '';
   sanitizedUrl!: SafeResourceUrl;
-  startThumb: number = 0;
-  endThumb: number = 100;
   videoId: string | null = null;
   errorMessage: string = '';
+
+  // Trim range, in seconds. Until real video-duration detection lands
+  // (ROADMAP P0), the slider spans a default 10-minute window.
+  maxSeconds: number = 600;
+  startSeconds: number = 0;
+  endSeconds: number = 60;
 
   constructor(private sanitizer: DomSanitizer, private router: Router) {}
 
@@ -109,23 +112,45 @@ export class RendingPageComponent {
 
     this.errorMessage = '';
     this.videoId = videoId;
+    this.updatePreview();
+  }
 
-    // Construct the embed URL using the video ID.
-    this.embedUrl = 'https://www.youtube.com/embed/' + videoId;
-
-    // Sanitize the URL to embed the YouTube video.
+  /**
+   * Rebuild the embedded iframe URL for the current video and trim range.
+   * `?start=&end=` makes the YouTube player begin at `start` and stop at
+   * `end` (both in whole seconds).
+   */
+  updatePreview() {
+    if (!this.videoId) {
+      return;
+    }
+    const start = Math.floor(this.startSeconds);
+    const end = Math.floor(this.endSeconds);
+    this.embedUrl =
+      `https://www.youtube.com/embed/${this.videoId}` +
+      `?start=${start}&end=${end}&rel=0`;
     this.sanitizedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.embedUrl
     );
   }
 
-  formatLabel(value: number): string {
-    if (value >= 1000) {
-      return Math.round(value / 1000) + 'k';
+  /** Keep start < end, then refresh the preview (called on slider drag-end). */
+  onRangeChange() {
+    if (this.startSeconds >= this.endSeconds) {
+      this.endSeconds = Math.min(this.startSeconds + 1, this.maxSeconds);
     }
-
-    return `${value}`;
+    this.updatePreview();
   }
+
+  /** Format a number of seconds as HH:MM:SS (or MM:SS under an hour). */
+  formatTime = (value: number): string => {
+    const total = Math.max(0, Math.floor(value));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+  };
 
   cropVideo() {
     this.openOnYouTube();

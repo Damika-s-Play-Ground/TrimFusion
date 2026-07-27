@@ -73,17 +73,44 @@
                     <button type="button" class="btn btn-warning">start</button>
                   </div>
                   <!-- /btn-group -->
-                  <input type="text" class="form-control" disabled/>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [value]="formatTime(startSeconds)"
+                    aria-label="Trim start time"
+                    disabled
+                  />
                 </div>
                 <div class="main-slider">
-                    <mat-slider min="200" max="500">
-                        <input value="300" matSliderStartThumb>
-                        <input value="400" matSliderEndThumb>
-                      </mat-slider>
-                      
+                  <mat-slider
+                    [min]="0"
+                    [max]="maxSeconds"
+                    step="1"
+                    [displayWith]="formatTime"
+                    discrete
+                  >
+                    <input
+                      matSliderStartThumb
+                      [(ngModel)]="startSeconds"
+                      (dragEnd)="onRangeChange()"
+                      aria-label="Trim start"
+                    />
+                    <input
+                      matSliderEndThumb
+                      [(ngModel)]="endSeconds"
+                      (dragEnd)="onRangeChange()"
+                      aria-label="Trim end"
+                    />
+                  </mat-slider>
                 </div>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control " disabled/>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [value]="formatTime(endSeconds)"
+                    aria-label="Trim end time"
+                    disabled
+                  />
                   <span class="input-group-append">
                     <button type="button" class="btn btn-success btn-flat">
                       end

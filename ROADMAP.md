@@ -25,9 +25,11 @@ complete slice per run. `npm run build` must pass before every commit.
       `/live/ID`, `watch?v=ID`, extra params (`&t=`, `&list=`), playlists, and bare
       11-char IDs. Returns null on failure. Exported pure function, unit-testable.
 - [x] Inline validation + error message when the URL is invalid (no silent bad embeds).
-- [ ] Wire the range slider start/end to the YouTube embed preview via
-      `?start=<sec>&end=<sec>` and reload the iframe on change.
-- [ ] Show HH:MM:SS labels for start/end instead of empty disabled inputs.
+- [x] Wire the range slider start/end to the YouTube embed preview via
+      `?start=<sec>&end=<sec>` — dual-thumb `mat-slider` bound to `startSeconds`/
+      `endSeconds`, iframe rebuilt on drag-end (keeps start < end).
+- [x] Show HH:MM:SS labels for start/end (live-updating disabled inputs + slider
+      tooltip via `displayWith`). `formatTime()` renders MM:SS / H:MM:SS.
 - [x] Gated/labeled the fake download: button is now "OPEN ON YOUTUBE" (icon
       `open_in_new`), disabled until a valid video is loaded, with a tooltip noting real
       trimming is coming. `downloadVideo()` → `openOnYouTube()`.
@@ -79,3 +81,8 @@ complete slice per run. `npm run build` must pass before every commit.
   (disabled until a valid video loads). Raised angular.json budget so build passes
   (bundle is 5.86 MB — pruning admin-lte/bootstrap tracked in P3). Build: PASS.
   Next up: P0 wire slider start/end to embed `?start=&end=` with HH:MM:SS labels.
+- _run 3_: P0 — wired dual-thumb `mat-slider` (`startSeconds`/`endSeconds`, 0–600s
+  default) to the YouTube embed via `?start=&end=&rel=0`; iframe rebuilds on drag-end
+  with a start<end guard. Added `formatTime()` HH:MM:SS labels (live inputs + slider
+  tooltip) and ARIA labels on thumbs. Build: PASS. Next up: P0 slider max should
+  reflect real video duration (via @angular/youtube-player, already a dep).
