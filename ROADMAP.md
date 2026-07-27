@@ -90,6 +90,11 @@ own small slice (all operate on the uploaded local file):
 - [ ] Dark mode.
 - [ ] Favicon / branding polish.
 
+- [x] Themed **404 / Not-Found page**: gradient "404", glass card, message, and a
+      "Back to TrimFusion" button (routerLink to /home). Replaced the bare placeholder;
+      VERIFIED via screenshot. (Follow-up: theme the orphaned `/download` mock page or
+      remove it.)
+
 ## P3 — Health
 
 - [x] Add prettier config + scripts (`.prettierrc.json`, `.prettierignore`, `format` &
@@ -238,3 +243,7 @@ own small slice (all operate on the uploaded local file):
   clean. Format: clean. Build: PASS (2.29 MB). Tests: 18/18. This clears the last P3
   health item. Next up: P1.5 mute/speed tools, extend theme to download/404 pages,
   dark/light toggle, or enable a11y lint rules.
+- _run 18_: P2 — redesigned the bare 404 page to match the theme (gradient 404, glass
+  card, "Back to TrimFusion" button). Lint/format clean, build PASS (2.30 MB), tests
+  18/18. VERIFIED via screenshot of a bogus route. Next up: theme/remove the orphaned
+  /download mock page, P1.5 mute/speed tools, or dark/light toggle.
