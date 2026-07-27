@@ -84,7 +84,10 @@ complete slice per run. `npm run build` must pass before every commit.
       with `--base-href /TrimFusion/`, adds an SPA `404.html` fallback, and publishes on
       push to `nextlevel`. Pages enabled with source = GitHub Actions.
 - [x] Live demo link in README → https://damika-s-play-ground.github.io/TrimFusion/
-      (verify the first deploy run goes green before advertising widely).
+      VERIFIED LIVE (HTTP 200; index + main.js + styles.css all load).
+      GOTCHA for future deploys: the `github-pages` environment blocks non-default
+      branches by default — `nextlevel` was added to a custom deployment-branch-policy
+      via the API so deploys from `nextlevel` are allowed.
 
 ---
 
@@ -139,3 +142,7 @@ complete slice per run. `npm run build` must pass before every commit.
   (source = Actions), and added the live-demo link to the README with an honest status
   note. Local prod build: PASS. Live URL: https://damika-s-play-ground.github.io/TrimFusion/
   Next up: verify the deploy run is green + the site loads; then P3 eslint or P1 ffmpeg.
+- _run 9b_: Deploy went green after allowing `nextlevel` in the `github-pages`
+  environment branch policy (first attempt was blocked by env protection). Site VERIFIED
+  LIVE at https://damika-s-play-ground.github.io/TrimFusion/ (HTTP 200, bundles load).
+  Next up: P1 real client-side trimming (ffmpeg.wasm) — the core feature — or P3 eslint.
