@@ -60,7 +60,10 @@ complete slice per run. `npm run build` must pass before every commit.
       `test:ci` script (`ng test --watch=false --browsers=ChromeHeadless`). Also repaired
       the stale scaffold `app.component.spec.ts` (referenced a removed `title`). 18/18 pass.
       TODO: trim/time (`formatTime`) tests once that logic is extracted/testable.
-- [ ] GitHub Actions CI (build + test).
+- [x] GitHub Actions CI (`.github/workflows/ci.yml`): on push to main/nextlevel and PRs
+      to main — `npm ci` → `npm run test:ci` (headless) → `npm run build` on Node 18.
+      Added `karma.conf.js` with a `ChromeHeadlessCI` (`--no-sandbox`) launcher wired via
+      `karmaConfig` in angular.json; `test:ci` now targets it.
 - [ ] Prune unused deps (jquery, admin-lte, ion-rangeslider if unused). NOTE: the
       initial bundle is 5.86 MB (mostly admin-lte + bootstrap CSS), so the angular.json
       budget was raised to 4mb warn / 7mb error to let the build pass. Pruning these
@@ -103,3 +106,9 @@ complete slice per run. `npm run build` must pass before every commit.
   property) that was blocking the whole suite. Build: PASS. Tests: 18/18 PASS
   (ChromeHeadless). Next up: P3 GitHub Actions CI running `build` + `test:ci` — the
   headless script makes this a clean next slice.
+- _run 6_: P3 — GitHub Actions CI (`ci.yml`): Node 18, `npm ci` → `test:ci` → `build`
+  on push (main/nextlevel) + PRs to main. Added `karma.conf.js` with a CI-safe
+  `ChromeHeadlessCI` (`--no-sandbox`) launcher (wired via `karmaConfig`), switched
+  `test:ci` to it, and simplified reporters/`clearContext` to drop a noisy
+  "full page reload" artifact. Build: PASS. Tests: 18/18 PASS. Next up: P3 prettier +
+  eslint (config + scripts) OR P3 prune unused deps (jquery/admin-lte/ion-rangeslider).
