@@ -85,23 +85,23 @@ export function extractVideoId(input: string): string | null {
   styleUrls: ['./rendering-page.component.scss'],
 })
 export class RenderingPageComponent implements OnDestroy {
-  youtubeUrl: string = '';
-  embedUrl: string = '';
+  youtubeUrl = '';
+  embedUrl = '';
   sanitizedUrl!: SafeResourceUrl;
   videoId: string | null = null;
-  errorMessage: string = '';
+  errorMessage = '';
 
   // Uploaded local video (an alternative to the YouTube preview).
   localVideoUrl: SafeUrl | null = null;
-  localFileName: string = '';
+  localFileName = '';
   private localObjectUrl: string | null = null;
   private localFile: File | null = null;
   private localVideoEl: HTMLVideoElement | null = null;
 
   // Client-side trim (ffmpeg.wasm) state.
-  trimming: boolean = false;
-  trimProgress: number = 0;
-  trimError: string = '';
+  trimming = false;
+  trimProgress = 0;
+  trimError = '';
 
   // "Crop to display size" presets (value = width / height, null = keep original).
   readonly aspectPresets: { label: string; value: number | null }[] = [
@@ -124,9 +124,9 @@ export class RenderingPageComponent implements OnDestroy {
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
-  maxSeconds: number = 600;
-  startSeconds: number = 0;
-  endSeconds: number = 60;
+  maxSeconds = 600;
+  startSeconds = 0;
+  endSeconds = 60;
 
   constructor(
     private sanitizer: DomSanitizer,

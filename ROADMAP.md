@@ -94,8 +94,10 @@ own small slice (all operate on the uploaded local file):
 
 - [x] Add prettier config + scripts (`.prettierrc.json`, `.prettierignore`, `format` &
       `format:check`), formatted all of `src`, and wired `format:check` into CI.
-- [ ] Add eslint (`@angular-eslint`) config + `lint` script + CI step (follow-up to
-      prettier; kept separate to avoid pulling several devDeps in one slice).
+- [x] Add eslint (`@angular-eslint` 16 + `@typescript-eslint` 5) with `.eslintrc.json`,
+      a `lint` script, and a CI "Lint" step. Fixed 10 `no-inferrable-types` findings.
+      Uses template/recommended (not accessibility) rules for now.
+      Follow-up: enable `@angular-eslint/template/accessibility` and fix a11y findings.
 - [x] Real unit tests for `extractVideoId` (17 cases: youtu.be, /shorts, /embed, /live,
       watch?v, extra params, no-protocol, bare id, whitespace, and null cases). Added a
       `test:ci` script (`ng test --watch=false --browsers=ChromeHeadless`). Also repaired
@@ -231,3 +233,8 @@ own small slice (all operate on the uploaded local file):
   redesigned UI (`docs/screenshot-home.png`), an accurate feature list, tech stack, live
   demo link, and correct clone/scripts. Docs-only (no build impact). Next up: P1.5
   mute/speed toggles, extend theme to download/404 pages, dark/light toggle, or P3 eslint.
+- _run 17_: P3 — added ESLint (@angular-eslint 16 / @typescript-eslint 5), `.eslintrc.json`,
+  `lint` script, and a CI "Lint" step; auto-fixed 10 no-inferrable-types findings. Lint:
+  clean. Format: clean. Build: PASS (2.29 MB). Tests: 18/18. This clears the last P3
+  health item. Next up: P1.5 mute/speed tools, extend theme to download/404 pages,
+  dark/light toggle, or enable a11y lint rules.
