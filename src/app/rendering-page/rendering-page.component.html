@@ -152,13 +152,53 @@
                 </div>
               </div>
 
+              <!-- Local upload: real client-side trim + download -->
+              <ng-container *ngIf="localVideoUrl">
+                <button
+                  mat-flat-button
+                  color="warn"
+                  (click)="trimAndDownload()"
+                  [disabled]="trimming"
+                  class="crop-button"
+                >
+                  <mat-icon>content_cut</mat-icon>
+                  {{ trimming ? 'TRIMMING…' : 'TRIM & DOWNLOAD' }}
+                </button>
+                <div
+                  *ngIf="trimming"
+                  class="progress mt-2"
+                  role="progressbar"
+                  aria-label="Trimming progress"
+                  [attr.aria-valuenow]="trimProgress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <div
+                    class="progress-bar progress-bar-striped progress-bar-animated"
+                    [style.width.%]="trimProgress"
+                  >
+                    {{ trimProgress }}%
+                  </div>
+                </div>
+                <div
+                  *ngIf="trimError"
+                  class="alert alert-danger py-2 mt-2"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {{ trimError }}
+                </div>
+              </ng-container>
+
+              <!-- YouTube: preview only (no client-side trim yet) -->
               <button
+                *ngIf="!localVideoUrl"
                 mat-flat-button
                 color="warn"
                 (click)="cropVideo()"
                 [disabled]="!videoId"
                 class="crop-button"
-                title="Real client-side trimming is coming soon. For now this opens the source video on YouTube."
+                title="Client-side trimming works for uploaded files. For a YouTube link, this opens the source video on YouTube."
               >
                 <mat-icon>open_in_new</mat-icon>
                 OPEN ON YOUTUBE

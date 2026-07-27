@@ -42,16 +42,38 @@ complete slice per run. `npm run build` must pass before every commit.
       `<video controls>` preview via an object URL (revoked on change/destroy), and the
       trim slider max/end sized from the real video duration (`loadedmetadata`). Selecting
       a file switches out of YouTube mode. No new deps yet.
-- [ ] Integrate `@ffmpeg/ffmpeg` (ffmpeg.wasm) to trim the uploaded file client-side.
-      NOTE: heavy dep — lightest viable setup, lazy-loaded. Keep YouTube as preview only.
-      Wire a "Trim & download" button (currently the local-video path has upload+preview
-      but no export). ffmpeg.wasm needs cross-origin isolation (COOP/COEP) headers —
-      GitHub Pages can't set them, so plan a single-file/SW workaround or the `-mt`-less
-      core; note this before implementing.
-- [ ] Real downloadable trimmed clip + progress bar during ffmpeg processing.
+- [x] Integrate `@ffmpeg/ffmpeg` (ffmpeg.wasm), lazy-loaded, in `FfmpegTrimService`.
+      Uses the SINGLE-THREADED core loaded from unpkg via `toBlobURL` → no SharedArrayBuffer,
+      so no COOP/COEP needed (works on GitHub Pages). Core/wasm/worker all fetched at
+      runtime from CDN, so the app bundle stays ~2.28 MB (not bundled).
+- [x] Real downloadable trimmed clip + progress bar. "TRIM & DOWNLOAD" button on the
+      local-upload path runs `ffmpeg -ss <start> -i in -t <dur> -c copy out` (fast,
+      lossless, keyframe-aligned), shows a live % progress bar, and downloads the clip.
+      Errors surface an inline alert. NOTE: in-browser runtime not yet verified in CI/
+      headless — needs a manual browser check on the live site (upload → trim → download).
 
-## P2 — UX / a11y polish
+## P1.5 — Editing tools & export options (user-requested, ffmpeg-powered)
 
+Now that the ffmpeg engine is wired, expand it into a real toolkit. Ship each as its
+own small slice (all operate on the uploaded local file):
+
+- [ ] **Download-format options**: export the trimmed clip as MP4 / WebM / GIF (and
+      "keep original"). A format `<select>`; GIF/format-change forces a re-encode.
+- [ ] **Crop to display sizes**: aspect-ratio presets — 16:9 (landscape), 9:16 (vertical
+      / Shorts / Reels), 1:1 (square), 4:5 (portrait) — via ffmpeg `crop`/`scale` +
+      `setsar`. Preview the target frame before export.
+- [ ] **Frame-accurate trim toggle**: option to re-encode (`-ss` after `-i`, libx264)
+      for exact cuts instead of keyframe-aligned `-c copy`.
+- [ ] **Extract audio** (MP3) and **mute** (drop audio) options.
+- [ ] **Playback speed** (0.5×–2×) and **resolution/scale** presets (1080p/720p/480p).
+- [ ] **Grab a still frame** (PNG) at the current position.
+- [ ] Show estimated output size / a "processing…" state; cancel button.
+
+## P2 — UX / a11y polish (incl. user-requested "next-level" design)
+
+- [ ] **Next-level visual redesign**: cohesive modern theme, better hierarchy/spacing,
+      polished controls, an editing-toolbar layout for the new tools, iconography, and
+      micro-interactions. (Consider a design pass via the design skills.)
 - [ ] Responsive layout (mobile-friendly video + slider).
 - [ ] Loading + error states throughout.
 - [ ] Keyboard navigation + ARIA labels on controls.
@@ -160,3 +182,12 @@ complete slice per run. `npm run build` must pass before every commit.
   — integrate ffmpeg.wasm to actually trim + download the uploaded clip with a progress
   bar (note: ffmpeg.wasm wants COOP/COEP isolation which GitHub Pages can't set — pick a
   single-threaded core / SW workaround). Alternatively P3 eslint as a lighter slice.
+- _run 11_: P1 (step 2) — REAL client-side trimming shipped. Added `@ffmpeg/ffmpeg` +
+  `@ffmpeg/util`, a lazy `FfmpegTrimService` (single-threaded core from CDN → no
+  COOP/COEP, GitHub-Pages-safe), and a "TRIM & DOWNLOAD" button with a live % progress
+  bar + inline error on the upload path. Bundle stays 2.28 MB (core loads at runtime).
+  Format: clean. Build: PASS. Tests: 18/18 PASS. Runtime trim NOT yet verified in
+  headless — flagged for a manual browser check. User also requested a big feature
+  expansion (formats, aspect-ratio crop, more tools, next-level UI) — added as new
+  P1.5/P2 backlog. Next up: verify trim in-browser on the live site, then P1.5
+  download-format options or aspect-ratio crop presets.

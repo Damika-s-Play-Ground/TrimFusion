@@ -5,6 +5,7 @@ import {
   SafeUrl,
 } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { FfmpegTrimService } from '../services/ffmpeg-trim.service';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -94,6 +95,12 @@ export class RenderingPageComponent implements OnDestroy {
   localVideoUrl: SafeUrl | null = null;
   localFileName: string = '';
   private localObjectUrl: string | null = null;
+  private localFile: File | null = null;
+
+  // Client-side trim (ffmpeg.wasm) state.
+  trimming: boolean = false;
+  trimProgress: number = 0;
+  trimError: string = '';
 
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
@@ -104,7 +111,8 @@ export class RenderingPageComponent implements OnDestroy {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private router: Router
+    private router: Router,
+    private ffmpegTrim: FfmpegTrimService
   ) {}
 
   ngOnDestroy(): void {
@@ -132,15 +140,48 @@ export class RenderingPageComponent implements OnDestroy {
 
     // Switch to local-file mode: drop any YouTube preview.
     this.errorMessage = '';
+    this.trimError = '';
     this.embedUrl = '';
     this.videoId = null;
 
     this.revokeLocalUrl();
+    this.localFile = file;
     this.localObjectUrl = URL.createObjectURL(file);
     this.localVideoUrl = this.sanitizer.bypassSecurityTrustUrl(
       this.localObjectUrl
     );
     this.localFileName = file.name;
+  }
+
+  /** Trim the uploaded video client-side (ffmpeg.wasm) and download the clip. */
+  async trimAndDownload(): Promise<void> {
+    if (!this.localFile || this.trimming) {
+      return;
+    }
+    this.trimming = true;
+    this.trimProgress = 0;
+    this.trimError = '';
+    try {
+      const { blob, fileName } = await this.ffmpegTrim.trim(
+        this.localFile,
+        this.startSeconds,
+        this.endSeconds,
+        (percent) => (this.trimProgress = percent)
+      );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      this.trimError =
+        'Trimming failed. This runs entirely in your browser and can be ' +
+        'memory-heavy for large files — try a shorter range or smaller file.';
+      console.error('ffmpeg trim failed', err);
+    } finally {
+      this.trimming = false;
+    }
   }
 
   /** Once the uploaded video's metadata loads, size the trim range to it. */
