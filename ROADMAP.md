@@ -110,7 +110,8 @@ own small slice (all operate on the uploaded local file):
 - [x] Add eslint (`@angular-eslint` 16 + `@typescript-eslint` 5) with `.eslintrc.json`,
       a `lint` script, and a CI "Lint" step. Fixed 10 `no-inferrable-types` findings.
       Uses template/recommended (not accessibility) rules for now.
-      Follow-up: enable `@angular-eslint/template/accessibility` and fix a11y findings.
+- [x] Enabled `@angular-eslint/template/accessibility` lint rules — templates already
+      pass (0 findings, thanks to existing ARIA labels), now enforced in CI going forward.
 - [x] Real unit tests for `extractVideoId` (17 cases: youtu.be, /shorts, /embed, /live,
       watch?v, extra params, no-protocol, bare id, whitespace, and null cases). Added a
       `test:ci` script (`ng test --watch=false --browsers=ChromeHeadless`). Also repaired
@@ -277,3 +278,8 @@ own small slice (all operate on the uploaded local file):
   crop/speed/scale. This clears the LAST P1.5 item — the editing toolkit is fully done.
   Lint clean, build PASS (2.30 MB), tests 18/18. Only optional polish remains
   (dark/light toggle, a11y lint, in-browser QA of ffmpeg paths).
+- _run 23_: P2/P3 — enabled `@angular-eslint/template/accessibility` rules; templates
+  already pass (0 findings), so a11y is now enforced in CI. Build PASS (2.30 MB), lint
+  clean. This clears the a11y follow-up. REMAINING is genuinely optional: a light-mode
+  toggle (real feature) and a manual in-browser QA of the ffmpeg export paths (can't be
+  done headless). Recommend stopping the loop after this unless the light toggle is wanted.
