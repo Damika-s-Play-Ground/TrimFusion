@@ -92,8 +92,10 @@ own small slice (all operate on the uploaded local file):
 
 - [x] Themed **404 / Not-Found page**: gradient "404", glass card, message, and a
       "Back to TrimFusion" button (routerLink to /home). Replaced the bare placeholder;
-      VERIFIED via screenshot. (Follow-up: theme the orphaned `/download` mock page or
-      remove it.)
+      VERIFIED via screenshot.
+- [x] Removed the orphaned `/download` mock page (nothing navigated to it; leftover
+      admin-lte product-list content) — component, route, and declaration — plus the two
+      now-unused mock screenshots in `src/assets`.
 
 ## P3 — Health
 
@@ -247,3 +249,9 @@ own small slice (all operate on the uploaded local file):
   card, "Back to TrimFusion" button). Lint/format clean, build PASS (2.30 MB), tests
   18/18. VERIFIED via screenshot of a bogus route. Next up: theme/remove the orphaned
   /download mock page, P1.5 mute/speed tools, or dark/light toggle.
+- _run 19_: Removed the orphaned `/download` mock page + 2 unused mock screenshots
+  (routing/module cleaned). This run was initially BLOCKED by a full disk (ENOSPC on
+  every command); freed ~210 MB via `brew cleanup` (safe, regenerable), then completed:
+  lint clean, build PASS (2.29 MB), tests 18/18. NOTE: disk is still 99% full (~3.9 GB
+  free) — the loop's per-run ng-serve/headless-Chrome/install churn eats space; consider
+  pausing the loop or freeing more disk. Next up: P1.5 mute/speed tools or dark/light.
