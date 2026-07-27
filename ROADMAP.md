@@ -74,9 +74,13 @@ own small slice (all operate on the uploaded local file):
 
 ## P2 — UX / a11y polish (incl. user-requested "next-level" design)
 
-- [ ] **Next-level visual redesign**: cohesive modern theme, better hierarchy/spacing,
-      polished controls, an editing-toolbar layout for the new tools, iconography, and
-      micro-interactions. (Consider a design pass via the design skills.)
+- [x] **Next-level visual redesign** (rendering page): modern dark, glassy theme with a
+      violet→pink brand gradient, restyled card/inputs/selects/buttons/slider/progress,
+      neutralized admin-lte sidebar offset. Done via component-scoped SCSS (no HTML rewrite,
+      all bindings intact). VERIFIED visually via headless-Chrome screenshot. Raised the
+      `anyComponentStyle` budget (8/16kb) for the themed page.
+      Follow-ups: apply the same theme to the download/404 pages; add dark/light toggle;
+      polish the Material slider colors to match the gradient.
 - [ ] Responsive layout (mobile-friendly video + slider).
 - [ ] Loading + error states throughout.
 - [ ] Keyboard navigation + ARIA labels on controls.
@@ -208,3 +212,9 @@ own small slice (all operate on the uploaded local file):
   optional crop; video path unchanged). Crop selector auto-disables for audio. Build:
   PASS (2.29 MB). Tests: 18/18. Runtime (MP3/GIF encode) not verified headless. Next up:
   P2 next-level redesign, or P1.5 mute/speed/frame-grab, or verify features in-browser.
+- _run 14_: P2 NEXT-LEVEL REDESIGN of the rendering page — modern dark/glassy theme,
+  violet→pink brand gradient, restyled every control, killed the admin-lte sidebar
+  offset. Component-scoped SCSS only (no HTML rewrite; bindings intact). VERIFIED with a
+  headless-Chrome screenshot (looks great). Raised anyComponentStyle budget to 8/16kb.
+  Build: PASS (2.29 MB). Tests: 18/18. Next up: extend theme to download/404 pages, add
+  dark/light toggle, or more P1.5 tools (mute/speed/frame-grab).
