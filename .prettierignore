@@ -1,0 +1,8 @@
+# Build output
+dist/
+coverage/
+# Dependencies
+node_modules/
+# Generated / vendor
+package-lock.json
+src/favicon.ico

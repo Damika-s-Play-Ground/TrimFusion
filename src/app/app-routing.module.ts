@@ -5,26 +5,26 @@ import { RenderingPageComponent } from './rendering-page/rendering-page.componen
 import { DownloadPageComponent } from './download-page/download-page.component';
 const routes: Routes = [
   {
-    component:RenderingPageComponent,
-    path:'home'
+    component: RenderingPageComponent,
+    path: 'home',
   },
   {
-    path:'',
-    pathMatch:'full',
-    redirectTo: '/home'
+    path: '',
+    pathMatch: 'full',
+    redirectTo: '/home',
   },
   {
-    component:DownloadPageComponent,
-    path:'download'
+    component: DownloadPageComponent,
+    path: 'download',
   },
   {
-    component:NotFoundPageComponent,
-    path:'**'
-  }
+    component: NotFoundPageComponent,
+    path: '**',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

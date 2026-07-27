@@ -54,7 +54,10 @@ complete slice per run. `npm run build` must pass before every commit.
 
 ## P3 — Health
 
-- [ ] Add prettier + eslint config + scripts.
+- [x] Add prettier config + scripts (`.prettierrc.json`, `.prettierignore`, `format` &
+      `format:check`), formatted all of `src`, and wired `format:check` into CI.
+- [ ] Add eslint (`@angular-eslint`) config + `lint` script + CI step (follow-up to
+      prettier; kept separate to avoid pulling several devDeps in one slice).
 - [x] Real unit tests for `extractVideoId` (17 cases: youtu.be, /shorts, /embed, /live,
       watch?v, extra params, no-protocol, bare id, whitespace, and null cases). Added a
       `test:ci` script (`ng test --watch=false --browsers=ChromeHeadless`). Also repaired
@@ -121,3 +124,9 @@ complete slice per run. `npm run build` must pass before every commit.
   more budget-error hack (tightened to 2.5/3.5 mb). Build: PASS. Tests: 18/18 PASS.
   Next up: P3 prettier + eslint, OR a follow-up CSS-prune (dedupe adminlte/bootstrap
   styles to shrink the remaining ~1.9 MB of CSS).
+- _run 8_: P3 — added Prettier (devDep + `.prettierrc.json` + `.prettierignore` +
+  `format`/`format:check` scripts), formatted all of `src`, and added a `format:check`
+  CI step. Deferred CSS-dedupe: admin-lte 3.1 is Bootstrap-4-based while the dep is
+  Bootstrap 5, so the duplicate CSS loads interact with cascade order — needs visual QA,
+  not a blind autonomous edit. Format: clean. Build: PASS (2.27 MB). Tests: 18/18 PASS.
+  Next up: P3 eslint (@angular-eslint) config + lint script + CI step.

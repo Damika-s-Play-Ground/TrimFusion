@@ -92,7 +92,10 @@ export class RenderingPageComponent {
   startSeconds: number = 0;
   endSeconds: number = 60;
 
-  constructor(private sanitizer: DomSanitizer, private router: Router) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private router: Router
+  ) {}
 
   extractVideoId(url: string): string | null {
     return extractVideoId(url);

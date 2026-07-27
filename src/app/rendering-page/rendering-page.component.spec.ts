@@ -32,7 +32,9 @@ describe('extractVideoId', () => {
   });
 
   it('parses an /embed/ URL', () => {
-    expect(extractVideoId(`https://www.youtube.com/embed/${ID}?rel=0`)).toBe(ID);
+    expect(extractVideoId(`https://www.youtube.com/embed/${ID}?rel=0`)).toBe(
+      ID
+    );
   });
 
   it('parses a /live/ URL', () => {
@@ -64,7 +66,9 @@ describe('extractVideoId', () => {
   });
 
   it('returns null for a YouTube URL with no video id', () => {
-    expect(extractVideoId('https://www.youtube.com/feed/subscriptions')).toBeNull();
+    expect(
+      extractVideoId('https://www.youtube.com/feed/subscriptions')
+    ).toBeNull();
   });
 
   it('returns null for a too-short id', () => {

@@ -8,16 +8,16 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
 import { RenderingPageComponent } from './rendering-page/rendering-page.component';
 import { DownloadPageComponent } from './download-page/download-page.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSliderModule} from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   declarations: [
     AppComponent,
     RenderingPageComponent,
     DownloadPageComponent,
-    NotFoundPageComponent
+    NotFoundPageComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,9 +26,9 @@ import {MatSliderModule} from '@angular/material/slider';
     FormsModule,
     MatButtonModule,
     MatIconModule,
-    MatSliderModule
+    MatSliderModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
