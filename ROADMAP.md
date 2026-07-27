@@ -69,7 +69,9 @@ own small slice (all operate on the uploaded local file):
       for exact cuts instead of keyframe-aligned `-c copy`.
 - [ ] **Extract audio** (MP3) and **mute** (drop audio) options.
 - [ ] **Playback speed** (0.5×–2×) and **resolution/scale** presets (1080p/720p/480p).
-- [ ] **Grab a still frame** (PNG) at the current position.
+- [x] **Grab a still frame** (PNG): "Grab current frame" button captures the frame shown
+      in the uploaded-video player to a canvas and downloads it as PNG (named with the
+      timestamp). No ffmpeg needed; instant.
 - [ ] Show estimated output size / a "processing…" state; cancel button.
 
 ## P2 — UX / a11y polish (incl. user-requested "next-level" design)
@@ -218,3 +220,7 @@ own small slice (all operate on the uploaded local file):
   headless-Chrome screenshot (looks great). Raised anyComponentStyle budget to 8/16kb.
   Build: PASS (2.29 MB). Tests: 18/18. Next up: extend theme to download/404 pages, add
   dark/light toggle, or more P1.5 tools (mute/speed/frame-grab).
+- _run 15_: P1.5 "Grab current frame (PNG)" — canvas capture of the uploaded-video
+  player's current frame → instant PNG download (timestamped filename). No ffmpeg;
+  ghost-styled secondary button in the new theme. Build: PASS (2.29 MB). Tests: 18/18.
+  Next up: P1.5 mute/speed toggles, extend theme to download/404 pages, or dark/light.

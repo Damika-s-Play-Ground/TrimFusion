@@ -96,6 +96,7 @@ export class RenderingPageComponent implements OnDestroy {
   localFileName: string = '';
   private localObjectUrl: string | null = null;
   private localFile: File | null = null;
+  private localVideoEl: HTMLVideoElement | null = null;
 
   // Client-side trim (ffmpeg.wasm) state.
   trimming: boolean = false;
@@ -205,12 +206,48 @@ export class RenderingPageComponent implements OnDestroy {
 
   /** Once the uploaded video's metadata loads, size the trim range to it. */
   onLocalMetadata(video: HTMLVideoElement): void {
+    this.localVideoEl = video;
     const duration = Math.floor(video.duration || 0);
     if (duration > 0) {
       this.maxSeconds = duration;
       this.startSeconds = 0;
       this.endSeconds = Math.min(60, duration);
     }
+  }
+
+  /**
+   * Capture the frame currently shown in the uploaded-video player and save it
+   * as a PNG. Runs entirely on a canvas — no ffmpeg needed. Scrub the player to
+   * the desired moment first.
+   */
+  grabFrame(): void {
+    const video = this.localVideoEl;
+    if (!video || !video.videoWidth || !video.videoHeight) {
+      this.trimError =
+        'Load a video and let it show a frame before grabbing a still.';
+      return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const base = (this.localFileName || 'frame').replace(/\.[^.]+$/, '');
+      const stamp = Math.floor(video.currentTime);
+      link.href = url;
+      link.download = `${base}-frame-${stamp}s.png`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
   }
 
   extractVideoId(url: string): string | null {

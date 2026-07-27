@@ -183,6 +183,21 @@
   }
 }
 
+// Secondary action (grab frame): outline/ghost variant.
+.crop-button--ghost {
+  margin-top: 0.6rem;
+  background: transparent;
+  border: 1px solid var(--tf-field-border);
+  color: var(--tf-text);
+  box-shadow: none;
+
+  &:hover:not([disabled]) {
+    filter: none;
+    border-color: var(--tf-accent-1);
+    background: rgba(139, 92, 246, 0.12);
+  }
+}
+
 // ── Preview ─────────────────────────────────────────────────────────────────
 .video-container {
   position: relative;

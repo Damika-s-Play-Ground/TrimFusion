@@ -205,6 +205,16 @@
                   <mat-icon>content_cut</mat-icon>
                   {{ trimming ? 'TRIMMING…' : 'TRIM & DOWNLOAD' }}
                 </button>
+                <button
+                  type="button"
+                  class="crop-button crop-button--ghost"
+                  (click)="grabFrame()"
+                  [disabled]="trimming"
+                  title="Save the frame currently shown in the player as a PNG"
+                >
+                  <mat-icon>photo_camera</mat-icon>
+                  GRAB CURRENT FRAME (PNG)
+                </button>
                 <div
                   *ngIf="trimming"
                   class="progress mt-2"
