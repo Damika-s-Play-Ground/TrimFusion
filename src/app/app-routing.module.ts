@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
-import { RendingPageComponent } from './rending-page/rending-page.component';
+import { RenderingPageComponent } from './rendering-page/rendering-page.component';
 import { DownloadPageComponent } from './download-page/download-page.component';
 const routes: Routes = [
   {
-    component:RendingPageComponent,
+    component:RenderingPageComponent,
     path:'home'
   },
   {

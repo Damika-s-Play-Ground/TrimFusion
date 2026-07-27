@@ -61,7 +61,8 @@ complete slice per run. `npm run build` must pass before every commit.
       initial bundle is 5.86 MB (mostly admin-lte + bootstrap CSS), so the angular.json
       budget was raised to 4mb warn / 7mb error to let the build pass. Pruning these
       deps should bring it back down and the budget can be tightened again.
-- [ ] Fix `rending-page` → `rendering-page` typo (folder, component, route refs).
+- [x] Fix `rending-page` → `rendering-page` typo (folder, files, `RenderingPageComponent`
+      class, `app-rendering-page` selector, module declaration + routing refs).
 - [ ] Refresh README with real screenshots + accurate feature list.
 
 ## P4 — Deploy
@@ -86,3 +87,10 @@ complete slice per run. `npm run build` must pass before every commit.
   with a start<end guard. Added `formatTime()` HH:MM:SS labels (live inputs + slider
   tooltip) and ARIA labels on thumbs. Build: PASS. Next up: P0 slider max should
   reflect real video duration (via @angular/youtube-player, already a dep).
+- _run 4_: P3 — fixed the `rending-page` → `rendering-page` typo (folder + files via
+  `git mv`, `RenderingPageComponent` class, `app-rendering-page` selector, template/
+  style URLs, module declaration + routing import/ref). No behavior change. Chose this
+  bounded slice over the P0 duration item, which needs a preview rewrite (swapping the
+  iframe for `<youtube-player>`) too large to land safely in one autonomous run. Build:
+  PASS. Next up: P0 real video duration OR P3 unit tests for `extractVideoId` (pure fn,
+  already exported) — tests are the lower-risk high-value slice if karma/Chrome runs.

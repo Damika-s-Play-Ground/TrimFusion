@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { YouTubePlayerModule } from '@angular/youtube-player';
-import { RendingPageComponent } from './rending-page/rending-page.component';
+import { RenderingPageComponent } from './rendering-page/rendering-page.component';
 import { DownloadPageComponent } from './download-page/download-page.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import {MatButtonModule} from '@angular/material/button';
@@ -15,7 +15,7 @@ import {MatSliderModule} from '@angular/material/slider';
 @NgModule({
   declarations: [
     AppComponent,
-    RendingPageComponent,
+    RenderingPageComponent,
     DownloadPageComponent,
     NotFoundPageComponent
   ],

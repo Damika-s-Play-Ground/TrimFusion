@@ -75,11 +75,11 @@ export function extractVideoId(input: string): string | null {
 }
 
 @Component({
-  selector: 'app-rending-page',
-  templateUrl: './rending-page.component.html',
-  styleUrls: ['./rending-page.component.scss'],
+  selector: 'app-rendering-page',
+  templateUrl: './rendering-page.component.html',
+  styleUrls: ['./rendering-page.component.scss'],
 })
-export class RendingPageComponent {
+export class RenderingPageComponent {
   youtubeUrl: string = '';
   embedUrl: string = '';
   sanitizedUrl!: SafeResourceUrl;
