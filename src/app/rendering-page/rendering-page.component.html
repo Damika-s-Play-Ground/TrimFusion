@@ -154,6 +154,25 @@
 
               <!-- Local upload: real client-side trim + download -->
               <ng-container *ngIf="localVideoUrl">
+                <div class="aspect-group mb-2">
+                  <label for="aspectSelect" class="form-label d-block mb-1">
+                    Crop to display size
+                  </label>
+                  <select
+                    id="aspectSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedAspect"
+                    [disabled]="trimming"
+                    aria-label="Crop to display size"
+                  >
+                    <option
+                      *ngFor="let preset of aspectPresets"
+                      [ngValue]="preset.value"
+                    >
+                      {{ preset.label }}
+                    </option>
+                  </select>
+                </div>
                 <button
                   mat-flat-button
                   color="warn"

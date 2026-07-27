@@ -102,6 +102,16 @@ export class RenderingPageComponent implements OnDestroy {
   trimProgress: number = 0;
   trimError: string = '';
 
+  // "Crop to display size" presets (value = width / height, null = keep original).
+  readonly aspectPresets: { label: string; value: number | null }[] = [
+    { label: 'Original (no crop)', value: null },
+    { label: '16:9 — Landscape', value: 16 / 9 },
+    { label: '9:16 — Vertical (Shorts/Reels)', value: 9 / 16 },
+    { label: '1:1 — Square', value: 1 },
+    { label: '4:5 — Portrait', value: 4 / 5 },
+  ];
+  selectedAspect: number | null = null;
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -162,12 +172,12 @@ export class RenderingPageComponent implements OnDestroy {
     this.trimProgress = 0;
     this.trimError = '';
     try {
-      const { blob, fileName } = await this.ffmpegTrim.trim(
-        this.localFile,
-        this.startSeconds,
-        this.endSeconds,
-        (percent) => (this.trimProgress = percent)
-      );
+      const { blob, fileName } = await this.ffmpegTrim.trim(this.localFile, {
+        startSeconds: this.startSeconds,
+        endSeconds: this.endSeconds,
+        aspectRatio: this.selectedAspect,
+        onProgress: (percent) => (this.trimProgress = percent),
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

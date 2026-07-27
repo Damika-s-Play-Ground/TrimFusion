@@ -72,41 +72,84 @@ export class FfmpegTrimService {
   }
 
   /**
+   * Centered-crop video filter that reshapes any input to the target aspect
+   * ratio `r` (= width / height), then trims to even dimensions (libx264
+   * requires that). Commas inside min() are escaped so ffmpeg's filtergraph
+   * parser doesn't treat them as filter separators.
+   */
+  private cropToAspectFilter(r: number): string {
+    const R = r.toFixed(6);
+    return (
+      `crop=min(iw\\,ih*${R}):min(ih\\,iw/${R}),` +
+      `crop=trunc(iw/2)*2:trunc(ih/2)*2`
+    );
+  }
+
+  /**
    * Trim `file` to the [startSeconds, endSeconds) range and return the result
-   * as a Blob. Uses stream copy (`-c copy`) so it is fast and lossless; cuts
-   * land on the nearest keyframe. The output keeps the input's container.
+   * as a Blob.
+   *
+   * - Without `aspectRatio`: stream copy (`-c copy`) — fast and lossless; cuts
+   *   land on the nearest keyframe and the input container is kept.
+   * - With `aspectRatio`: centered-crop to that ratio and re-encode (libx264 /
+   *   aac, MP4 output) — used for the "crop to display size" presets.
    */
   async trim(
     file: File,
-    startSeconds: number,
-    endSeconds: number,
-    onProgress?: (percent: number) => void
+    options: {
+      startSeconds: number;
+      endSeconds: number;
+      aspectRatio?: number | null;
+      onProgress?: (percent: number) => void;
+    }
   ): Promise<{ blob: Blob; fileName: string }> {
+    const { startSeconds, endSeconds, aspectRatio, onProgress } = options;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
-    const ext = this.extensionOf(file.name);
-    const inputName = `input.${ext}`;
-    const outputName = `trimmed.${ext}`;
+    const crop = aspectRatio && aspectRatio > 0;
+
+    const inExt = this.extensionOf(file.name);
+    const outExt = crop ? 'mp4' : inExt;
+    const inputName = `input.${inExt}`;
+    const outputName = `trimmed.${outExt}`;
 
     const ffmpeg = await this.ensureLoaded(onProgress);
 
     await ffmpeg.writeFile(inputName, await fetchFile(file));
-    await ffmpeg.exec([
+
+    const args = [
       '-ss',
       String(start),
       '-i',
       inputName,
       '-t',
       String(duration),
-      '-c',
-      'copy',
-      outputName,
-    ]);
+    ];
+    if (crop) {
+      args.push(
+        '-vf',
+        this.cropToAspectFilter(aspectRatio as number),
+        '-c:v',
+        'libx264',
+        '-preset',
+        'veryfast',
+        '-crf',
+        '23',
+        '-c:a',
+        'aac',
+        '-movflags',
+        '+faststart'
+      );
+    } else {
+      args.push('-c', 'copy');
+    }
+    args.push(outputName);
+    await ffmpeg.exec(args);
 
     const data = await ffmpeg.readFile(outputName);
     // data is a Uint8Array; wrap its buffer in a Blob.
     const blob = new Blob([(data as Uint8Array).buffer], {
-      type: file.type || 'video/mp4',
+      type: crop ? 'video/mp4' : file.type || 'video/mp4',
     });
 
     // Best-effort cleanup of the virtual FS.
@@ -118,6 +161,7 @@ export class FfmpegTrimService {
     }
 
     const base = file.name.replace(/\.[^.]+$/, '') || 'video';
-    return { blob, fileName: `${base}-trimmed.${ext}` };
+    const suffix = crop ? 'cropped' : 'trimmed';
+    return { blob, fileName: `${base}-${suffix}.${outExt}` };
   }
 }

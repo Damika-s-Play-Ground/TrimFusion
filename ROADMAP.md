@@ -59,9 +59,10 @@ own small slice (all operate on the uploaded local file):
 
 - [ ] **Download-format options**: export the trimmed clip as MP4 / WebM / GIF (and
       "keep original"). A format `<select>`; GIF/format-change forces a re-encode.
-- [ ] **Crop to display sizes**: aspect-ratio presets — 16:9 (landscape), 9:16 (vertical
-      / Shorts / Reels), 1:1 (square), 4:5 (portrait) — via ffmpeg `crop`/`scale` +
-      `setsar`. Preview the target frame before export.
+- [x] **Crop to display sizes**: aspect-ratio presets — Original, 16:9, 9:16 (Shorts/
+      Reels), 1:1, 4:5 — via a centered ffmpeg `crop` (even-dim safe) + libx264 re-encode
+      to MP4. Selector on the upload path; "Original" keeps the fast `-c copy` trim.
+      TODO (nice-to-have): live preview of the target frame before export.
 - [ ] **Frame-accurate trim toggle**: option to re-encode (`-ss` after `-i`, libx264)
       for exact cuts instead of keyframe-aligned `-c copy`.
 - [ ] **Extract audio** (MP3) and **mute** (drop audio) options.
@@ -191,3 +192,12 @@ own small slice (all operate on the uploaded local file):
   expansion (formats, aspect-ratio crop, more tools, next-level UI) — added as new
   P1.5/P2 backlog. Next up: verify trim in-browser on the live site, then P1.5
   download-format options or aspect-ratio crop presets.
+- _run 12_: Branch workflow change — per user, consolidated everything onto `main`
+  (fast-forward merge of the 12 nextlevel commits), retargeted CI + Pages deploy to
+  `main`, fixed the github-pages env branch policy (allow main, drop nextlevel), and
+  DELETED `nextlevel` (local + remote). Left unrelated `snyk-*`/`tech-stack-file` bot
+  branches untouched (flagged to user). Then shipped P1.5 "Crop to display sizes":
+  aspect-ratio presets (16:9/9:16/1:1/4:5/Original) via centered ffmpeg crop + libx264
+  re-encode; "Original" keeps the fast copy path. Build: PASS (2.29 MB). Tests: 18/18.
+  Loop now runs on main (cron recreated as 0a6f4d89). Next up: P1.5 download-format
+  options (mp4/webm/gif) or extract-audio/mute, then P2 next-level redesign.
