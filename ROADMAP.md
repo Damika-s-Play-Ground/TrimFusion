@@ -114,7 +114,10 @@ own small slice (all operate on the uploaded local file):
       slice can shrink this further. FontAwesome CSS must stay (used in download-page).
 - [x] Fix `rending-page` → `rendering-page` typo (folder, files, `RenderingPageComponent`
       class, `app-rendering-page` selector, module declaration + routing refs).
-- [ ] Refresh README with real screenshots + accurate feature list.
+- [x] Refresh README: real screenshot of the redesigned UI (`docs/screenshot-home.png`),
+      accurate feature list (trim, crop-to-size, MP4/MP3/GIF export, PNG frame grab,
+      YouTube preview), tech stack, live demo link, correct clone URL + scripts.
+      (Old mock screenshots in `src/assets` are now unreferenced — prune candidate.)
 
 ## P4 — Deploy
 
@@ -224,3 +227,7 @@ own small slice (all operate on the uploaded local file):
   player's current frame → instant PNG download (timestamped filename). No ffmpeg;
   ghost-styled secondary button in the new theme. Build: PASS (2.29 MB). Tests: 18/18.
   Next up: P1.5 mute/speed toggles, extend theme to download/404 pages, or dark/light.
+- _run 16_: P3 — refreshed the README with a real headless-Chrome screenshot of the
+  redesigned UI (`docs/screenshot-home.png`), an accurate feature list, tech stack, live
+  demo link, and correct clone/scripts. Docs-only (no build impact). Next up: P1.5
+  mute/speed toggles, extend theme to download/404 pages, dark/light toggle, or P3 eslint.
