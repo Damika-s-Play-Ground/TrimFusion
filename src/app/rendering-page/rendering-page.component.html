@@ -11,10 +11,20 @@
               >
             </h1>
           </div>
-          <div class="col-sm-4">
-            <ol class="breadcrumb float-lg-right">
-              <li class="active">HOME</li>
-            </ol>
+          <div class="col-sm-4 tf-header-actions">
+            <button
+              type="button"
+              class="tf-theme-toggle"
+              (click)="toggleTheme()"
+              [attr.aria-label]="
+                theme === 'dark'
+                  ? 'Switch to light mode'
+                  : 'Switch to dark mode'
+              "
+              [attr.aria-pressed]="theme === 'light'"
+            >
+              {{ theme === 'dark' ? '☀️ Light' : '🌙 Dark' }}
+            </button>
           </div>
         </div>
         <!-- /.row -->

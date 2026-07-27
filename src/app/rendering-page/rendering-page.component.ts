@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, HostBinding, OnDestroy } from '@angular/core';
 import {
   DomSanitizer,
   SafeResourceUrl,
@@ -143,6 +143,22 @@ export class RenderingPageComponent implements OnDestroy {
   // Frame-accurate cut (re-encode) vs. fast keyframe-aligned copy.
   preciseCut = false;
 
+  // Light/dark theme (persisted). Dark is the default.
+  theme: 'dark' | 'light' = 'dark';
+
+  @HostBinding('class.tf-light') get isLightTheme(): boolean {
+    return this.theme === 'light';
+  }
+
+  toggleTheme(): void {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem('tf-theme', this.theme);
+    } catch {
+      /* ignore storage errors (e.g. private mode) */
+    }
+  }
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -154,7 +170,16 @@ export class RenderingPageComponent implements OnDestroy {
     private sanitizer: DomSanitizer,
     private router: Router,
     private ffmpegTrim: FfmpegTrimService
-  ) {}
+  ) {
+    try {
+      const saved = localStorage.getItem('tf-theme');
+      if (saved === 'light' || saved === 'dark') {
+        this.theme = saved;
+      }
+    } catch {
+      /* ignore storage errors */
+    }
+  }
 
   ngOnDestroy(): void {
     this.revokeLocalUrl();

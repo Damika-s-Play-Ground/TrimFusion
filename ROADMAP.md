@@ -93,7 +93,9 @@ own small slice (all operate on the uploaded local file):
 - [ ] Loading + error states throughout.
 - [ ] Keyboard navigation + ARIA labels on controls.
 - [ ] Empty states.
-- [ ] Dark mode.
+- [x] Dark/Light mode toggle: header button switches themes via a `.tf-light` host class
+      overriding the CSS variables; choice persisted in `localStorage`. Dark is default.
+      Both themes VERIFIED via screenshots.
 - [ ] Favicon / branding polish.
 
 - [x] Themed **404 / Not-Found page**: gradient "404", glass card, message, and a
@@ -283,3 +285,8 @@ own small slice (all operate on the uploaded local file):
   clean. This clears the a11y follow-up. REMAINING is genuinely optional: a light-mode
   toggle (real feature) and a manual in-browser QA of the ffmpeg export paths (can't be
   done headless). Recommend stopping the loop after this unless the light toggle is wanted.
+- _run 24_: P2 — Dark/Light theme toggle (header button, `.tf-light` host class swapping
+  CSS vars, persisted in localStorage). Both themes verified via screenshots. Lint clean,
+  build PASS (2.30 MB), tests 18/18. This was the last real feature — LOOP STOPPED
+  (cron 0a6f4d89 cancelled). Remaining work is only manual in-browser QA of the ffmpeg
+  export paths, which can't be automated headless. Restart anytime with /loop.
