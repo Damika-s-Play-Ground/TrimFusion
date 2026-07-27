@@ -5,7 +5,7 @@ import {
   SafeUrl,
 } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { FfmpegTrimService } from '../services/ffmpeg-trim.service';
+import { FfmpegTrimService, TrimOutput } from '../services/ffmpeg-trim.service';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -112,6 +112,14 @@ export class RenderingPageComponent implements OnDestroy {
   ];
   selectedAspect: number | null = null;
 
+  // "Export as" options.
+  readonly outputFormats: { label: string; value: TrimOutput }[] = [
+    { label: 'Video (MP4/original)', value: 'video' },
+    { label: 'Audio only (MP3)', value: 'audio' },
+    { label: 'Animated GIF', value: 'gif' },
+  ];
+  selectedOutput: TrimOutput = 'video';
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -176,6 +184,7 @@ export class RenderingPageComponent implements OnDestroy {
         startSeconds: this.startSeconds,
         endSeconds: this.endSeconds,
         aspectRatio: this.selectedAspect,
+        output: this.selectedOutput,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

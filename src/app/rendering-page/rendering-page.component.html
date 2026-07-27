@@ -154,6 +154,25 @@
 
               <!-- Local upload: real client-side trim + download -->
               <ng-container *ngIf="localVideoUrl">
+                <div class="export-group mb-2">
+                  <label for="outputSelect" class="form-label d-block mb-1">
+                    Export as
+                  </label>
+                  <select
+                    id="outputSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedOutput"
+                    [disabled]="trimming"
+                    aria-label="Export format"
+                  >
+                    <option
+                      *ngFor="let fmt of outputFormats"
+                      [ngValue]="fmt.value"
+                    >
+                      {{ fmt.label }}
+                    </option>
+                  </select>
+                </div>
                 <div class="aspect-group mb-2">
                   <label for="aspectSelect" class="form-label d-block mb-1">
                     Crop to display size
@@ -162,7 +181,7 @@
                     id="aspectSelect"
                     class="form-select"
                     [(ngModel)]="selectedAspect"
-                    [disabled]="trimming"
+                    [disabled]="trimming || selectedOutput === 'audio'"
                     aria-label="Crop to display size"
                   >
                     <option

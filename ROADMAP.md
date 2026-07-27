@@ -57,8 +57,10 @@ complete slice per run. `npm run build` must pass before every commit.
 Now that the ffmpeg engine is wired, expand it into a real toolkit. Ship each as its
 own small slice (all operate on the uploaded local file):
 
-- [ ] **Download-format options**: export the trimmed clip as MP4 / WebM / GIF (and
-      "keep original"). A format `<select>`; GIF/format-change forces a re-encode.
+- [x] **Export-format options**: "Export as" selector — Video (MP4/original), Audio only
+      (MP3, `libmp3lame`), or Animated GIF (`fps=12,scale=480` + optional crop). Composes
+      with the crop presets (disabled for audio). NOTE: WebM not included yet; MP3/GIF
+      encoder availability in the CDN core is assumed — needs an in-browser check.
 - [x] **Crop to display sizes**: aspect-ratio presets — Original, 16:9, 9:16 (Shorts/
       Reels), 1:1, 4:5 — via a centered ffmpeg `crop` (even-dim safe) + libx264 re-encode
       to MP4. Selector on the upload path; "Original" keeps the fast `-c copy` trim.
@@ -201,3 +203,8 @@ own small slice (all operate on the uploaded local file):
   re-encode; "Original" keeps the fast copy path. Build: PASS (2.29 MB). Tests: 18/18.
   Loop now runs on main (cron recreated as 0a6f4d89). Next up: P1.5 download-format
   options (mp4/webm/gif) or extract-audio/mute, then P2 next-level redesign.
+- _run 13_: P1.5 "Export as" options — added a Video / Audio (MP3) / GIF selector wired
+  through `FfmpegTrimService` (audio: `-vn -c:a libmp3lame`; gif: `fps=12,scale=480` with
+  optional crop; video path unchanged). Crop selector auto-disables for audio. Build:
+  PASS (2.29 MB). Tests: 18/18. Runtime (MP3/GIF encode) not verified headless. Next up:
+  P2 next-level redesign, or P1.5 mute/speed/frame-grab, or verify features in-browser.

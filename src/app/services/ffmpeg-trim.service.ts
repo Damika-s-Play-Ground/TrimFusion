@@ -2,6 +2,9 @@ import { Injectable, NgZone } from '@angular/core';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
+/** What the trim operation should produce. */
+export type TrimOutput = 'video' | 'audio' | 'gif';
+
 /**
  * Client-side video trimming via ffmpeg.wasm.
  *
@@ -100,18 +103,33 @@ export class FfmpegTrimService {
       startSeconds: number;
       endSeconds: number;
       aspectRatio?: number | null;
+      output?: TrimOutput;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
     const { startSeconds, endSeconds, aspectRatio, onProgress } = options;
+    const output: TrimOutput = options.output ?? 'video';
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
-    const crop = aspectRatio && aspectRatio > 0;
+    // Cropping only applies to visual outputs.
+    const crop = output !== 'audio' && !!aspectRatio && aspectRatio > 0;
 
     const inExt = this.extensionOf(file.name);
-    const outExt = crop ? 'mp4' : inExt;
+    let outExt: string;
+    if (output === 'audio') {
+      outExt = 'mp3';
+    } else if (output === 'gif') {
+      outExt = 'gif';
+    } else {
+      outExt = crop ? 'mp4' : inExt;
+    }
+    const mimeByOutput: Record<TrimOutput, string> = {
+      video: crop ? 'video/mp4' : file.type || 'video/mp4',
+      audio: 'audio/mpeg',
+      gif: 'image/gif',
+    };
     const inputName = `input.${inExt}`;
-    const outputName = `trimmed.${outExt}`;
+    const outputName = `out.${outExt}`;
 
     const ffmpeg = await this.ensureLoaded(onProgress);
 
@@ -125,7 +143,17 @@ export class FfmpegTrimService {
       '-t',
       String(duration),
     ];
-    if (crop) {
+    if (output === 'audio') {
+      // Strip video, encode audio to MP3.
+      args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
+    } else if (output === 'gif') {
+      const filters = [
+        ...(crop ? [this.cropToAspectFilter(aspectRatio as number)] : []),
+        'fps=12',
+        'scale=480:-2:flags=lanczos',
+      ].join(',');
+      args.push('-vf', filters);
+    } else if (crop) {
       args.push(
         '-vf',
         this.cropToAspectFilter(aspectRatio as number),
@@ -141,6 +169,7 @@ export class FfmpegTrimService {
         '+faststart'
       );
     } else {
+      // Fast, lossless stream copy.
       args.push('-c', 'copy');
     }
     args.push(outputName);
@@ -149,7 +178,7 @@ export class FfmpegTrimService {
     const data = await ffmpeg.readFile(outputName);
     // data is a Uint8Array; wrap its buffer in a Blob.
     const blob = new Blob([(data as Uint8Array).buffer], {
-      type: crop ? 'video/mp4' : file.type || 'video/mp4',
+      type: mimeByOutput[output],
     });
 
     // Best-effort cleanup of the virtual FS.
@@ -161,7 +190,14 @@ export class FfmpegTrimService {
     }
 
     const base = file.name.replace(/\.[^.]+$/, '') || 'video';
-    const suffix = crop ? 'cropped' : 'trimmed';
+    let suffix: string;
+    if (output === 'audio') {
+      suffix = 'audio';
+    } else if (output === 'gif') {
+      suffix = 'clip';
+    } else {
+      suffix = crop ? 'cropped' : 'trimmed';
+    }
     return { blob, fileName: `${base}-${suffix}.${outExt}` };
   }
 }
