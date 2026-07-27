@@ -42,6 +42,22 @@
                   </button>
                 </span>
               </div>
+              <div class="upload-group mb-3">
+                <label for="localVideo" class="form-label d-block mb-1">
+                  …or upload your own video
+                </label>
+                <input
+                  id="localVideo"
+                  type="file"
+                  class="form-control"
+                  accept="video/*"
+                  (change)="onFileSelected($event)"
+                  aria-label="Upload your own video"
+                />
+                <small *ngIf="localFileName" class="text-muted">
+                  Loaded: {{ localFileName }}
+                </small>
+              </div>
               <div
                 *ngIf="errorMessage"
                 class="alert alert-danger py-2"
@@ -51,8 +67,17 @@
                 {{ errorMessage }}
               </div>
               <div class="video-container">
+                <video
+                  *ngIf="localVideoUrl"
+                  #localVid
+                  [src]="localVideoUrl"
+                  controls
+                  width="560"
+                  class="local-video-preview"
+                  (loadedmetadata)="onLocalMetadata(localVid)"
+                ></video>
                 <iframe
-                  *ngIf="embedUrl"
+                  *ngIf="embedUrl && !localVideoUrl"
                   width="560"
                   height="315"
                   [src]="sanitizedUrl"
@@ -69,7 +94,7 @@
                   allowfullscreen
                 ></iframe>
                 <img
-                  *ngIf="!embedUrl"
+                  *ngIf="!embedUrl && !localVideoUrl"
                   src="assets/default-video-thumbnail.jpg"
                   alt="placeholder"
                   class="default-video-thumbnail"

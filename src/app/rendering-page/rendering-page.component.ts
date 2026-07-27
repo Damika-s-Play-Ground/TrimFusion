@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, OnDestroy } from '@angular/core';
+import {
+  DomSanitizer,
+  SafeResourceUrl,
+  SafeUrl,
+} from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 /**
@@ -79,15 +83,21 @@ export function extractVideoId(input: string): string | null {
   templateUrl: './rendering-page.component.html',
   styleUrls: ['./rendering-page.component.scss'],
 })
-export class RenderingPageComponent {
+export class RenderingPageComponent implements OnDestroy {
   youtubeUrl: string = '';
   embedUrl: string = '';
   sanitizedUrl!: SafeResourceUrl;
   videoId: string | null = null;
   errorMessage: string = '';
 
-  // Trim range, in seconds. Until real video-duration detection lands
-  // (ROADMAP P0), the slider spans a default 10-minute window.
+  // Uploaded local video (an alternative to the YouTube preview).
+  localVideoUrl: SafeUrl | null = null;
+  localFileName: string = '';
+  private localObjectUrl: string | null = null;
+
+  // Trim range, in seconds. For an uploaded file this is set from the real
+  // video duration; for YouTube it defaults to a 10-minute window until
+  // duration detection lands (ROADMAP P0).
   maxSeconds: number = 600;
   startSeconds: number = 0;
   endSeconds: number = 60;
@@ -96,6 +106,52 @@ export class RenderingPageComponent {
     private sanitizer: DomSanitizer,
     private router: Router
   ) {}
+
+  ngOnDestroy(): void {
+    this.revokeLocalUrl();
+  }
+
+  private revokeLocalUrl(): void {
+    if (this.localObjectUrl) {
+      URL.revokeObjectURL(this.localObjectUrl);
+      this.localObjectUrl = null;
+    }
+  }
+
+  /** Handle "Upload your own video": preview a locally-selected file. */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('video/')) {
+      this.errorMessage = 'Please choose a video file.';
+      return;
+    }
+
+    // Switch to local-file mode: drop any YouTube preview.
+    this.errorMessage = '';
+    this.embedUrl = '';
+    this.videoId = null;
+
+    this.revokeLocalUrl();
+    this.localObjectUrl = URL.createObjectURL(file);
+    this.localVideoUrl = this.sanitizer.bypassSecurityTrustUrl(
+      this.localObjectUrl
+    );
+    this.localFileName = file.name;
+  }
+
+  /** Once the uploaded video's metadata loads, size the trim range to it. */
+  onLocalMetadata(video: HTMLVideoElement): void {
+    const duration = Math.floor(video.duration || 0);
+    if (duration > 0) {
+      this.maxSeconds = duration;
+      this.startSeconds = 0;
+      this.endSeconds = Math.min(60, duration);
+    }
+  }
 
   extractVideoId(url: string): string | null {
     return extractVideoId(url);

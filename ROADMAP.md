@@ -38,9 +38,16 @@ complete slice per run. `npm run build` must pass before every commit.
 
 ## P1 — Real client-side trimming (no backend)
 
-- [ ] Add "Upload your own video" input (local file).
+- [x] Add "Upload your own video" input (local file): file picker (`accept="video/*"`),
+      `<video controls>` preview via an object URL (revoked on change/destroy), and the
+      trim slider max/end sized from the real video duration (`loadedmetadata`). Selecting
+      a file switches out of YouTube mode. No new deps yet.
 - [ ] Integrate `@ffmpeg/ffmpeg` (ffmpeg.wasm) to trim the uploaded file client-side.
       NOTE: heavy dep — lightest viable setup, lazy-loaded. Keep YouTube as preview only.
+      Wire a "Trim & download" button (currently the local-video path has upload+preview
+      but no export). ffmpeg.wasm needs cross-origin isolation (COOP/COEP) headers —
+      GitHub Pages can't set them, so plan a single-file/SW workaround or the `-mt`-less
+      core; note this before implementing.
 - [ ] Real downloadable trimmed clip + progress bar during ffmpeg processing.
 
 ## P2 — UX / a11y polish
@@ -146,3 +153,10 @@ complete slice per run. `npm run build` must pass before every commit.
   environment branch policy (first attempt was blocked by env protection). Site VERIFIED
   LIVE at https://damika-s-play-ground.github.io/TrimFusion/ (HTTP 200, bundles load).
   Next up: P1 real client-side trimming (ffmpeg.wasm) — the core feature — or P3 eslint.
+- _run 10_: P1 (step 1) — "Upload your own video": added a file picker + local `<video>`
+  preview (object URL, revoked on change/ngOnDestroy) and sized the trim slider from the
+  uploaded file's real duration via `loadedmetadata`. Selecting a file exits YouTube mode.
+  No new deps. Format: clean. Build: PASS (2.27 MB). Tests: 18/18 PASS. Next up: P1 step 2
+  — integrate ffmpeg.wasm to actually trim + download the uploaded clip with a progress
+  bar (note: ffmpeg.wasm wants COOP/COEP isolation which GitHub Pages can't set — pick a
+  single-threaded core / SW workaround). Alternatively P3 eslint as a lighter slice.
