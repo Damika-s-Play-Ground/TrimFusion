@@ -64,10 +64,13 @@ complete slice per run. `npm run build` must pass before every commit.
       to main — `npm ci` → `npm run test:ci` (headless) → `npm run build` on Node 18.
       Added `karma.conf.js` with a `ChromeHeadlessCI` (`--no-sandbox`) launcher wired via
       `karmaConfig` in angular.json; `test:ci` now targets it.
-- [ ] Prune unused deps (jquery, admin-lte, ion-rangeslider if unused). NOTE: the
-      initial bundle is 5.86 MB (mostly admin-lte + bootstrap CSS), so the angular.json
-      budget was raised to 4mb warn / 7mb error to let the build pass. Pruning these
-      deps should bring it back down and the budget can be tightened again.
+- [x] Prune unused JS: emptied the `scripts` array (jQuery, Bootstrap-JS, all admin-lte
+      plugins — DataTables/pdfmake/Chart.js/etc.; none used by this Angular-only app) and
+      removed `jquery` + `ion-rangeslider` deps. Bundle: **5.86 MB → 2.27 MB (−61%)**.
+      Budget tightened back to 2.5mb warn / 3.5mb error. NOTE: styles are still ~1.9 MB
+      with duplicate CSS (adminlte double-loaded via styles.scss + angular.json; bootstrap
+      .css and .min.css both listed; tempusdominus listed twice) — a follow-up CSS-prune
+      slice can shrink this further. FontAwesome CSS must stay (used in download-page).
 - [x] Fix `rending-page` → `rendering-page` typo (folder, files, `RenderingPageComponent`
       class, `app-rendering-page` selector, module declaration + routing refs).
 - [ ] Refresh README with real screenshots + accurate feature list.
@@ -112,3 +115,9 @@ complete slice per run. `npm run build` must pass before every commit.
   `test:ci` to it, and simplified reporters/`clearContext` to drop a noisy
   "full page reload" artifact. Build: PASS. Tests: 18/18 PASS. Next up: P3 prettier +
   eslint (config + scripts) OR P3 prune unused deps (jquery/admin-lte/ion-rangeslider).
+- _run 7_: P3 — pruned unused JS. Emptied the huge `scripts` array (jQuery, Bootstrap-JS,
+  admin-lte plugin bundle) + removed `jquery`/`ion-rangeslider` deps after confirming no
+  template uses Bootstrap-JS behaviors or jQuery. Bundle 5.86 MB → 2.27 MB (−61%); no
+  more budget-error hack (tightened to 2.5/3.5 mb). Build: PASS. Tests: 18/18 PASS.
+  Next up: P3 prettier + eslint, OR a follow-up CSS-prune (dedupe adminlte/bootstrap
+  styles to shrink the remaining ~1.9 MB of CSS).
