@@ -71,8 +71,9 @@ own small slice (all operate on the uploaded local file):
       audio) — shipped as a "Remove audio" checkbox on the video export path
       (`-an`, fast copy when no other re-encode is needed).
 - [x] **Playback speed** (0.5×/1×/1.5×/2×) for video export via `setpts` + `atempo`
-      (re-encodes to MP4/H.264). — [ ] **resolution/scale** presets (1080p/720p/480p)
-      still to do.
+      (re-encodes to MP4/H.264).
+- [x] **Resolution/scale** presets (Original/1080p/720p/480p) for video export via
+      `scale=-2:<h>` (even width, libx264-safe); composes with crop/speed.
 - [x] **Grab a still frame** (PNG): "Grab current frame" button captures the frame shown
       in the uploaded-video player to a canvas and downloads it as PNG (named with the
       timestamp). No ffmpeg needed; instant.
@@ -265,3 +266,8 @@ own small slice (all operate on the uploaded local file):
   dev-server/screenshots to conserve disk. Lint clean, build PASS (2.30 MB), tests 18/18.
   Runtime (speed/atempo/mute) not verified headless. Next up: resolution/scale presets,
   dark/light toggle, or a11y lint rules.
+- _run 21_: P1.5 — added **resolution presets** (Original/1080p/720p/480p) for video
+  export via `scale=-2:<h>`; composes with crop/speed in the filter chain. This completes
+  the P1.5 editing toolkit. Lint clean, build PASS (2.30 MB), tests 18/18. Disk-safe run.
+  Next up: dark/light toggle, a11y lint rules, or an in-browser verification pass of the
+  ffmpeg export paths. Roadmap is now largely exhausted — mostly optional polish remains.

@@ -196,6 +196,25 @@
                   </select>
                 </div>
                 <div
+                  class="scale-group mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <label for="scaleSelect" class="form-label d-block mb-1">
+                    Resolution
+                  </label>
+                  <select
+                    id="scaleSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedScale"
+                    [disabled]="trimming"
+                    aria-label="Output resolution"
+                  >
+                    <option *ngFor="let s of scalePresets" [ngValue]="s.value">
+                      {{ s.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
                   class="speed-group mb-2"
                   *ngIf="selectedOutput === 'video'"
                 >

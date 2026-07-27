@@ -131,6 +131,15 @@ export class RenderingPageComponent implements OnDestroy {
   selectedSpeed = 1;
   muteAudio = false;
 
+  // Resolution presets (target height; null = keep original) — video export only.
+  readonly scalePresets: { label: string; value: number | null }[] = [
+    { label: 'Original resolution', value: null },
+    { label: '1080p', value: 1080 },
+    { label: '720p', value: 720 },
+    { label: '480p', value: 480 },
+  ];
+  selectedScale: number | null = null;
+
   // Trim range, in seconds. For an uploaded file this is set from the real
   // video duration; for YouTube it defaults to a 10-minute window until
   // duration detection lands (ROADMAP P0).
@@ -198,6 +207,7 @@ export class RenderingPageComponent implements OnDestroy {
         output: this.selectedOutput,
         speed: this.selectedSpeed,
         mute: this.muteAudio,
+        scaleHeight: this.selectedScale,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

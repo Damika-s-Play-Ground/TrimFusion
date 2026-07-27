@@ -106,6 +106,7 @@ export class FfmpegTrimService {
       output?: TrimOutput;
       speed?: number;
       mute?: boolean;
+      scaleHeight?: number | null;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
@@ -114,6 +115,11 @@ export class FfmpegTrimService {
     // Speed (video export only); clamp to ffmpeg's atempo-friendly range.
     const speed = Math.min(2, Math.max(0.5, options.speed ?? 1));
     const mute = !!options.mute;
+    // Target height for downscaling (video export only); null = keep original.
+    const scaleHeight =
+      output === 'video' && options.scaleHeight && options.scaleHeight > 0
+        ? Math.round(options.scaleHeight)
+        : null;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
     // Cropping only applies to visual outputs.
@@ -126,10 +132,10 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      // Re-encode (crop or speed change) always yields MP4/H.264.
-      outExt = crop || speed !== 1 ? 'mp4' : inExt;
+      // Re-encode (crop, speed, or scale) always yields MP4/H.264.
+      outExt = crop || speed !== 1 || scaleHeight ? 'mp4' : inExt;
     }
-    const videoReencoded = crop || speed !== 1;
+    const videoReencoded = crop || speed !== 1 || !!scaleHeight;
     const mimeByOutput: Record<TrimOutput, string> = {
       video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
@@ -164,11 +170,15 @@ export class FfmpegTrimService {
       // Video output. Re-encode only when we must (crop or speed change);
       // otherwise a fast, lossless stream copy.
       const changeSpeed = speed !== 1;
-      const needsReencode = crop || changeSpeed;
+      const needsReencode = crop || changeSpeed || !!scaleHeight;
       if (needsReencode) {
         const vfilters: string[] = [];
         if (crop) {
           vfilters.push(this.cropToAspectFilter(aspectRatio as number));
+        }
+        if (scaleHeight) {
+          // -2 keeps the aspect ratio with an even width (libx264-safe).
+          vfilters.push(`scale=-2:${scaleHeight}`);
         }
         if (changeSpeed) {
           vfilters.push(`setpts=${(1 / speed).toFixed(6)}*PTS`);
