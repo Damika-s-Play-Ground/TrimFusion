@@ -48,6 +48,30 @@
     ></div>
   </div>
 </div>
+<div class="segment-lane" *ngIf="segments.length">
+  <ng-container *ngFor="let seg of segments; let i = index">
+    <button
+      *ngIf="blockStyle(seg) as style"
+      type="button"
+      class="segment-block"
+      [class.selected]="selectedSegment === i"
+      [style.left.%]="style.left"
+      [style.width.%]="style.width"
+      (click)="segmentSelect.emit(i)"
+      [attr.aria-label]="
+        'Segment ' +
+        (i + 1) +
+        ': ' +
+        formatTime(seg.start) +
+        ' to ' +
+        formatTime(seg.end)
+      "
+      [attr.aria-pressed]="selectedSegment === i"
+    >
+      {{ i + 1 }}
+    </button>
+  </ng-container>
+</div>
 <div class="zoom-row">
   <span class="zoom-label">Zoom</span>
   <button

@@ -32,6 +32,9 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   @Input() waveform: number[] | null = null;
   /** Player position in seconds; null hides the playhead layer. */
   @Input() playhead: number | null = null;
+  /** Stitch segments to render as blocks on the lane below the strips. */
+  @Input() segments: { start: number; end: number }[] = [];
+  @Input() selectedSegment: number | null = null;
 
   @Output() startChange = new EventEmitter<number>();
   @Output() endChange = new EventEmitter<number>();
@@ -42,6 +45,8 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   /** Set the trim start/end to the current playhead. */
   @Output() setIn = new EventEmitter<void>();
   @Output() setOut = new EventEmitter<void>();
+  /** A segment block was clicked (index into `segments`). */
+  @Output() segmentSelect = new EventEmitter<number>();
 
   @ViewChild('waveCanvas')
   private waveCanvas?: ElementRef<HTMLCanvasElement>;
@@ -110,6 +115,26 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     const ratio = (event.clientX - rect.left) / rect.width;
     const span = this.viewTo - this.viewFrom;
     this.seek.emit(snapSeconds(this.viewFrom + ratio * span, this.snap));
+  }
+
+  /** Clamped left/width percents for a segment block, null when off-window. */
+  blockStyle(seg: {
+    start: number;
+    end: number;
+  }): { left: number; width: number } | null {
+    const span = this.viewTo - this.viewFrom;
+    if (span <= 0) {
+      return null;
+    }
+    const from = Math.max(seg.start, this.viewFrom);
+    const to = Math.min(seg.end, this.viewTo);
+    if (to <= from) {
+      return null;
+    }
+    return {
+      left: ((from - this.viewFrom) / span) * 100,
+      width: ((to - from) / span) * 100,
+    };
   }
 
   /** Arrow keys move the playhead (±1 s, Shift = ±5 s). */

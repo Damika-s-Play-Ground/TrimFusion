@@ -27,12 +27,12 @@ specs; DOM work stays thin.
 - [x] W2-015 Click on timeline seeks the player
 - [x] W2-016 In/out markers rendered at start/end positions
 - [x] W2-017 "Set in/out at playhead" buttons
-- [ ] W2-018 Segment blocks rendered on the timeline from the segments list
-- [ ] W2-019 Segment block selection/highlight
+- [x] W2-018 Segment blocks rendered on the timeline from the segments list
+- [x] W2-019 Segment block selection/highlight
 - [ ] W2-020 Drag segment edges to resize (pointer events)
 - [ ] W2-021 Drag segment body to move
-- [ ] W2-022 Reorder segments (up/down controls in the list)
-- [ ] W2-023 Overlap detection + merge helper (pure + spec)
+- [x] W2-022 Reorder segments (up/down controls in the list)
+- [x] W2-023 Overlap detection + merge helper (pure + spec)
 - [ ] W2-024 Segment-total indicator vs platform caps (60 s Shorts etc.)
 - [ ] W2-025 Per-segment preview (seek + play just that range)
 - [ ] W2-026 Live crop overlay on the player (CSS mask for chosen aspect)
@@ -87,7 +87,7 @@ specs; DOM work stays thin.
 ## E13 — Tests (15)
 
 - [x] W2-071 Spec: zoom visible-window math
-- [ ] W2-072 Spec: overlap detection/merge
+- [x] W2-072 Spec: overlap detection/merge
 - [ ] W2-073 Spec: time-string parser edge cases
 - [x] W2-074 Spec: waveform peak bucketing
 - [ ] W2-075 Spec: shortcut map completeness + no duplicate bindings

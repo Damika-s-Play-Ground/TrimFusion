@@ -383,11 +383,34 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.3rem 0.6rem;
+    padding: 0.15rem 0.4rem;
     border: 1px solid var(--tf-border);
     border-radius: 8px;
     margin-bottom: 0.35rem;
     font-variant-numeric: tabular-nums;
+
+    &.selected {
+      border-color: var(--tf-accent-1);
+      background: rgba(139, 92, 246, 0.12);
+    }
+  }
+}
+
+.segment-pick {
+  color: var(--tf-text);
+  text-decoration: none;
+  padding: 0.15rem 0.2rem;
+}
+
+.segment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+
+  .btn {
+    color: var(--tf-muted);
+    text-decoration: none;
+    padding: 0 0.3rem;
   }
 }
 

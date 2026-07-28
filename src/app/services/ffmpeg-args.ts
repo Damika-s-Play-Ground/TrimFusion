@@ -378,18 +378,24 @@ export interface SegmentRange {
 }
 
 /**
- * Floor to whole seconds, clamp negatives, drop empty ranges, sort.
- * The sort is stable, so equal-start pieces (loop/boomerang) keep their order.
+ * Floor to whole seconds, clamp negatives, drop empty ranges. Sorted by
+ * start by default; pass `sortByStart = false` to preserve the caller's
+ * arrangement order (stitching honors the user's sequence, so a clip can
+ * be re-arranged out of chronological order on purpose).
  */
-export function normalizeSegments(segments: SegmentRange[]): SegmentRange[] {
-  return segments
+export function normalizeSegments(
+  segments: SegmentRange[],
+  sortByStart = true
+): SegmentRange[] {
+  const cleaned = segments
     .map((s) => ({
       start: Math.max(0, Math.floor(s.start)),
       end: Math.floor(s.end),
       reverse: !!s.reverse,
     }))
-    .filter((s) => s.end > s.start)
-    .sort((a, b) => a.start - b.start);
+    .filter((s) => s.end > s.start);
+  // Stable sort: equal-start pieces (loop/boomerang) keep their order.
+  return sortByStart ? cleaned.sort((a, b) => a.start - b.start) : cleaned;
 }
 
 export interface SegmentsOptions {
@@ -438,7 +444,9 @@ export function buildSegmentsPlan(
   input: { ext: string },
   options: SegmentsOptions
 ): SegmentsPlan {
-  const segments = normalizeSegments(options.segments);
+  // Preserve the caller's arrangement order — the stitched output plays the
+  // pieces in the sequence the user built, not chronological order.
+  const segments = normalizeSegments(options.segments, false);
   if (!segments.length) {
     throw new Error('No valid segments to export.');
   }

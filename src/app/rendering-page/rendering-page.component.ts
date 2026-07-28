@@ -25,6 +25,7 @@ import {
 import { messageFor, TrimError } from '@services/trim-error';
 import { formatTime as formatTimeFn } from '../shared/format-time';
 import { captureFilmstrip, FilmstripHandle } from '../timeline/filmstrip';
+import { hasOverlap, mergeOverlapping } from '../timeline/segment-ops';
 import { decodePeaks } from '../timeline/waveform';
 
 /**
@@ -755,6 +756,8 @@ export class RenderingPageComponent implements OnDestroy {
   // Multi-segment stitching: keep-ranges collected from the slider.
   segments: { start: number; end: number }[] = [];
 
+  selectedSegmentIndex: number | null = null;
+
   addSegment(): void {
     if (this.endSeconds <= this.startSeconds) {
       return;
@@ -764,10 +767,52 @@ export class RenderingPageComponent implements OnDestroy {
 
   removeSegment(index: number): void {
     this.segments.splice(index, 1);
+    if (this.selectedSegmentIndex === index) {
+      this.selectedSegmentIndex = null;
+    } else if (
+      this.selectedSegmentIndex !== null &&
+      this.selectedSegmentIndex > index
+    ) {
+      this.selectedSegmentIndex--;
+    }
   }
 
   clearSegments(): void {
     this.segments = [];
+    this.selectedSegmentIndex = null;
+  }
+
+  /** Select a segment (timeline block or list row). */
+  selectSegment(index: number): void {
+    this.selectedSegmentIndex =
+      this.selectedSegmentIndex === index ? null : index;
+  }
+
+  /** Move a segment up/down in the stitch order. */
+  moveSegment(index: number, direction: -1 | 1): void {
+    const target = index + direction;
+    if (target < 0 || target >= this.segments.length) {
+      return;
+    }
+    [this.segments[index], this.segments[target]] = [
+      this.segments[target],
+      this.segments[index],
+    ];
+    if (this.selectedSegmentIndex === index) {
+      this.selectedSegmentIndex = target;
+    } else if (this.selectedSegmentIndex === target) {
+      this.selectedSegmentIndex = index;
+    }
+  }
+
+  get segmentsOverlap(): boolean {
+    return hasOverlap(this.segments);
+  }
+
+  /** Replace the list with its chronological overlap-free merge. */
+  mergeSegments(): void {
+    this.segments = mergeOverlapping(this.segments);
+    this.selectedSegmentIndex = null;
   }
 
   get segmentsTotalSeconds(): number {

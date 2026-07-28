@@ -466,3 +466,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   on the focusable timeline group (real keyboard operability, focus-visible ring);
   "Set start/end here" buttons pin the trim range to the playhead with order/bounds
   clamping. Gates green (83/83, 2.47 MB). Wave 2: 21/100.
+- _run 45_ (executor): W2-018, 019, 022, 023, 072 (5 items): **segment blocks on the
+  timeline** — numbered blocks in a lane under the strips (zoom-window clamped via
+  blockStyle(), off-screen hidden), click/keyboard selection synced with the list
+  (toggle, aria-pressed), ↑/↓ stitch-order reordering, and pure hasOverlap/
+  mergeOverlapping helpers (7-case spec) with an overlap warning + one-click merge.
+  ENGINE CHANGE: buildSegmentsPlan now PRESERVES arrangement order (normalizeSegments
+  gained sortByStart param) so reordering genuinely changes the stitched output;
+  spec updated to assert order preservation. Tests 83 → 88, gates green (2.47 MB).
+  Wave 2: 26/100.

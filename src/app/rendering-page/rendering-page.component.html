@@ -127,6 +127,9 @@
                 (seek)="onSeek($event)"
                 (setIn)="setInAtPlayhead()"
                 (setOut)="setOutAtPlayhead()"
+                [segments]="segments"
+                [selectedSegment]="selectedSegmentIndex"
+                (segmentSelect)="selectSegment($event)"
               ></app-timeline>
 
               <!-- Local upload: real client-side trim + download -->
@@ -579,22 +582,71 @@
                     class="segment-list list-unstyled mt-2 mb-1"
                     *ngIf="segments.length"
                   >
-                    <li *ngFor="let s of segments; let i = index">
-                      <span>
-                        {{ i + 1 }}. {{ formatTime(s.start) }} –
-                        {{ formatTime(s.end) }}
-                      </span>
+                    <li
+                      *ngFor="let s of segments; let i = index"
+                      [class.selected]="selectedSegmentIndex === i"
+                    >
                       <button
                         type="button"
-                        class="btn btn-sm btn-link segment-remove"
-                        (click)="removeSegment(i)"
-                        [disabled]="trimming"
-                        [attr.aria-label]="'Remove segment ' + (i + 1)"
+                        class="btn btn-sm btn-link segment-pick"
+                        (click)="selectSegment(i)"
+                        [attr.aria-pressed]="selectedSegmentIndex === i"
+                        [attr.aria-label]="'Select segment ' + (i + 1)"
                       >
-                        ✕
+                        {{ i + 1 }}. {{ formatTime(s.start) }} –
+                        {{ formatTime(s.end) }}
                       </button>
+                      <span class="segment-actions">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-link"
+                          (click)="moveSegment(i, -1)"
+                          [disabled]="trimming || i === 0"
+                          [attr.aria-label]="
+                            'Move segment ' + (i + 1) + ' earlier'
+                          "
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-link"
+                          (click)="moveSegment(i, 1)"
+                          [disabled]="trimming || i === segments.length - 1"
+                          [attr.aria-label]="
+                            'Move segment ' + (i + 1) + ' later'
+                          "
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-link segment-remove"
+                          (click)="removeSegment(i)"
+                          [disabled]="trimming"
+                          [attr.aria-label]="'Remove segment ' + (i + 1)"
+                        >
+                          ✕
+                        </button>
+                      </span>
                     </li>
                   </ul>
+                  <small
+                    *ngIf="segmentsOverlap"
+                    class="text-muted d-block"
+                    aria-live="polite"
+                  >
+                    ⚠ Segments overlap — the stitched clip will repeat those
+                    frames.
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      (click)="mergeSegments()"
+                      [disabled]="trimming"
+                    >
+                      Merge overlaps
+                    </button>
+                  </small>
                   <small *ngIf="segments.length" class="text-muted d-block">
                     {{ segments.length }} segment(s) · total
                     {{ formatTime(segmentsTotalSeconds) }} · exports as MP4

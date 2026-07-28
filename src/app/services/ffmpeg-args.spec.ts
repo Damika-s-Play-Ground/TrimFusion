@@ -355,8 +355,10 @@ describe('buildSegmentsPlan', () => {
     expect(p.concatArgs.join(' ')).toContain('-c copy');
     expect(p.outputName).toBe('joined.mp4');
     expect(p.suffix).toBe('stitched');
-    // Sorted: the 0–5 range becomes the first step.
-    expect(p.steps[0].args[p.steps[0].args.indexOf('-ss') + 1]).toBe('0');
+    // Arrangement order is preserved: the 10–20 range stays the first step
+    // (the user's sequence wins over chronological order).
+    expect(p.steps[0].args[p.steps[0].args.indexOf('-ss') + 1]).toBe('10');
+    expect(p.steps[1].args[p.steps[1].args.indexOf('-ss') + 1]).toBe('0');
   });
 
   // W1-050: per-step args are frame-accurate and share filters.
