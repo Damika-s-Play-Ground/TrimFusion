@@ -511,3 +511,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   inside the viewport), ±1-frame step buttons (~1/30 s, bypasses snap), jump-to-trim-
   start/end buttons, and vertical ±1 s nudge buttons beside both time inputs
   (clamped, committed). Gates green (101/101, 2.48 MB). Wave 2: 49/100.
+- _run 51_ (executor): W2-044..048 + spec-halves 078, 083 (7 items): **E2 closeout
+  hardening** — toolbar role/label on the control row (ARIA pass across the new
+  surfaces), reduced-motion guards extended to the player preview transitions,
+  zoom/snap preferences persisted in localStorage (restored on load, saved on
+  change), responsive filmstrip thumbnail count (thumbCountForWidth, 6–24 band,
+  ~72 px/thumb), and a pure trailing-edge debounce with cancel wired to a
+  window-resize waveform redraw (jasmine.clock spec). Tests 101 → 108, gates green
+  (2.48 MB). Wave 2: 56/100 — E2 remaining: 049, 050.

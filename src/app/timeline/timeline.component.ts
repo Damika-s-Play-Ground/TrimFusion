@@ -3,12 +3,14 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { debounce } from '../shared/debounce';
 import { formatTime } from '../shared/format-time';
 import { parseTimeString } from '../shared/parse-time';
 import { panWindow, snapSeconds, ZOOM_LEVELS, zoomWindow } from './zoom';
@@ -62,10 +64,56 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   readonly skeletonCells = Array.from({ length: 10 });
 
   // ── Zoom / pan / snap ─────────────────────────────────────────────────────
+  private static readonly PREFS_KEY = 'tf-timeline-prefs';
   readonly zoomLevels = ZOOM_LEVELS;
   zoom = 1;
   viewFrom = 0;
   snap = true;
+
+  constructor() {
+    // Restore persisted zoom/snap preferences.
+    try {
+      const raw = localStorage.getItem(TimelineComponent.PREFS_KEY);
+      if (raw) {
+        const prefs = JSON.parse(raw) as { zoom?: number; snap?: boolean };
+        if (
+          prefs.zoom &&
+          (ZOOM_LEVELS as readonly number[]).includes(prefs.zoom)
+        ) {
+          this.zoom = prefs.zoom;
+        }
+        if (typeof prefs.snap === 'boolean') {
+          this.snap = prefs.snap;
+        }
+      }
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
+  private persistPrefs(): void {
+    try {
+      localStorage.setItem(
+        TimelineComponent.PREFS_KEY,
+        JSON.stringify({ zoom: this.zoom, snap: this.snap })
+      );
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
+  setSnap(value: boolean): void {
+    this.snap = value;
+    this.persistPrefs();
+  }
+
+  /** Redraw the waveform when the layout resizes (debounced). */
+  private readonly onResize = debounce(() => this.drawWaveform(), 150);
+
+  @HostListener('window:resize')
+  handleWindowResize(): void {
+    this.onResize();
+  }
 
   get viewTo(): number {
     return Math.min(this.max, this.viewFrom + this.max / this.zoom);
@@ -88,6 +136,7 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     this.zoom = level;
     const focus = (this.start + this.end) / 2;
     this.viewFrom = zoomWindow(this.max, level, focus).from;
+    this.persistPrefs();
     // Canvas width changes with the track width; redraw next frame.
     setTimeout(() => this.drawWaveform());
   }

@@ -85,7 +85,7 @@
     </button>
   </ng-container>
 </div>
-<div class="zoom-row">
+<div class="zoom-row" role="toolbar" aria-label="Timeline controls">
   <span class="zoom-label">Zoom</span>
   <button
     *ngFor="let level of zoomLevels"
@@ -184,7 +184,7 @@
     {{ formatTime(playhead ?? 0) }} / {{ formatTime(max) }}
   </span>
   <label class="snap-toggle">
-    <input type="checkbox" [(ngModel)]="snap" />
+    <input type="checkbox" [ngModel]="snap" (ngModelChange)="setSnap($event)" />
     Snap to seconds
   </label>
 </div>

@@ -53,11 +53,11 @@ specs; DOM work stays thin.
 - [x] W2-041 Nudge buttons ±1 s on start/end
 - [x] W2-042 "Use full video" one-click range reset
 - [x] W2-043 Keyboard operability for timeline markers (arrows when focused)
-- [ ] W2-044 Timeline ARIA roles/labels pass
-- [ ] W2-045 Respect prefers-reduced-motion in timeline animations
-- [ ] W2-046 Persist zoom/snap preferences (localStorage)
-- [ ] W2-047 Filmstrip thumbnail count adapts to container width
-- [ ] W2-048 Debounce helper for heavy preview recomputes (pure + spec)
+- [x] W2-044 Timeline ARIA roles/labels pass
+- [x] W2-045 Respect prefers-reduced-motion in timeline animations
+- [x] W2-046 Persist zoom/snap preferences (localStorage)
+- [x] W2-047 Filmstrip thumbnail count adapts to container width
+- [x] W2-048 Debounce helper for heavy preview recomputes (pure + spec)
 - [ ] W2-049 Timeline empty/loading state polish
 - [ ] W2-050 Timeline architecture note in README (how the pieces fit)
 
@@ -93,12 +93,12 @@ specs; DOM work stays thin.
 - [ ] W2-075 Spec: shortcut map completeness + no duplicate bindings
 - [ ] W2-076 Spec: undo/redo stack behavior
 - [ ] W2-077 Spec: URL settings round-trip
-- [ ] W2-078 Spec: debounce helper timing (fakeAsync)
+- [x] W2-078 Spec: debounce helper timing (fakeAsync)
 - [ ] W2-079 Component spec: timeline renders segment blocks
 - [ ] W2-080 Component spec: numeric time inputs validate/clamp
 - [ ] W2-081 Component spec: cheat-sheet opens and closes
 - [x] W2-082 Spec: preview sync mapping (rate/muted/volume values)
-- [ ] W2-083 Spec: responsive thumbnail-count function
+- [x] W2-083 Spec: responsive thumbnail-count function
 - [x] W2-084 Spec: snap rounding helper
 - [ ] W2-085 Coverage report noted in ROADMAP (services ≥80% statements)
 

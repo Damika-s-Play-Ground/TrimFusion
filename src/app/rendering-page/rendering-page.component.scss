@@ -293,6 +293,13 @@
   font-size: 0.85rem;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .video-container video,
+  .crop-overlay {
+    transition: none;
+  }
+}
+
 // ── Tool selectors (export / crop) ──────────────────────────────────────────
 .export-group,
 .aspect-group {

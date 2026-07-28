@@ -32,7 +32,11 @@ import {
   previewFilter,
   previewTransform,
 } from '../shared/preview-css';
-import { captureFilmstrip, FilmstripHandle } from '../timeline/filmstrip';
+import {
+  captureFilmstrip,
+  FilmstripHandle,
+  thumbCountForWidth,
+} from '../timeline/filmstrip';
 import { hasOverlap, mergeOverlapping } from '../timeline/segment-ops';
 import { decodePeaks } from '../timeline/waveform';
 
@@ -254,7 +258,8 @@ export class RenderingPageComponent implements OnDestroy {
       return;
     }
     this.filmstripLoading = true;
-    const handle = captureFilmstrip(this.localObjectUrl, 10);
+    const count = thumbCountForWidth(Math.min(720, window.innerWidth - 80));
+    const handle = captureFilmstrip(this.localObjectUrl, count);
     this.filmstripHandle = handle;
     handle.promise
       .then((frames) => {

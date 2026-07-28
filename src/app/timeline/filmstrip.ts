@@ -15,6 +15,14 @@ export function thumbTimes(durationSeconds: number, count: number): number[] {
   );
 }
 
+/** Thumbnail count that fits a container width (~72 px per thumb, 6–24). */
+export function thumbCountForWidth(containerWidth: number): number {
+  if (!isFinite(containerWidth) || containerWidth <= 0) {
+    return 10;
+  }
+  return Math.max(6, Math.min(24, Math.round(containerWidth / 72)));
+}
+
 export interface FilmstripHandle {
   promise: Promise<string[]>;
   cancel(): void;
