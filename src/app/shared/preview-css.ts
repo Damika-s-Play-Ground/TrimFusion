@@ -5,7 +5,7 @@
  * so we map b → 1+b, which tracks well within the ±0.5 clamp).
  */
 
-import { RotateOption } from '@services/ffmpeg-args';
+import { FILTER_DEFS, FilterEntry, RotateOption } from '@services/ffmpeg-args';
 
 export function previewFilter(
   brightness: number,
@@ -44,6 +44,31 @@ export function previewTransform(rotate: RotateOption | null): string {
     default:
       return 'none';
   }
+}
+
+/**
+ * CSS approximations for the stack entries that have one (W3-006).
+ * Export-only filters contribute nothing here — the UI badges them.
+ */
+export function stackPreviewFilter(
+  filters: FilterEntry[] | undefined | null
+): string[] {
+  if (!filters?.length) {
+    return [];
+  }
+  const out: string[] = [];
+  for (const entry of filters) {
+    const def = FILTER_DEFS[entry.key];
+    if (!def?.css) {
+      continue;
+    }
+    const intensity = Math.min(
+      1,
+      Math.max(0, entry.intensity ?? def.defaultIntensity)
+    );
+    out.push(def.css(intensity));
+  }
+  return out;
 }
 
 export interface PlaybackSync {

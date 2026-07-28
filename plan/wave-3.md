@@ -20,11 +20,11 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-003 UI: "Filters" section — add-filter select + stacked list (remove)
 - [x] W3-004 UI: reorder stack entries (↑/↓)
 - [x] W3-005 UI: per-filter intensity slider (when the def declares a range)
-- [ ] W3-006 Preview: stack → CSS filter chain mapping in preview-css (approximable subset)
-- [ ] W3-007 Preview: "export-only" badge for non-approximable filters
-- [ ] W3-008 Filter: grayscale (`hue=s=0`; CSS grayscale)
-- [ ] W3-009 Filter: sepia (colorchannelmixer preset; CSS sepia)
-- [ ] W3-010 Filter: invert (`negate`; CSS invert)
+- [x] W3-006 Preview: stack → CSS filter chain mapping in preview-css (approximable subset)
+- [x] W3-007 Preview: "export-only" badge for non-approximable filters
+- [x] W3-008 Filter: grayscale (`hue=s=0`; CSS grayscale)
+- [x] W3-009 Filter: sepia (colorchannelmixer preset; CSS sepia)
+- [x] W3-010 Filter: invert (`negate`; CSS invert)
 - [ ] W3-011 Filter: vignette (intensity → angle; export-only)
 - [ ] W3-012 Filter: blur (`boxblur` intensity; CSS blur approx)
 - [ ] W3-013 Filter: sharpen (`unsharp` intensity; export-only)
@@ -79,13 +79,13 @@ filter approximations where one exists (else the preview badge says
 - [ ] W3-056 Spec: FILTER_DEFS registry completeness (every key builds a snippet)
 - [x] W3-057 Spec: stack composes in order after eq
 - [ ] W3-058 Spec: intensity clamps per filter def
-- [ ] W3-059 Spec: grayscale/sepia/invert snippets
+- [x] W3-059 Spec: grayscale/sepia/invert snippets
 - [ ] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
 - [ ] W3-061 Spec: gamma/exposure/temperature/tint snippets
 - [ ] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
 - [ ] W3-063 Spec: each look preset expands to its expected stack
 - [ ] W3-064 Spec: stack ↔ URL state round-trip
-- [ ] W3-065 Spec: stack ↔ CSS preview mapping (approximable subset + badge flags)
+- [x] W3-065 Spec: stack ↔ CSS preview mapping (approximable subset + badge flags)
 - [ ] W3-066 Spec: segments plan carries the stack into every step
 - [ ] W3-067 Spec: saved-looks serialization (name collision, delete)
 - [ ] W3-068 Spec: summary chip counts filters

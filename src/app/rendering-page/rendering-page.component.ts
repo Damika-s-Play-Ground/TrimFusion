@@ -42,6 +42,7 @@ import {
   PlaybackSync,
   previewFilter,
   previewTransform,
+  stackPreviewFilter,
 } from '../shared/preview-css';
 import { actionForKey, isTypingTarget } from '../shared/shortcuts';
 import {
@@ -174,7 +175,10 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
     if (!this.previewActive) {
       return 'none';
     }
-    return previewFilter(this.brightness, this.contrast, this.saturation);
+    const base = previewFilter(this.brightness, this.contrast, this.saturation);
+    const stack = stackPreviewFilter(this.filterStack);
+    const parts = [...(base === 'none' ? [] : [base]), ...stack];
+    return parts.length ? parts.join(' ') : 'none';
   }
 
   get previewTransformCss(): string {

@@ -3,6 +3,7 @@ import {
   playbackSync,
   previewFilter,
   previewTransform,
+  stackPreviewFilter,
 } from './preview-css';
 
 describe('previewFilter', () => {
@@ -21,6 +22,24 @@ describe('previewTransform', () => {
     expect(previewTransform('cw270')).toBe('rotate(-90deg) scale(0.5625)');
     expect(previewTransform('hflip')).toBe('scaleX(-1)');
     expect(previewTransform('vflip')).toBe('scaleY(-1)');
+  });
+});
+
+describe('stackPreviewFilter', () => {
+  // W3-065: approximable subset maps to CSS; export-only entries drop out.
+  it('maps approximable filters and skips unknown keys', () => {
+    expect(
+      stackPreviewFilter([
+        { key: 'grayscale' },
+        { key: 'nonexistent' },
+        { key: 'invert' },
+      ])
+    ).toEqual(['grayscale(1)', 'invert(1)']);
+  });
+
+  it('returns empty for empty stacks', () => {
+    expect(stackPreviewFilter([])).toEqual([]);
+    expect(stackPreviewFilter(null)).toEqual([]);
   });
 });
 

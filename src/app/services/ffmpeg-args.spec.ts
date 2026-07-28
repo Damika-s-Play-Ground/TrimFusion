@@ -340,6 +340,19 @@ describe('filter stack (W3 framework)', () => {
     expect(p.args[p.args.indexOf('-vf') + 1]).toContain('colorchannelmixer');
   });
 
+  // W3-059: the seed filters produce their exact snippets.
+  it('maps grayscale/sepia/invert to their snippets', () => {
+    const vf = (over: Partial<TrimOptions>) => {
+      const p = plan(over);
+      return p.args[p.args.indexOf('-vf') + 1];
+    };
+    expect(vf({ filters: [{ key: 'grayscale' }] })).toBe('hue=s=0');
+    expect(vf({ filters: [{ key: 'invert' }] })).toBe('negate');
+    expect(vf({ filters: [{ key: 'sepia' }] })).toBe(
+      'colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131'
+    );
+  });
+
   it('skips unknown filter keys and empty stacks', () => {
     const p = plan({ filters: [{ key: 'nonexistent' }] });
     expect(p.args.join(' ')).toContain('-c copy');

@@ -631,3 +631,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   upgrade), jquery 3.7.1 (jquery no longer a dependency). All 16 remote branches
   deleted after landing/supersession. Gates green on the new toolchain (131/131,
   2.54 MB ≤ 2.6 budget).
+- _run 64_ (executor): W3-006..010, 059, 065 (7 items; 007 badge + 008..010 defs
+  shipped with the framework — now verified by their own specs): **live preview of
+  the filter stack** — stackPreviewFilter() maps approximable entries to CSS
+  (grayscale/sepia/invert), composed into the player's filter chain after the color
+  preview; export-only filters stay badged and contribute nothing to the preview;
+  explicit snippet specs for the three seed filters and the CSS-mapping spec
+  (unknown keys skipped, empty stacks). Tests 131 → 134, gates green (2.54 MB).
+  Wave 3: 13/100.
