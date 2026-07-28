@@ -14,10 +14,10 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-006 FPS control for video export (Original/60/30/24)
 - [x] W1-007 FPS control for GIF export (8/12/15/24)
 - [x] W1-008 GIF width control (320/480/640)
-- [ ] W1-009 Cancel mid-export (ffmpeg.terminate + service re-init + Cancel button)
-- [ ] W1-010 Duration guardrail: warn (non-blocking) when export range > 10 min
-- [ ] W1-011 File-size guardrail: warn when input > 500 MB
-- [ ] W1-012 OOM detection: catch wasm abort → friendly "try lower resolution/shorter range" message
+- [x] W1-009 Cancel mid-export (ffmpeg.terminate + service re-init + Cancel button)
+- [x] W1-010 Duration guardrail: warn (non-blocking) when export range > 10 min
+- [x] W1-011 File-size guardrail: warn when input > 500 MB
+- [x] W1-012 OOM detection: catch wasm abort → friendly "try lower resolution/shorter range" message
 - [x] W1-013 Reverse-video option (`reverse`/`areverse`)
 - [x] W1-014 Loop ×2/×3 option (concat same segment)
 - [x] W1-015 Boomerang option (forward + reversed concat)
@@ -90,21 +90,21 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 
 ## E15 — Error taxonomy & resilience (15)
 
-- [ ] W1-076 `TrimError` class with typed codes (LOAD_FAILED/ENCODE_FAILED/OOM/CANCELLED/INVALID_INPUT)
-- [ ] W1-077 Service throws typed errors everywhere
-- [ ] W1-078 Component maps error codes → specific friendly messages
-- [ ] W1-079 CDN load: retry once on failure
-- [ ] W1-080 CDN fallback (unpkg → jsdelivr) for core/wasm/worker
-- [ ] W1-081 Load timeout (60 s) with actionable message
-- [ ] W1-082 Cancel path yields CANCELLED (info, not error, in UI)
-- [ ] W1-083 Better invalid-file-type message (what was detected vs expected)
-- [ ] W1-084 Empty/zero-length range validation before export
+- [x] W1-076 `TrimError` class with typed codes (LOAD_FAILED/ENCODE_FAILED/OOM/CANCELLED/INVALID_INPUT)
+- [x] W1-077 Service throws typed errors everywhere
+- [x] W1-078 Component maps error codes → specific friendly messages
+- [x] W1-079 CDN load: retry once on failure
+- [x] W1-080 CDN fallback (unpkg → jsdelivr) for core/wasm/worker
+- [x] W1-081 Load timeout (60 s) with actionable message
+- [x] W1-082 Cancel path yields CANCELLED (info, not error, in UI)
+- [x] W1-083 Better invalid-file-type message (what was detected vs expected)
+- [x] W1-084 Empty/zero-length range validation before export
 - [ ] W1-085 Material snackbar/toast for transient statuses (done/cancelled/failed)
 - [ ] W1-086 Global ErrorHandler with contextual console logging
 - [ ] W1-087 `navigator.storage.estimate()` headroom check before heavy exports
 - [ ] W1-088 Handle metadata-load failure (duration NaN) gracefully
 - [ ] W1-089 Detect codec-unsupported-in-preview and explain (export may still work)
-- [ ] W1-090 Unit tests for error mapping table
+- [x] W1-090 Unit tests for error mapping table
 
 ## E17 — Export recap & diagnostics (10)
 

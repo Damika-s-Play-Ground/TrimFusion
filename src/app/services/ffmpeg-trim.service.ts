@@ -10,6 +10,8 @@ import {
   TrimOptions,
 } from './ffmpeg-args';
 
+import { classifyError, TrimError } from './trim-error';
+
 export type { RotateOption, TrimOutput } from './ffmpeg-args';
 
 /** Progress callback shared by all export operations. */
@@ -36,14 +38,73 @@ export class FfmpegTrimService {
   // so multi-exec operations (segments + concat) re-point this per step.
   private progressCb: ProgressFn | null = null;
 
+  // Set while the user has requested cancellation of the running export.
+  private cancelRequested = false;
+
   // Pinned versions (kept in sync with package.json's @ffmpeg/ffmpeg).
   private static readonly FFMPEG_VERSION = '0.12.15';
   private static readonly CORE_VERSION = '0.12.6';
   private static readonly WORKER_FILE = '814.ffmpeg.js';
+  // Primary + fallback CDNs for the ~30 MB core download.
+  private static readonly CDN_BASES = [
+    'https://unpkg.com',
+    'https://cdn.jsdelivr.net/npm',
+  ];
+  private static readonly LOAD_TIMEOUT_MS = 60_000;
 
   constructor(private zone: NgZone) {}
 
-  /** Lazily download + initialize ffmpeg.wasm (once). */
+  /**
+   * Cancel the running export: terminates the wasm worker (the only way to
+   * stop ffmpeg.wasm mid-exec) and forces a fresh engine load next time.
+   */
+  cancel(): void {
+    if (!this.ffmpeg) {
+      return;
+    }
+    this.cancelRequested = true;
+    try {
+      this.ffmpeg.terminate();
+    } catch {
+      /* ignore */
+    }
+    this.ffmpeg = null;
+    this.loadPromise = null;
+  }
+
+  private withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () =>
+            reject(
+              new TrimError('LOAD_FAILED', 'Timed out loading the engine.')
+            ),
+          ms
+        )
+      ),
+    ]);
+  }
+
+  private async loadFrom(cdn: string, ffmpeg: FFmpeg): Promise<void> {
+    const coreBase = `${cdn}/@ffmpeg/core@${FfmpegTrimService.CORE_VERSION}/dist/umd`;
+    const workerURL = `${cdn}/@ffmpeg/ffmpeg@${FfmpegTrimService.FFMPEG_VERSION}/dist/umd/${FfmpegTrimService.WORKER_FILE}`;
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${coreBase}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(
+        `${coreBase}/ffmpeg-core.wasm`,
+        'application/wasm'
+      ),
+      classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
+    });
+  }
+
+  /**
+   * Lazily download + initialize ffmpeg.wasm (once). Tries each CDN in turn
+   * (retry + fallback) with a timeout; resets state on failure so a later
+   * call can retry cleanly.
+   */
   private async ensureLoaded(onProgress?: ProgressFn): Promise<FFmpeg> {
     this.progressCb = onProgress ?? null;
     if (this.ffmpeg && this.loadPromise) {
@@ -64,24 +125,32 @@ export class FfmpegTrimService {
       }
     });
 
-    const coreBase = `https://unpkg.com/@ffmpeg/core@${FfmpegTrimService.CORE_VERSION}/dist/umd`;
-    const workerURL = `https://unpkg.com/@ffmpeg/ffmpeg@${FfmpegTrimService.FFMPEG_VERSION}/dist/umd/${FfmpegTrimService.WORKER_FILE}`;
-
     this.loadPromise = (async () => {
-      await ffmpeg.load({
-        coreURL: await toBlobURL(
-          `${coreBase}/ffmpeg-core.js`,
-          'text/javascript'
-        ),
-        wasmURL: await toBlobURL(
-          `${coreBase}/ffmpeg-core.wasm`,
-          'application/wasm'
-        ),
-        classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
-      });
+      let lastError: unknown;
+      for (const cdn of FfmpegTrimService.CDN_BASES) {
+        try {
+          await this.withTimeout(
+            this.loadFrom(cdn, ffmpeg),
+            FfmpegTrimService.LOAD_TIMEOUT_MS
+          );
+          return;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      throw lastError instanceof TrimError
+        ? lastError
+        : new TrimError('LOAD_FAILED', String(lastError));
     })();
 
-    await this.loadPromise;
+    try {
+      await this.loadPromise;
+    } catch (err) {
+      // Allow a clean retry on the next call.
+      this.ffmpeg = null;
+      this.loadPromise = null;
+      throw err instanceof TrimError ? err : new TrimError('LOAD_FAILED');
+    }
     return ffmpeg;
   }
 
@@ -109,14 +178,15 @@ export class FfmpegTrimService {
     file: File,
     options: TrimOptions & { onProgress?: ProgressFn }
   ): Promise<{ blob: Blob; fileName: string }> {
+    this.cancelRequested = false;
     const plan = buildTrimPlan(
       { ext: extensionOf(file.name), mimeType: file.type },
       options
     );
 
     const ffmpeg = await this.ensureLoaded(options.onProgress);
-    await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
     try {
+      await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
       await ffmpeg.exec(plan.args);
       const data = await ffmpeg.readFile(plan.outputName);
       // data is a Uint8Array; wrap its buffer in a Blob.
@@ -127,6 +197,8 @@ export class FfmpegTrimService {
         blob,
         fileName: `${this.baseNameOf(file)}-${plan.suffix}.${plan.outExt}`,
       };
+    } catch (err) {
+      throw classifyError(err, this.cancelRequested);
     } finally {
       await this.cleanup(ffmpeg, [plan.inputName, plan.outputName]);
     }
@@ -141,6 +213,7 @@ export class FfmpegTrimService {
     file: File,
     options: SegmentsOptions & { onProgress?: ProgressFn }
   ): Promise<{ blob: Blob; fileName: string }> {
+    this.cancelRequested = false;
     const { onProgress } = options;
     const plan = buildSegmentsPlan({ ext: extensionOf(file.name) }, options);
 
@@ -181,6 +254,8 @@ export class FfmpegTrimService {
         blob,
         fileName: `${this.baseNameOf(file)}-${plan.suffix}.${plan.outExt}`,
       };
+    } catch (err) {
+      throw classifyError(err, this.cancelRequested);
     } finally {
       await this.cleanup(ffmpeg, [
         plan.inputName,
@@ -197,10 +272,11 @@ export class FfmpegTrimService {
     timeSeconds: number,
     onProgress?: ProgressFn
   ): Promise<{ blob: Blob; fileName: string }> {
+    this.cancelRequested = false;
     const plan = buildFramePlan({ ext: extensionOf(file.name) }, timeSeconds);
     const ffmpeg = await this.ensureLoaded(onProgress);
-    await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
     try {
+      await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
       await ffmpeg.exec(plan.args);
       const data = await ffmpeg.readFile(plan.outputName);
       const blob = new Blob([(data as Uint8Array).buffer], {
@@ -210,6 +286,8 @@ export class FfmpegTrimService {
         blob,
         fileName: `${this.baseNameOf(file)}-${plan.suffix}.${plan.outExt}`,
       };
+    } catch (err) {
+      throw classifyError(err, this.cancelRequested);
     } finally {
       await this.cleanup(ffmpeg, [plan.inputName, plan.outputName]);
     }

@@ -16,6 +16,7 @@ import {
   SegmentRange,
   TrimOptions,
 } from '../services/ffmpeg-args';
+import { messageFor, TrimError } from '../services/trim-error';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -112,6 +113,40 @@ export class RenderingPageComponent implements OnDestroy {
   trimming = false;
   trimProgress = 0;
   trimError = '';
+  // Non-error status (e.g. "Export cancelled.").
+  infoMessage = '';
+
+  /** Ask the service to abort the running export. */
+  cancelExport(): void {
+    this.ffmpegTrim.cancel();
+  }
+
+  /** Map a thrown export error onto the user-facing message table. */
+  private handleExportError(err: unknown): void {
+    if (err instanceof TrimError && err.code === 'CANCELLED') {
+      this.infoMessage = messageFor('CANCELLED');
+      return;
+    }
+    this.trimError =
+      err instanceof TrimError
+        ? messageFor(err.code)
+        : messageFor('ENCODE_FAILED');
+    console.error('export failed', err);
+  }
+
+  /** Non-blocking heads-up for slow/memory-heavy exports. */
+  get exportWarning(): string | null {
+    if (this.endSeconds - this.startSeconds > 600) {
+      return (
+        'Ranges over 10 minutes can be slow and memory-heavy in the ' +
+        'browser — consider a shorter clip.'
+      );
+    }
+    if (this.localFile && this.localFile.size > 500 * 1024 * 1024) {
+      return 'Files over 500 MB can exhaust browser memory during export.';
+    }
+    return null;
+  }
 
   // "Crop to display size" presets (value = width / height, null = keep original).
   readonly aspectPresets: { label: string; value: number | null }[] = [
@@ -399,7 +434,9 @@ export class RenderingPageComponent implements OnDestroy {
       return;
     }
     if (!file.type.startsWith('video/')) {
-      this.errorMessage = 'Please choose a video file.';
+      this.errorMessage = `Please choose a video file — that looks like "${
+        file.type || 'an unknown type'
+      }".`;
       return;
     }
 
@@ -433,9 +470,14 @@ export class RenderingPageComponent implements OnDestroy {
     if (!this.localFile || this.trimming) {
       return;
     }
+    if (this.endSeconds <= this.startSeconds) {
+      this.trimError = messageFor('INVALID_INPUT');
+      return;
+    }
     this.trimming = true;
     this.trimProgress = 0;
     this.trimError = '';
+    this.infoMessage = '';
     try {
       const onProgress = (percent: number) => (this.trimProgress = percent);
       // Loop/boomerang effects are built by stitching segments.
@@ -462,10 +504,7 @@ export class RenderingPageComponent implements OnDestroy {
       }
       this.downloadBlob(result.blob, result.fileName);
     } catch (err) {
-      this.trimError =
-        'Trimming failed. This runs entirely in your browser and can be ' +
-        'memory-heavy for large files — try a shorter range or smaller file.';
-      console.error('ffmpeg trim failed', err);
+      this.handleExportError(err);
     } finally {
       this.trimming = false;
     }
@@ -487,8 +526,7 @@ export class RenderingPageComponent implements OnDestroy {
       );
       this.downloadBlob(blob, fileName);
     } catch (err) {
-      this.trimError = 'Frame export failed — try a different position.';
-      console.error('ffmpeg frame export failed', err);
+      this.handleExportError(err);
     } finally {
       this.trimming = false;
     }
@@ -525,8 +563,7 @@ export class RenderingPageComponent implements OnDestroy {
         );
       }
     } catch (err) {
-      this.trimError = 'Splitting failed. Try fewer parts or a smaller range.';
-      console.error('ffmpeg split failed', err);
+      this.handleExportError(err);
     } finally {
       this.trimming = false;
     }
@@ -573,10 +610,7 @@ export class RenderingPageComponent implements OnDestroy {
       );
       this.downloadBlob(blob, fileName);
     } catch (err) {
-      this.trimError =
-        'Stitching failed. This runs entirely in your browser and can be ' +
-        'memory-heavy — try fewer/shorter segments or a smaller file.';
-      console.error('ffmpeg segment export failed', err);
+      this.handleExportError(err);
     } finally {
       this.trimming = false;
     }

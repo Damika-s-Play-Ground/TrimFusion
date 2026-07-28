@@ -383,3 +383,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   CI bundle-size budget step (2392 KB ≤ 2662 KB verified locally), dependabot
   (npm + actions weekly), bug/feature issue templates, PR template with gate
   checklist, README program section. Gates all green (59/59). Wave 1: 62/100.
+- _run 34_: Resilience batch W1-009..012, 076..084, 090 (14 items): typed TrimError
+  taxonomy + pure classifyError/messageFor (trim-error.ts), service throws typed
+  errors, CDN retry+fallback (unpkg → jsdelivr) with 60 s timeout and clean-retry
+  state reset, cancel-export (worker terminate + fresh reload), CANCELLED shown as
+  info not error, OOM detection with actionable guidance, duration/size guardrail
+  warnings, sharper invalid-file/range messages, 6 taxonomy tests (one caught a real
+  regex bug: /OOM/i matched "boom"). Tests 59 → 65. Wave 1: 76/100.

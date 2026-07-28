@@ -670,6 +670,13 @@
                   <mat-icon>photo_camera</mat-icon>
                   GRAB CURRENT FRAME (PNG)
                 </button>
+                <small
+                  *ngIf="exportWarning && !trimming"
+                  class="text-muted d-block mt-2"
+                  aria-live="polite"
+                >
+                  ⚠ {{ exportWarning }}
+                </small>
                 <div
                   *ngIf="trimming"
                   class="progress mt-2"
@@ -685,6 +692,22 @@
                   >
                     {{ trimProgress }}%
                   </div>
+                </div>
+                <button
+                  *ngIf="trimming"
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary mt-2"
+                  (click)="cancelExport()"
+                >
+                  Cancel export
+                </button>
+                <div
+                  *ngIf="infoMessage && !trimming"
+                  class="alert alert-secondary py-2 mt-2"
+                  role="status"
+                  aria-live="polite"
+                >
+                  {{ infoMessage }}
                 </div>
                 <div
                   *ngIf="trimError"
