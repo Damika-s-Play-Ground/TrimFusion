@@ -364,3 +364,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   comprehensive next-level plan → see PLAN-NEXTLEVEL.md (pipeline + ~1000-item
   program in waves). Remaining P5 stubs (drag&drop/shortcuts, PWA, export summary)
   are folded into that plan.
+- _run 31_: User commissioned FULL program execution ("complete all the items in the
+  plan"). Expanded **plan/wave-1.md** (100 concrete items) and shipped the keystone
+  batch W1-001..004 + W1-026..052 (31 items): pure `ffmpeg-args.ts` engine module
+  (buildTrimPlan/buildSegmentsPlan/normalizeSegments), service slimmed to load/IO/
+  progress, and a 28-case unit suite over the full option matrix. Tests 18 → 46, lint
+  clean, build PASS (2.31 MB). Loop re-armed to batch through the remaining items
+  wave by wave.
