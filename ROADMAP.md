@@ -378,3 +378,8 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   and a live ffmpeg command preview. Component refactored onto a single
   trimOptions() collector. Tests 46 → 59, lint clean, build PASS (2.33 MB).
   Wave 1: 51/100.
+- _run 33_: Config batch W1-060..068, 071, 072 (11 items; 060/062/065 were already
+  satisfied — verified, not re-done): `verify` + `build:stats` scripts, engines,
+  CI bundle-size budget step (2392 KB ≤ 2662 KB verified locally), dependabot
+  (npm + actions weekly), bug/feature issue templates, PR template with gate
+  checklist, README program section. Gates all green (59/59). Wave 1: 62/100.

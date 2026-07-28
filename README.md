@@ -60,9 +60,24 @@ npm run format     # Prettier
 > of its videos, so the button there opens the source on YouTube. Real trimming/export
 > works on **uploaded** files.
 
+## Roadmap & the Next-Level program
+
+TrimFusion is being evolved into a full in-browser video studio through a
+tracked ~1000-item program:
+
+- [PLAN-NEXTLEVEL.md](./PLAN-NEXTLEVEL.md) — the delivery pipeline and the
+  18-epic / 10-wave program plan
+- [plan/wave-1.md](./plan/wave-1.md) — the active wave checklist (item IDs
+  like `W1-042` appear in commit messages)
+- [ROADMAP.md](./ROADMAP.md) — per-run changelog and history
+
+Every change lands through the same gates: `npm run verify` (format check,
+lint incl. accessibility rules, headless unit tests, production build).
+
 ## Contributing
 
-Contributions are welcome — open an issue or PR.
+Contributions are welcome — open an issue or PR. Please run `npm run verify`
+before submitting; the PR template includes the gate checklist.
 
 ## License
 

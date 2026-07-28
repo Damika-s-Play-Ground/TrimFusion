@@ -71,19 +71,19 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [ ] W1-057 Enable Angular strict templates + fix fallout
 - [ ] W1-058 ESLint import-order rule + autofix pass
 - [ ] W1-059 ESLint no-console (allow warn/error) + cleanup
-- [ ] W1-060 `format:check` script + CI step (fail on unformatted)
-- [ ] W1-061 CI bundle-size budget assertion (fail > 2.6 MB initial)
-- [ ] W1-062 CI: also run on pull_request events
-- [ ] W1-063 `npm run verify` = format:check + lint + test:ci + build
-- [ ] W1-064 package.json `engines` (node >=18)
-- [ ] W1-065 .editorconfig
-- [ ] W1-066 dependabot.yml (npm weekly)
-- [ ] W1-067 Issue template (bug + feature)
-- [ ] W1-068 PR template with gate checklist
+- [x] W1-060 `format:check` script + CI step (fail on unformatted)
+- [x] W1-061 CI bundle-size budget assertion (fail > 2.6 MB initial)
+- [x] W1-062 CI: also run on pull_request events
+- [x] W1-063 `npm run verify` = format:check + lint + test:ci + build
+- [x] W1-064 package.json `engines` (node >=18)
+- [x] W1-065 .editorconfig
+- [x] W1-066 dependabot.yml (npm weekly)
+- [x] W1-067 Issue template (bug + feature)
+- [x] W1-068 PR template with gate checklist
 - [ ] W1-069 Seed CHANGELOG.md from ROADMAP run history
 - [ ] W1-070 VERSION file + tag v1.0.0
-- [ ] W1-071 README: program section linking PLAN-NEXTLEVEL + wave files
-- [ ] W1-072 build:stats script + bundle-analysis doc note
+- [x] W1-071 README: program section linking PLAN-NEXTLEVEL + wave files
+- [x] W1-072 build:stats script + bundle-analysis doc note
 - [ ] W1-073 tsconfig path alias `@services/*`
 - [ ] W1-074 ESLint max-lines warning on components (flag oversized rendering-page)
 - [ ] W1-075 Extract export-controls into `ExportControlsComponent` (shrink rendering-page)

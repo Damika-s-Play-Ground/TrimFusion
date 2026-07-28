@@ -34,3 +34,9 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Bundle size budget (initial <= 2.6 MB)
+        run: |
+          SIZE_KB=$(du -ck dist/trim-fusion/main*.js dist/trim-fusion/polyfills*.js dist/trim-fusion/runtime*.js dist/trim-fusion/styles*.css | tail -1 | cut -f1)
+          echo "Initial bundle: ${SIZE_KB} KB (budget 2662 KB)"
+          test "$SIZE_KB" -le 2662
