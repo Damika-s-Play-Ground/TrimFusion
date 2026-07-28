@@ -416,3 +416,16 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   detection on the <video> error event with honest "export may still work" note.
   Gates green (70/70). Wave 1: 98/100 — remaining: 075 (component split), 100
   (wave exit → wave-2 generation).
+- _run 39_ (executor) — **WAVE 1 EXIT (100/100)**. RETRO: 99 items shipped, 1 deferred
+  (W1-075 component split → W2-086: under the lint size threshold and Wave 2 rewrites
+  that template area — splitting now = double churn). Shipped across 9 commits: the
+  pure ffmpeg-args engine + 52-test matrix, quality/fps/effects/fades/MP3/frame/split/
+  preview features, typed-error resilience (cancel, CDN fallback, OOM guidance,
+  snackbar statuses, storage/metadata/codec fallbacks), export summary + estimates +
+  diagnostics, strict-lint hardening (import-order, no-console, max-lines), CI bundle
+  budget, dependabot/templates, CHANGELOG + v1.0.0 tag, @services alias, global error
+  handler. METRICS: tests 18 → 70 (all green), bundle 2.29 → 2.45 MB (budget 2.6 MB;
+  animations+snackbar account for the growth), lint 0 errors/0 warnings, disk stable.
+  DEBT/NOTES: ffmpeg runtime paths still need one manual in-browser QA pass (standing);
+  bundle diet is Wave 6's job. Generated plan/wave-2.md (Timeline pro: E2×50 timeline/
+  preview, E7×20 shortcuts, E13×15 tests, E11×15 polish incl. carried W2-086).

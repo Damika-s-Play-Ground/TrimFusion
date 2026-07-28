@@ -86,7 +86,7 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-072 build:stats script + bundle-analysis doc note
 - [x] W1-073 tsconfig path alias `@services/*`
 - [x] W1-074 ESLint max-lines warning on components (flag oversized rendering-page)
-- [ ] W1-075 Extract export-controls into `ExportControlsComponent` (shrink rendering-page)
+- [x] W1-075 DEFERRED → W2-086: component is under the 800-line lint threshold and Wave 2's timeline/section restructure rewrites this exact template area — splitting now would be churned twice. Carried into plan/wave-2.md.
 
 ## E15 — Error taxonomy & resilience (15)
 
@@ -117,4 +117,4 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-097 Copy-settings-to-clipboard button (diagnostics)
 - [x] W1-098 wasm capability report util (SAB/threads/memory) in diagnostics
 - [x] W1-099 Encode wall-time measured + shown in success recap
-- [ ] W1-100 Wave-1 exit: retro in ROADMAP, metrics (bundle, test count), generate plan/wave-2.md
+- [x] W1-100 Wave-1 exit: retro in ROADMAP, metrics (bundle, test count), generate plan/wave-2.md
