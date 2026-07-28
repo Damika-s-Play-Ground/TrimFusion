@@ -166,8 +166,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
       combined with `atempo` in one `-af` chain) and MP3 export. Non-default volume
       forces the MP4 re-encode path (audio codecs can't be swapped safely in arbitrary
       source containers). Hidden for GIF; disabled while muted.
-- [ ] **Social presets**: one-click Shorts/Reels/TikTok bundle (9:16 crop + ≤60 s cap +
-      720p) that sets the existing controls.
+- [x] **Social presets**: one-click "Quick presets" row — Shorts/Reels/TikTok (9:16 +
+      ≤60 s cap + 720p + precise cut), Instagram square (1:1 + ≤60 s + 720p + precise
+      cut), YouTube landscape (16:9 + 1080p). Presets just set the existing controls,
+      so everything stays inspectable/overridable; active preset is highlighted.
 - [ ] **Multi-segment trim + concat** (flagship): mark multiple keep-ranges on the
       timeline, export as one stitched clip (trim each + concat filter/demuxer).
 - [ ] **Drag & drop upload** onto the player + **keyboard shortcuts** (I/O = set
@@ -332,3 +334,8 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   with `atempo` into a single `-af`) and MP3 export; hidden for GIF, disabled when
   muted; non-default volume joins the MP4 re-encode conditions. Lint clean, build PASS
   (2.30 MB), tests 18/18. Next: social presets (one-click Shorts/Reels/TikTok bundle).
+- _run 28_: P5 slice 4 — **social quick presets** (Shorts/Reels/TikTok 9:16 ≤60 s 720p
+  precise; Instagram square 1:1 ≤60 s 720p precise; YouTube 16:9 1080p) as a button row
+  that configures the existing controls (crop/scale/duration/precise-cut) and highlights
+  the active preset. Lint clean, build PASS (2.31 MB), tests 18/18. Next: multi-segment
+  trim + concat (flagship) — likely needs 2 runs (service concat first, then timeline UI).

@@ -167,6 +167,28 @@
 
               <!-- Local upload: real client-side trim + download -->
               <ng-container *ngIf="localVideoUrl">
+                <div class="social-group mb-2">
+                  <span class="form-label d-block mb-1">Quick presets</span>
+                  <div class="social-buttons">
+                    <button
+                      *ngFor="let p of socialPresets"
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      [class.active]="appliedPreset === p.key"
+                      (click)="applySocialPreset(p)"
+                      [disabled]="trimming"
+                    >
+                      {{ p.label }}
+                    </button>
+                  </div>
+                  <small
+                    *ngIf="appliedPreset"
+                    class="text-muted d-block mt-1"
+                    aria-live="polite"
+                  >
+                    Preset applied — crop, resolution and duration set below.
+                  </small>
+                </div>
                 <div class="export-group mb-2">
                   <label for="outputSelect" class="form-label d-block mb-1">
                     Export as

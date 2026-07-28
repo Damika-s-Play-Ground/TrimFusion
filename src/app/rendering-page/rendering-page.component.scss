@@ -317,6 +317,34 @@
   }
 }
 
+// ── Social quick presets ────────────────────────────────────────────────────
+.social-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .btn {
+    border-color: var(--tf-border);
+    color: var(--tf-text);
+
+    &:hover {
+      border-color: var(--tf-accent-1);
+      background: var(--tf-surface);
+      color: var(--tf-text);
+    }
+
+    &.active {
+      border-color: var(--tf-accent-1);
+      background: linear-gradient(
+        135deg,
+        var(--tf-accent-1),
+        var(--tf-accent-2)
+      );
+      color: #fff;
+    }
+  }
+}
+
 // ── Progress + alerts ───────────────────────────────────────────────────────
 .progress {
   height: 1.1rem;

@@ -176,6 +176,53 @@ export class RenderingPageComponent implements OnDestroy {
     this.saturation = 1;
   }
 
+  // One-click social presets: configure the existing controls as a bundle.
+  readonly socialPresets: {
+    key: string;
+    label: string;
+    aspect: number;
+    scale: number;
+    maxDuration: number | null;
+  }[] = [
+    {
+      key: 'shorts',
+      label: 'Shorts / Reels / TikTok',
+      aspect: 9 / 16,
+      scale: 720,
+      maxDuration: 60,
+    },
+    {
+      key: 'square',
+      label: 'Instagram square',
+      aspect: 1,
+      scale: 720,
+      maxDuration: 60,
+    },
+    {
+      key: 'youtube',
+      label: 'YouTube landscape',
+      aspect: 16 / 9,
+      scale: 1080,
+      maxDuration: null,
+    },
+  ];
+  appliedPreset: string | null = null;
+
+  applySocialPreset(preset: (typeof this.socialPresets)[number]): void {
+    this.selectedOutput = 'video';
+    this.selectedAspect = preset.aspect;
+    this.selectedScale = preset.scale;
+    if (preset.maxDuration !== null) {
+      this.endSeconds = Math.min(
+        this.endSeconds,
+        this.startSeconds + preset.maxDuration
+      );
+      // Exact caps matter for platform limits — use the frame-accurate cut.
+      this.preciseCut = true;
+    }
+    this.appliedPreset = preset.key;
+  }
+
   // Audio gain, 0–2 (1 = unchanged). Not applicable to GIF or muted video.
   volumeGain = 1;
 
