@@ -108,13 +108,13 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 
 ## E17 — Export recap & diagnostics (10)
 
-- [ ] W1-091 Export-summary model (derive active settings snapshot)
-- [ ] W1-092 Summary chip row above export button (format/crop/res/speed/volume/precise)
-- [ ] W1-093 Rough output-size estimate heuristic in summary
-- [ ] W1-094 Duration-after-speed readout in summary
-- [ ] W1-095 Output-dimensions estimate from video metadata + crop/scale
-- [ ] W1-096 Success recap ("Downloaded name.mp4 — 0:42, 720p, 4.1 MB")
-- [ ] W1-097 Copy-settings-to-clipboard button (diagnostics)
-- [ ] W1-098 wasm capability report util (SAB/threads/memory) in diagnostics
-- [ ] W1-099 Encode wall-time measured + shown in success recap
+- [x] W1-091 Export-summary model (derive active settings snapshot)
+- [x] W1-092 Summary chip row above export button (format/crop/res/speed/volume/precise)
+- [x] W1-093 Rough output-size estimate heuristic in summary
+- [x] W1-094 Duration-after-speed readout in summary
+- [x] W1-095 Output-dimensions estimate from video metadata + crop/scale
+- [x] W1-096 Success recap ("Downloaded name.mp4 — 0:42, 720p, 4.1 MB")
+- [x] W1-097 Copy-settings-to-clipboard button (diagnostics)
+- [x] W1-098 wasm capability report util (SAB/threads/memory) in diagnostics
+- [x] W1-099 Encode wall-time measured + shown in success recap
 - [ ] W1-100 Wave-1 exit: retro in ROADMAP, metrics (bundle, test count), generate plan/wave-2.md

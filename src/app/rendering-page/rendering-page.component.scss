@@ -380,6 +380,19 @@
   }
 }
 
+// ── Export summary chips ────────────────────────────────────────────────────
+.summary-chip {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  margin: 0 0.35rem 0.35rem 0;
+  border: 1px solid var(--tf-border);
+  border-radius: 999px;
+  background: var(--tf-surface);
+  color: var(--tf-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 // ── Segment stitching ───────────────────────────────────────────────────────
 .segment-group {
   .btn-outline-secondary {

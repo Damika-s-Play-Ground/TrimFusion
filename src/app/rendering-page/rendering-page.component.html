@@ -584,6 +584,15 @@
                     >
                       Split range into clips
                     </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="copyDiagnostics()"
+                      [disabled]="trimming"
+                      title="Copy settings, command and browser capabilities for bug reports"
+                    >
+                      Copy diagnostics
+                    </button>
                   </div>
                   <details class="command-preview mt-2">
                     <summary>ffmpeg command preview</summary>
@@ -649,6 +658,19 @@
                           ' segments)'
                     }}
                   </button>
+                </div>
+                <div class="summary-row mt-2" *ngIf="exportSummary as summary">
+                  <span class="form-label d-block mb-1">Export summary</span>
+                  <span class="summary-chip" *ngFor="let chip of summary.chips">
+                    {{ chip }}
+                  </span>
+                  <small class="text-muted d-block mt-1">
+                    ≈ {{ formatTime(summary.outDurationSeconds) }}
+                    <ng-container *ngIf="summary.outWidth && summary.outHeight">
+                      · {{ summary.outWidth }}×{{ summary.outHeight }}
+                    </ng-container>
+                    · est. {{ formatBytes(summary.estimatedBytes) }}
+                  </small>
                 </div>
                 <button
                   mat-flat-button

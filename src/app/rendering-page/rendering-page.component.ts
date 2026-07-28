@@ -17,6 +17,11 @@ import {
   TrimOptions,
 } from '../services/ffmpeg-args';
 import { messageFor, TrimError } from '../services/trim-error';
+import {
+  capabilityReport,
+  ExportSummary,
+  summarizeExport,
+} from '../services/export-summary';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -362,19 +367,71 @@ export class RenderingPageComponent implements OnDestroy {
     };
   }
 
-  /** The exact ffmpeg command the current settings produce (education/debug). */
-  get commandPreview(): string {
+  /** Plan for the current settings, or null before a file is loaded. */
+  private currentPlan() {
     if (!this.localFile) {
-      return '';
+      return null;
     }
-    const plan = buildTrimPlan(
+    return buildTrimPlan(
       {
         ext: extensionOf(this.localFile.name),
         mimeType: this.localFile.type,
       },
       this.trimOptions()
     );
-    return `ffmpeg ${plan.args.join(' ')}`;
+  }
+
+  /** The exact ffmpeg command the current settings produce (education/debug). */
+  get commandPreview(): string {
+    const plan = this.currentPlan();
+    return plan ? `ffmpeg ${plan.args.join(' ')}` : '';
+  }
+
+  // Source dimensions captured from the player's metadata.
+  private localVideoWidth: number | null = null;
+  private localVideoHeight: number | null = null;
+  private localDuration: number | null = null;
+
+  /** Live recap of what the current settings will produce. */
+  get exportSummary(): ExportSummary | null {
+    const plan = this.currentPlan();
+    if (!plan) {
+      return null;
+    }
+    return summarizeExport(
+      this.trimOptions(),
+      {
+        width: this.localVideoWidth,
+        height: this.localVideoHeight,
+        durationSeconds: this.localDuration,
+        fileSizeBytes: this.localFile?.size ?? null,
+      },
+      plan.args.includes('libx264')
+    );
+  }
+
+  formatBytes(bytes: number | null): string {
+    if (bytes === null) {
+      return '?';
+    }
+    return bytes >= 1_000_000
+      ? `${(bytes / 1_000_000).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(bytes / 1000))} KB`;
+  }
+
+  /** Copy settings + command + browser capabilities for bug reports. */
+  async copyDiagnostics(): Promise<void> {
+    const payload = {
+      settings: this.trimOptions(),
+      command: this.commandPreview,
+      capabilities: capabilityReport(),
+    };
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+      this.infoMessage = 'Diagnostics copied to the clipboard.';
+    } catch {
+      this.trimError = 'Could not access the clipboard.';
+    }
   }
 
   // Light/dark theme (persisted). Dark is the default.
@@ -479,6 +536,7 @@ export class RenderingPageComponent implements OnDestroy {
     this.trimError = '';
     this.infoMessage = '';
     try {
+      const startedAt = performance.now();
       const onProgress = (percent: number) => (this.trimProgress = percent);
       // Loop/boomerang effects are built by stitching segments.
       const stitched =
@@ -503,6 +561,15 @@ export class RenderingPageComponent implements OnDestroy {
         });
       }
       this.downloadBlob(result.blob, result.fileName);
+      const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
+      const dims = this.exportSummary;
+      this.infoMessage =
+        `Downloaded ${result.fileName} — ` +
+        `${this.formatBytes(result.blob.size)} in ${seconds} s` +
+        (dims?.outWidth && dims.outHeight
+          ? `, ${dims.outWidth}×${dims.outHeight}`
+          : '') +
+        '.';
     } catch (err) {
       this.handleExportError(err);
     } finally {
@@ -619,7 +686,10 @@ export class RenderingPageComponent implements OnDestroy {
   /** Once the uploaded video's metadata loads, size the trim range to it. */
   onLocalMetadata(video: HTMLVideoElement): void {
     this.localVideoEl = video;
+    this.localVideoWidth = video.videoWidth || null;
+    this.localVideoHeight = video.videoHeight || null;
     const duration = Math.floor(video.duration || 0);
+    this.localDuration = duration > 0 ? duration : null;
     if (duration > 0) {
       this.maxSeconds = duration;
       this.startSeconds = 0;

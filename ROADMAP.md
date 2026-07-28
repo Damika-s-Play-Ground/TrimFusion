@@ -390,3 +390,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   info not error, OOM detection with actionable guidance, duration/size guardrail
   warnings, sharper invalid-file/range messages, 6 taxonomy tests (one caught a real
   regex bug: /OOM/i matched "boom"). Tests 59 → 65. Wave 1: 76/100.
+- _run 35_: Summary batch W1-091..099 (9 items): pure export-summary module (chips,
+  post-speed duration, rotate/crop/scale-aware output dimensions, size estimates:
+  proportional for copy, CRF/height heuristic for re-encodes, bitrate math for MP3,
+  width/fps for GIF), live summary chip row above the export button, success recap
+  with real size + encode wall-time, copy-diagnostics (settings + command + wasm
+  capability report). 5 new tests. Tests 65 → 70. Wave 1: 85/100. Remaining 15:
+  strict TS (056/057), eslint extras (058/059/073/074), component split (075),
+  CHANGELOG/VERSION (069/070), snackbar/global-handler/storage/metadata/codec
+  (085..089), wave-exit (100) — queued for the cron executor.
