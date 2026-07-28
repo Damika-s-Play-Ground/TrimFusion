@@ -399,3 +399,8 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   strict TS (056/057), eslint extras (058/059/073/074), component split (075),
   CHANGELOG/VERSION (069/070), snackbar/global-handler/storage/metadata/codec
   (085..089), wave-exit (100) — queued for the cron executor.
+- _run 36_ (executor): W1-056..059, 074 (5 items): strict TS + strict templates
+  verified already enabled; added `eslint-plugin-import` (small dev-dep, noted) with
+  alphabetized import/order (autofixed 2 files), no-console (allow warn/error),
+  max-lines warning (800) on components. Lint 0 errors 0 warnings, build PASS
+  (2.33 MB), tests 70/70. Wave 1: 90/100.

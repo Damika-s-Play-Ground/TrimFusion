@@ -10,7 +10,20 @@
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "plugins": ["import"],
       "rules": {
+        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "import/order": [
+          "error",
+          {
+            "alphabetize": { "order": "asc", "caseInsensitive": true },
+            "newlines-between": "never"
+          }
+        ],
+        "max-lines": [
+          "warn",
+          { "max": 800, "skipBlankLines": true, "skipComments": true }
+        ],
         "@angular-eslint/directive-selector": [
           "error",
           { "type": "attribute", "prefix": "app", "style": "camelCase" }

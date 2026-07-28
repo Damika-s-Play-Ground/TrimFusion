@@ -67,10 +67,10 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 
 ## E14 — Strict TS, CI & DX (20)
 
-- [ ] W1-056 Enable TypeScript `strict: true` + fix fallout
-- [ ] W1-057 Enable Angular strict templates + fix fallout
-- [ ] W1-058 ESLint import-order rule + autofix pass
-- [ ] W1-059 ESLint no-console (allow warn/error) + cleanup
+- [x] W1-056 Enable TypeScript `strict: true` + fix fallout (verified: already enabled)
+- [x] W1-057 Enable Angular strict templates + fix fallout (verified: already enabled)
+- [x] W1-058 ESLint import-order rule + autofix pass
+- [x] W1-059 ESLint no-console (allow warn/error) + cleanup
 - [x] W1-060 `format:check` script + CI step (fail on unformatted)
 - [x] W1-061 CI bundle-size budget assertion (fail > 2.6 MB initial)
 - [x] W1-062 CI: also run on pull_request events
@@ -85,7 +85,7 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-071 README: program section linking PLAN-NEXTLEVEL + wave files
 - [x] W1-072 build:stats script + bundle-analysis doc note
 - [ ] W1-073 tsconfig path alias `@services/*`
-- [ ] W1-074 ESLint max-lines warning on components (flag oversized rendering-page)
+- [x] W1-074 ESLint max-lines warning on components (flag oversized rendering-page)
 - [ ] W1-075 Extract export-controls into `ExportControlsComponent` (shrink rendering-page)
 
 ## E15 — Error taxonomy & resilience (15)

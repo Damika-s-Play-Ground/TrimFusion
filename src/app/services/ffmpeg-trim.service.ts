@@ -9,7 +9,6 @@ import {
   SegmentsOptions,
   TrimOptions,
 } from './ffmpeg-args';
-
 import { classifyError, TrimError } from './trim-error';
 
 export type { RotateOption, TrimOutput } from './ffmpeg-args';
