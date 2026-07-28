@@ -23,10 +23,10 @@ specs; DOM work stays thin.
 - [x] W2-011 Zoomed viewport horizontal pan/scroll
 - [x] W2-012 Zoom controls in UI (buttons + current level)
 - [x] W2-013 Snap-to-second toggle (pure rounding helper)
-- [ ] W2-014 Playhead marker synced to the player's currentTime
-- [ ] W2-015 Click on timeline seeks the player
-- [ ] W2-016 In/out markers rendered at start/end positions
-- [ ] W2-017 "Set in/out at playhead" buttons
+- [x] W2-014 Playhead marker synced to the player's currentTime
+- [x] W2-015 Click on timeline seeks the player
+- [x] W2-016 In/out markers rendered at start/end positions
+- [x] W2-017 "Set in/out at playhead" buttons
 - [ ] W2-018 Segment blocks rendered on the timeline from the segments list
 - [ ] W2-019 Segment block selection/highlight
 - [ ] W2-020 Drag segment edges to resize (pointer events)
@@ -52,7 +52,7 @@ specs; DOM work stays thin.
 - [ ] W2-040 Time-string parser "m:ss(.t)" → seconds (pure + spec)
 - [ ] W2-041 Nudge buttons ±1 s on start/end
 - [ ] W2-042 "Use full video" one-click range reset
-- [ ] W2-043 Keyboard operability for timeline markers (arrows when focused)
+- [x] W2-043 Keyboard operability for timeline markers (arrows when focused)
 - [ ] W2-044 Timeline ARIA roles/labels pass
 - [ ] W2-045 Respect prefers-reduced-motion in timeline animations
 - [ ] W2-046 Persist zoom/snap preferences (localStorage)

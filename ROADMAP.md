@@ -459,3 +459,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   min/max ride the window, snap-to-seconds toggle switches slider step 1 s ↔ 0.1 s
   and rounds emitted values; view resets on new file. Tests 76 → 83, gates green
   (2.46 MB). Wave 2: 16/100.
+- _run 44_ (executor): W2-014..017, 043 (5 items): **playhead layer** — white glow
+  playhead marker synced to the player's timeupdate, violet/pink in/out markers, all
+  positioned via posPercent() inside the zoom window (hidden when off-screen);
+  click-to-seek on the strips (snap-aware) and arrow-key seeking (±1 s, Shift ±5 s)
+  on the focusable timeline group (real keyboard operability, focus-visible ring);
+  "Set start/end here" buttons pin the trim range to the playhead with order/bounds
+  clamping. Gates green (83/83, 2.47 MB). Wave 2: 21/100.

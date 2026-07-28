@@ -8,6 +8,41 @@
 // ── Zoomable strip viewport ─────────────────────────────────────────────────
 .strip-viewport {
   overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border-radius: 8px;
+
+  &:focus-visible {
+    outline: 2px solid var(--tf-accent-1);
+    outline-offset: 2px;
+  }
+}
+
+.track-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  .marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-1px);
+  }
+
+  .marker-in {
+    background: rgba(139, 92, 246, 0.9);
+  }
+
+  .marker-out {
+    background: rgba(236, 72, 153, 0.9);
+  }
+
+  .marker-playhead {
+    background: #fff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  }
 }
 
 .strip-track {

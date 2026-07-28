@@ -127,6 +127,45 @@ export class RenderingPageComponent implements OnDestroy {
   waveform: number[] | null = null;
   private waveformToken = 0;
 
+  // Player position for the timeline playhead (null until a file plays).
+  playhead: number | null = null;
+
+  onTimeUpdate(video: HTMLVideoElement): void {
+    this.playhead = video.currentTime;
+  }
+
+  /** Timeline asked to move the playhead (click or arrow keys). */
+  onSeek(seconds: number): void {
+    this.playhead = seconds;
+    if (this.localVideoEl) {
+      this.localVideoEl.currentTime = seconds;
+    }
+  }
+
+  /** Pin the trim start to the playhead (keeps start < end). */
+  setInAtPlayhead(): void {
+    if (this.playhead === null) {
+      return;
+    }
+    this.startSeconds = Math.max(
+      0,
+      Math.min(Math.round(this.playhead), this.endSeconds - 1)
+    );
+    this.onRangeChange();
+  }
+
+  /** Pin the trim end to the playhead (keeps end > start). */
+  setOutAtPlayhead(): void {
+    if (this.playhead === null) {
+      return;
+    }
+    this.endSeconds = Math.min(
+      this.maxSeconds,
+      Math.max(Math.round(this.playhead), this.startSeconds + 1)
+    );
+    this.onRangeChange();
+  }
+
   /** Decode the new file's audio peaks; stale results are dropped. */
   private regenerateWaveform(file: File): void {
     const token = ++this.waveformToken;

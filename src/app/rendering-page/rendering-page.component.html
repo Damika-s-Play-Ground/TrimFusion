@@ -88,6 +88,7 @@
                   width="560"
                   class="local-video-preview"
                   (loadedmetadata)="onLocalMetadata(localVid)"
+                  (timeupdate)="onTimeUpdate(localVid)"
                   (error)="onPreviewError()"
                 ></video>
                 <iframe
@@ -121,7 +122,11 @@
                 [filmstrip]="filmstrip"
                 [filmstripLoading]="filmstripLoading"
                 [waveform]="waveform"
+                [playhead]="playhead"
                 (rangeCommit)="onRangeChange()"
+                (seek)="onSeek($event)"
+                (setIn)="setInAtPlayhead()"
+                (setOut)="setOutAtPlayhead()"
               ></app-timeline>
 
               <!-- Local upload: real client-side trim + download -->

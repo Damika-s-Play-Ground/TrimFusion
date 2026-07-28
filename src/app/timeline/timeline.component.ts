@@ -30,11 +30,18 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   @Input() filmstripLoading = false;
   /** Normalized 0..1 audio peaks; null/empty = no audio track (no strip). */
   @Input() waveform: number[] | null = null;
+  /** Player position in seconds; null hides the playhead layer. */
+  @Input() playhead: number | null = null;
 
   @Output() startChange = new EventEmitter<number>();
   @Output() endChange = new EventEmitter<number>();
   /** Emitted when a thumb drag finishes (parent revalidates the range). */
   @Output() rangeCommit = new EventEmitter<void>();
+  /** Ask the parent to seek the player (timeline click / arrow keys). */
+  @Output() seek = new EventEmitter<number>();
+  /** Set the trim start/end to the current playhead. */
+  @Output() setIn = new EventEmitter<void>();
+  @Output() setOut = new EventEmitter<void>();
 
   @ViewChild('waveCanvas')
   private waveCanvas?: ElementRef<HTMLCanvasElement>;
@@ -80,6 +87,43 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
       (direction * span) / 4,
       this.max
     ).from;
+  }
+
+  // ── Playhead / markers ────────────────────────────────────────────────────
+
+  /** Percent position inside the visible window, or null when off-screen. */
+  posPercent(seconds: number): number | null {
+    const span = this.viewTo - this.viewFrom;
+    if (span <= 0) {
+      return null;
+    }
+    const percent = ((seconds - this.viewFrom) / span) * 100;
+    return percent >= 0 && percent <= 100 ? percent : null;
+  }
+
+  /** Click on the strips seeks the player to that position. */
+  onTrackClick(event: MouseEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    if (!rect.width) {
+      return;
+    }
+    const ratio = (event.clientX - rect.left) / rect.width;
+    const span = this.viewTo - this.viewFrom;
+    this.seek.emit(snapSeconds(this.viewFrom + ratio * span, this.snap));
+  }
+
+  /** Arrow keys move the playhead (±1 s, Shift = ±5 s). */
+  onTrackKeydown(event: KeyboardEvent): void {
+    if (
+      this.playhead === null ||
+      (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')
+    ) {
+      return;
+    }
+    event.preventDefault();
+    const step =
+      (event.shiftKey ? 5 : 1) * (event.key === 'ArrowLeft' ? -1 : 1);
+    this.seek.emit(Math.max(0, Math.min(this.max, this.playhead + step)));
   }
 
   ngAfterViewInit(): void {

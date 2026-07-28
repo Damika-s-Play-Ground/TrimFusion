@@ -1,4 +1,11 @@
-<div class="strip-viewport">
+<div
+  class="strip-viewport"
+  role="group"
+  tabindex="0"
+  aria-label="Timeline — click to move the playhead, arrow keys to step it"
+  (click)="onTrackClick($event)"
+  (keydown)="onTrackKeydown($event)"
+>
   <div
     class="strip-track"
     [style.width.%]="zoom * 100"
@@ -22,6 +29,23 @@
       *ngIf="waveform?.length"
       aria-hidden="true"
     ></canvas>
+  </div>
+  <div class="track-overlay" aria-hidden="true">
+    <div
+      class="marker marker-in"
+      *ngIf="posPercent(start) !== null"
+      [style.left.%]="posPercent(start)"
+    ></div>
+    <div
+      class="marker marker-out"
+      *ngIf="posPercent(end) !== null"
+      [style.left.%]="posPercent(end)"
+    ></div>
+    <div
+      class="marker marker-playhead"
+      *ngIf="playhead !== null && posPercent(playhead) !== null"
+      [style.left.%]="posPercent(playhead)"
+    ></div>
   </div>
 </div>
 <div class="zoom-row">
@@ -58,6 +82,24 @@
   <span class="zoom-window" *ngIf="zoom > 1">
     {{ formatTime(viewFrom) }} – {{ formatTime(viewTo) }}
   </span>
+  <button
+    type="button"
+    class="zoom-btn"
+    (click)="setIn.emit()"
+    [disabled]="playhead === null"
+    aria-label="Set trim start at the playhead"
+  >
+    ⇤ Set start here
+  </button>
+  <button
+    type="button"
+    class="zoom-btn"
+    (click)="setOut.emit()"
+    [disabled]="playhead === null"
+    aria-label="Set trim end at the playhead"
+  >
+    Set end here ⇥
+  </button>
   <label class="snap-toggle">
     <input type="checkbox" [(ngModel)]="snap" />
     Snap to seconds
