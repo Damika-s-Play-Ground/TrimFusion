@@ -388,6 +388,35 @@ describe('filter stack (W3 framework)', () => {
     expect(vf({ filters: [{ key: 'blur' }] })).toBe('boxblur=3.0');
   });
 
+  // W3-061: color-science snippets (neutral at 0.5, mapped at extremes).
+  it('maps gamma/exposure/temperature/tint with midpoint neutrality', () => {
+    const vf = (over: Partial<TrimOptions>) => {
+      const p = plan(over);
+      return p.args[p.args.indexOf('-vf') + 1];
+    };
+    expect(vf({ filters: [{ key: 'gamma', intensity: 0.5 }] })).toBe(
+      'eq=gamma=1.000'
+    );
+    expect(vf({ filters: [{ key: 'gamma', intensity: 1 }] })).toBe(
+      'eq=gamma=2.000'
+    );
+    expect(vf({ filters: [{ key: 'exposure', intensity: 0.5 }] })).toBe(
+      'exposure=0.00'
+    );
+    expect(vf({ filters: [{ key: 'exposure', intensity: 1 }] })).toBe(
+      'exposure=3.00'
+    );
+    expect(vf({ filters: [{ key: 'temperature', intensity: 0.5 }] })).toBe(
+      'colortemperature=6500'
+    );
+    expect(vf({ filters: [{ key: 'tint', intensity: 0 }] })).toBe(
+      'colorbalance=gm=-1.00'
+    );
+    expect(vf({ filters: [{ key: 'huerotate', intensity: 0.25 }] })).toBe(
+      'hue=h=90'
+    );
+  });
+
   it('skips unknown filter keys and empty stacks', () => {
     const p = plan({ filters: [{ key: 'nonexistent' }] });
     expect(p.args.join(' ')).toContain('-c copy');

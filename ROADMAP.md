@@ -646,3 +646,9 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   end-to-end. Specs: exact snippet-per-intensity mappings and the clamp/default
   behavior ([0,1] clamp, def default when omitted). Tests 134 → 136, gates green
   (2.55 MB). Wave 3: 19/100.
+- _run 66_ (executor): W3-015..019, 061 (6 items): **color-science filters** — gamma
+  (2^(2i−1), 0.5–2.0), exposure (±3 stops with a CSS brightness(2^E) live preview),
+  color temperature (2000K warm → 11000K cool via colortemperature), tint
+  (colorbalance green–magenta), hue rotate (0–360° with CSS hue-rotate preview).
+  All neutral at the slider midpoint by design. Spec pins midpoint neutrality and
+  the extreme mappings. Tests 136 → 137, gates green (2.55 MB). Wave 3: 25/100.

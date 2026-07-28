@@ -29,11 +29,11 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-012 Filter: blur (`boxblur` intensity; CSS blur approx)
 - [x] W3-013 Filter: sharpen (`unsharp` intensity; export-only)
 - [x] W3-014 Filter: denoise (`hqdn3d`; export-only)
-- [ ] W3-015 Filter: gamma (eq gamma; export-only)
-- [ ] W3-016 Filter: exposure (`exposure` filter; export-only)
-- [ ] W3-017 Filter: color temperature (colortemperature; export-only)
-- [ ] W3-018 Filter: tint (colorbalance preset; export-only)
-- [ ] W3-019 Filter: hue rotate (`hue=h=`; CSS hue-rotate)
+- [x] W3-015 Filter: gamma (eq gamma; export-only)
+- [x] W3-016 Filter: exposure (`exposure` filter; export-only)
+- [x] W3-017 Filter: color temperature (colortemperature; export-only)
+- [x] W3-018 Filter: tint (colorbalance preset; export-only)
+- [x] W3-019 Filter: hue rotate (`hue=h=`; CSS hue-rotate)
 - [ ] W3-020 Filter: posterize (`elbg`/lutyuv approx; export-only)
 - [ ] W3-021 Filter: film grain (`noise` intensity; export-only)
 - [ ] W3-022 Filter: pixelate (scale-down-up trick; export-only)
@@ -81,7 +81,7 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-058 Spec: intensity clamps per filter def
 - [x] W3-059 Spec: grayscale/sepia/invert snippets
 - [x] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
-- [ ] W3-061 Spec: gamma/exposure/temperature/tint snippets
+- [x] W3-061 Spec: gamma/exposure/temperature/tint snippets
 - [ ] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
 - [ ] W3-063 Spec: each look preset expands to its expected stack
 - [ ] W3-064 Spec: stack ↔ URL state round-trip

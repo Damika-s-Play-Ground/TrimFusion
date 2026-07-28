@@ -93,6 +93,45 @@ export const FILTER_DEFS: Record<string, FilterDef> = {
     snippet: (i) => `hqdn3d=${(i * 8).toFixed(1)}`,
     css: null,
   },
+  // Color science — all neutral at intensity 0.5, so adding the filter
+  // changes nothing until the slider moves.
+  gamma: {
+    label: 'Gamma',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    snippet: (i) => `eq=gamma=${(2 ** (2 * i - 1)).toFixed(3)}`,
+    css: null,
+  },
+  exposure: {
+    label: 'Exposure',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    // ±3 stops; CSS approximates a stop as a 2^E brightness multiplier.
+    snippet: (i) => `exposure=${(6 * i - 3).toFixed(2)}`,
+    css: (i) => `brightness(${(2 ** (6 * i - 3)).toFixed(2)})`,
+  },
+  temperature: {
+    label: 'Color temperature',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    // 2000K (warm) → 11000K (cool); 6500K neutral at the midpoint.
+    snippet: (i) => `colortemperature=${Math.round(2000 + 9000 * i)}`,
+    css: null,
+  },
+  tint: {
+    label: 'Tint (green–magenta)',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    snippet: (i) => `colorbalance=gm=${(2 * i - 1).toFixed(2)}`,
+    css: null,
+  },
+  huerotate: {
+    label: 'Hue rotate',
+    hasIntensity: true,
+    defaultIntensity: 0.25,
+    snippet: (i) => `hue=h=${Math.round(360 * i)}`,
+    css: (i) => `hue-rotate(${Math.round(360 * i)}deg)`,
+  },
 };
 
 /** Expand a filter stack into vf snippets (unknown keys skipped). */
