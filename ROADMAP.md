@@ -532,3 +532,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   prevented, no double-fire with the focused strip via defaultPrevented guard),
   , / . frame steps, M mute toggle, + / − timeline zoom via a new zoomStep() on the
   timeline. Gates green (108/108, 2.49 MB). Wave 2: 66/100.
+- _run 54_ (executor): W2-059..063, 075 (6 items; 063 = verify — the pure map shipped
+  with the W2-051 scaffold): **S** adds the current range as a segment, **E** starts
+  the export, **?** toggles a keyboard **cheat-sheet overlay** (dialog with kbd-styled
+  key list, Esc closes, ⌨ Keys header button for discoverability), and a 5-case
+  shortcut-map spec (every action bound, no accidental duplicates — only +/= share
+  zoomIn — case-insensitive resolution, typing-target detection). Tests 108 → 112,
+  gates green (2.49 MB). Wave 2: 72/100.

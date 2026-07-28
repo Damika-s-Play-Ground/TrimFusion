@@ -71,11 +71,11 @@ specs; DOM work stays thin.
 - [x] W2-056 , / . = frame step
 - [x] W2-057 M = mute toggle
 - [x] W2-058 + / − = timeline zoom
-- [ ] W2-059 S = add current range as segment
-- [ ] W2-060 E = start export
-- [ ] W2-061 ? = open the shortcut cheat-sheet
-- [ ] W2-062 Cheat-sheet overlay (esc closes, focus handled)
-- [ ] W2-063 Shortcut map as a pure module (key → action table) + spec
+- [x] W2-059 S = add current range as segment
+- [x] W2-060 E = start export
+- [x] W2-061 ? = open the shortcut cheat-sheet
+- [x] W2-062 Cheat-sheet overlay (esc closes, focus handled)
+- [x] W2-063 Shortcut map as a pure module (key → action table) + spec (module landed with W2-051; spec with W2-075)
 - [ ] W2-064 preventDefault audit so shortcuts don't fight the browser
 - [ ] W2-065 Shortcuts on/off toggle in the UI
 - [ ] W2-066 Persist the shortcuts preference
@@ -90,7 +90,7 @@ specs; DOM work stays thin.
 - [x] W2-072 Spec: overlap detection/merge
 - [x] W2-073 Spec: time-string parser edge cases
 - [x] W2-074 Spec: waveform peak bucketing
-- [ ] W2-075 Spec: shortcut map completeness + no duplicate bindings
+- [x] W2-075 Spec: shortcut map completeness + no duplicate bindings
 - [ ] W2-076 Spec: undo/redo stack behavior
 - [ ] W2-077 Spec: URL settings round-trip
 - [x] W2-078 Spec: debounce helper timing (fakeAsync)

@@ -211,6 +211,21 @@ export class RenderingPageComponent implements OnDestroy {
 
   // Keyboard shortcuts (W2-051..): global keydown, skipped while typing.
   shortcutsEnabled = true;
+  showCheatSheet = false;
+
+  readonly shortcutHelp: { keys: string; label: string }[] = [
+    { keys: 'Space', label: 'Play / pause' },
+    { keys: 'I / O', label: 'Set start / end at the playhead' },
+    { keys: 'J / K / L', label: 'Shuttle: slower / pause / faster' },
+    { keys: '← / →', label: 'Seek 1 s (Shift: 5 s)' },
+    { keys: ', / .', label: 'Step one frame' },
+    { keys: 'M', label: 'Toggle mute' },
+    { keys: '+ / −', label: 'Timeline zoom' },
+    { keys: 'S', label: 'Add current range as a segment' },
+    { keys: 'E', label: 'Export' },
+    { keys: '?', label: 'Show this cheat-sheet' },
+    { keys: 'Esc', label: 'Close the cheat-sheet' },
+  ];
 
   @ViewChild(TimelineComponent) private timeline?: TimelineComponent;
 
@@ -252,6 +267,10 @@ export class RenderingPageComponent implements OnDestroy {
     }
     if (event.defaultPrevented) {
       // e.g. the focused timeline strip already handled an arrow key.
+      return;
+    }
+    if (event.key === 'Escape' && this.showCheatSheet) {
+      this.showCheatSheet = false;
       return;
     }
     const action = actionForKey(event.key);
@@ -302,8 +321,16 @@ export class RenderingPageComponent implements OnDestroy {
       case 'zoomOut':
         this.timeline?.zoomStep(-1);
         break;
-      default:
-        // Remaining actions land with their wave items.
+      case 'addSegment':
+        this.addSegment();
+        break;
+      case 'export':
+        if (!this.trimming) {
+          void this.trimAndDownload();
+        }
+        break;
+      case 'cheatSheet':
+        this.showCheatSheet = !this.showCheatSheet;
         break;
     }
   }
