@@ -436,3 +436,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   shimmer skeleton (reduced-motion aware), regenerated per new file with in-flight
   cancel. Dead timeline styles removed from rendering-page. Gates green (70/70,
   2.46 MB). Wave 2: 5/100.
+- _run 41_: PR triage per user request ("merge all PRs"): merged the 4 GitHub-Actions
+  bumps (#12 deploy-pages v5, #13 upload-pages-artifact v5, #14 setup-node v7,
+  #15 checkout v7) and applied the 3 npm bumps on main (tslib 2.8.1, zone.js 0.13.3,
+  karma-chrome-launcher 3.2.0 → dependabot PRs #18/#19/#20 auto-close). NOT merged,
+  with reasons: #16 Angular 16→22 (six majors; needs staged ng update migrations —
+  a dedicated program effort, left open) and #17 admin-lte 3→4 (package is slated for
+  removal in Wave 6, closed). Added dependabot ignores for both major streams.
+  Gates green after bumps (lint 0, build 2.46 MB, tests 70/70).

@@ -9,6 +9,14 @@ updates:
       angular:
         patterns:
           - '@angular*'
+    ignore:
+      # Slated for REMOVAL in the Wave-6 bundle diet, not upgrade.
+      - dependency-name: 'admin-lte'
+        update-types: ['version-update:semver-major']
+      # Angular majors need staged `ng update` migrations (tracked as a
+      # dedicated program effort), not a bump PR.
+      - dependency-name: '@angular*'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
