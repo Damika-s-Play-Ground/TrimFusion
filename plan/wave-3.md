@@ -34,10 +34,10 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-017 Filter: color temperature (colortemperature; export-only)
 - [x] W3-018 Filter: tint (colorbalance preset; export-only)
 - [x] W3-019 Filter: hue rotate (`hue=h=`; CSS hue-rotate)
-- [ ] W3-020 Filter: posterize (`elbg`/lutyuv approx; export-only)
-- [ ] W3-021 Filter: film grain (`noise` intensity; export-only)
-- [ ] W3-022 Filter: pixelate (scale-down-up trick; export-only)
-- [ ] W3-023 Filter: edge glow (`edgedetect` blend; export-only)
+- [x] W3-020 Filter: posterize (`elbg`/lutyuv approx; export-only)
+- [x] W3-021 Filter: film grain (`noise` intensity; export-only)
+- [x] W3-022 Filter: pixelate (scale-down-up trick; export-only)
+- [x] W3-023 Filter: edge glow (`edgedetect` blend; export-only)
 - [ ] W3-024 Look preset: Cinematic teal-orange (curves)
 - [ ] W3-025 Look preset: Vintage fade (curves + grain)
 - [ ] W3-026 Look preset: Noir (grayscale + contrast + vignette)
@@ -82,7 +82,7 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-059 Spec: grayscale/sepia/invert snippets
 - [x] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
 - [x] W3-061 Spec: gamma/exposure/temperature/tint snippets
-- [ ] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
+- [x] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
 - [ ] W3-063 Spec: each look preset expands to its expected stack
 - [ ] W3-064 Spec: stack ↔ URL state round-trip
 - [x] W3-065 Spec: stack ↔ CSS preview mapping (approximable subset + badge flags)

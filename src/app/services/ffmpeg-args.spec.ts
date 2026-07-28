@@ -417,6 +417,27 @@ describe('filter stack (W3 framework)', () => {
     );
   });
 
+  // W3-062: stylistic snippets (posterize/grain/pixelate/edge paint).
+  it('maps the stylistic filters at representative intensities', () => {
+    const vf = (over: Partial<TrimOptions>) => {
+      const p = plan(over);
+      return p.args[p.args.indexOf('-vf') + 1];
+    };
+    // i=0.5 → 5 luma levels → step 51.
+    expect(vf({ filters: [{ key: 'posterize', intensity: 0.5 }] })).toBe(
+      'lutyuv=y=trunc(val/51)*51'
+    );
+    expect(vf({ filters: [{ key: 'grain', intensity: 0.5 }] })).toBe(
+      'noise=alls=15:allf=t'
+    );
+    expect(vf({ filters: [{ key: 'pixelate', intensity: 0.5 }] })).toBe(
+      'scale=iw/11:ih/11,scale=11*iw:11*ih:flags=neighbor'
+    );
+    expect(vf({ filters: [{ key: 'edgepaint', intensity: 0.5 }] })).toBe(
+      'edgedetect=mode=colormix:high=0.50'
+    );
+  });
+
   it('skips unknown filter keys and empty stacks', () => {
     const p = plan({ filters: [{ key: 'nonexistent' }] });
     expect(p.args.join(' ')).toContain('-c copy');

@@ -652,3 +652,9 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   (colorbalance green–magenta), hue rotate (0–360° with CSS hue-rotate preview).
   All neutral at the slider midpoint by design. Spec pins midpoint neutrality and
   the extreme mappings. Tests 136 → 137, gates green (2.55 MB). Wave 3: 25/100.
+- _run 67_ (executor): W3-020..023, 062 (5 items): **stylistic filters complete the
+  individual set (16 total)** — posterize (luma quantization, 8→2 levels via lutyuv),
+  film grain (temporal noise 0–30), pixelate (down/upscale with neighbor sampling,
+  2–20×), edge paint (edgedetect colormix, threshold falls with intensity). Spec
+  pins each snippet at representative intensities. Tests 137 → 138, gates green
+  (2.55 MB). Wave 3: 30/100 — next: the ten one-click look presets.

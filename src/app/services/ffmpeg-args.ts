@@ -132,6 +132,48 @@ export const FILTER_DEFS: Record<string, FilterDef> = {
     snippet: (i) => `hue=h=${Math.round(360 * i)}`,
     css: (i) => `hue-rotate(${Math.round(360 * i)}deg)`,
   },
+  // Stylistic set.
+  posterize: {
+    label: 'Posterize',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    // Fewer luma levels as intensity rises (8 → 2).
+    snippet: (i) => {
+      const levels = 8 - Math.round(6 * i);
+      const step = Math.round(256 / levels);
+      return `lutyuv=y=trunc(val/${step})*${step}`;
+    },
+    css: null,
+  },
+  grain: {
+    label: 'Film grain',
+    hasIntensity: true,
+    defaultIntensity: 0.3,
+    snippet: (i) => `noise=alls=${Math.round(i * 30)}:allf=t`,
+    css: null,
+  },
+  pixelate: {
+    label: 'Pixelate',
+    hasIntensity: true,
+    defaultIntensity: 0.4,
+    snippet: (i) => {
+      const factor = 2 + Math.round(18 * i);
+      return (
+        `scale=iw/${factor}:ih/${factor},` +
+        `scale=${factor}*iw:${factor}*ih:flags=neighbor`
+      );
+    },
+    css: null,
+  },
+  edgepaint: {
+    label: 'Edge paint',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    // Lower high-threshold = more edges mixed into the color image.
+    snippet: (i) =>
+      `edgedetect=mode=colormix:high=${(0.8 - 0.6 * i).toFixed(2)}`,
+    css: null,
+  },
 };
 
 /** Expand a filter stack into vf snippets (unknown keys skipped). */
