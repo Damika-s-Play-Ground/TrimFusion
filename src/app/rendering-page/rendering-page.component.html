@@ -385,6 +385,66 @@
                     Precise cut (frame-accurate, slower)
                   </label>
                 </div>
+                <div class="segment-group mb-2">
+                  <span class="form-label d-block mb-1">
+                    Stitch multiple ranges
+                  </span>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="addSegment()"
+                    [disabled]="trimming || endSeconds <= startSeconds"
+                  >
+                    + Add current range as segment
+                  </button>
+                  <ul
+                    class="segment-list list-unstyled mt-2 mb-1"
+                    *ngIf="segments.length"
+                  >
+                    <li *ngFor="let s of segments; let i = index">
+                      <span>
+                        {{ i + 1 }}. {{ formatTime(s.start) }} –
+                        {{ formatTime(s.end) }}
+                      </span>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link segment-remove"
+                        (click)="removeSegment(i)"
+                        [disabled]="trimming"
+                        [attr.aria-label]="'Remove segment ' + (i + 1)"
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  </ul>
+                  <small *ngIf="segments.length" class="text-muted d-block">
+                    {{ segments.length }} segment(s) · total
+                    {{ formatTime(segmentsTotalSeconds) }} · exports as MP4
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      (click)="clearSegments()"
+                      [disabled]="trimming"
+                    >
+                      Clear all
+                    </button>
+                  </small>
+                  <button
+                    *ngIf="segments.length >= 2"
+                    type="button"
+                    class="crop-button crop-button--ghost"
+                    (click)="exportSegments()"
+                    [disabled]="trimming"
+                  >
+                    {{
+                      trimming
+                        ? 'Working…'
+                        : 'Export stitched clip (' +
+                          segments.length +
+                          ' segments)'
+                    }}
+                  </button>
+                </div>
                 <button
                   mat-flat-button
                   color="warn"

@@ -180,8 +180,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
         `buildEqFilter`) and `trim()` rewired onto them. Also fixed a latent bug:
         the ffmpeg progress handler captured only the FIRST call's onProgress —
         now routed through a re-pointable `progressCb`.
-  - [ ] Part 2 (UI): segment list on the timeline (add current range as segment,
-        remove, clear), "Export stitched clip" button calling `trimSegments()`.
+  - [x] Part 2 (UI): "Stitch multiple ranges" — add current slider range as a
+        segment, per-segment remove + clear-all, count/total-duration readout,
+        "Export stitched clip" button (enabled at 2+ segments) calling
+        `trimSegments()`; shared download helper extracted.
 - [ ] **Drag & drop upload** onto the player + **keyboard shortcuts** (I/O = set
       in/out at playhead, space = play/pause).
 - [ ] **PWA**: installable + offline app shell (@angular/pwa; note: new dep, allowed
@@ -355,3 +357,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   Fixed latent progress-callback capture bug (first-call closure → re-pointable sink).
   Lint clean, build PASS (2.31 MB), tests 18/18. Segment path not headless-verifiable
   (wasm). Next: part 2 — segment-list timeline UI + "Export stitched clip".
+- _run 30_: P5 slice 5b — **multi-segment UI**: segment builder under the timeline
+  (add current range, remove/clear, totals) + "Export stitched clip" via
+  `trimSegments()`. Lint clean, build PASS (2.31 MB), tests 18/18. FLAGSHIP COMPLETE.
+  User then asked to STOP the loop (cron 6ddca538 cancelled) and commission a
+  comprehensive next-level plan → see PLAN-NEXTLEVEL.md (pipeline + ~1000-item
+  program in waves). Remaining P5 stubs (drag&drop/shortcuts, PWA, export summary)
+  are folded into that plan.

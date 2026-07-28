@@ -306,6 +306,16 @@ export class RenderingPageComponent implements OnDestroy {
     this.localFileName = file.name;
   }
 
+  /** Trigger a browser download for a produced blob. */
+  private downloadBlob(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   /** Trim the uploaded video client-side (ffmpeg.wasm) and download the clip. */
   async trimAndDownload(): Promise<void> {
     if (!this.localFile || this.trimming) {
@@ -331,17 +341,70 @@ export class RenderingPageComponent implements OnDestroy {
         volume: this.volumeGain,
         onProgress: (percent) => (this.trimProgress = percent),
       });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(url);
+      this.downloadBlob(blob, fileName);
     } catch (err) {
       this.trimError =
         'Trimming failed. This runs entirely in your browser and can be ' +
         'memory-heavy for large files — try a shorter range or smaller file.';
       console.error('ffmpeg trim failed', err);
+    } finally {
+      this.trimming = false;
+    }
+  }
+
+  // Multi-segment stitching: keep-ranges collected from the slider.
+  segments: { start: number; end: number }[] = [];
+
+  addSegment(): void {
+    if (this.endSeconds <= this.startSeconds) {
+      return;
+    }
+    this.segments.push({ start: this.startSeconds, end: this.endSeconds });
+  }
+
+  removeSegment(index: number): void {
+    this.segments.splice(index, 1);
+  }
+
+  clearSegments(): void {
+    this.segments = [];
+  }
+
+  get segmentsTotalSeconds(): number {
+    return this.segments.reduce((sum, s) => sum + (s.end - s.start), 0);
+  }
+
+  /** Export all collected segments as one stitched MP4 and download it. */
+  async exportSegments(): Promise<void> {
+    if (!this.localFile || this.trimming || this.segments.length < 2) {
+      return;
+    }
+    this.trimming = true;
+    this.trimProgress = 0;
+    this.trimError = '';
+    try {
+      const { blob, fileName } = await this.ffmpegTrim.trimSegments(
+        this.localFile,
+        {
+          segments: this.segments,
+          aspectRatio: this.selectedAspect,
+          speed: this.selectedSpeed,
+          mute: this.muteAudio,
+          scaleHeight: this.selectedScale,
+          rotate: this.selectedRotate,
+          brightness: this.brightness,
+          contrast: this.contrast,
+          saturation: this.saturation,
+          volume: this.volumeGain,
+          onProgress: (percent) => (this.trimProgress = percent),
+        }
+      );
+      this.downloadBlob(blob, fileName);
+    } catch (err) {
+      this.trimError =
+        'Stitching failed. This runs entirely in your browser and can be ' +
+        'memory-heavy — try fewer/shorter segments or a smaller file.';
+      console.error('ffmpeg segment export failed', err);
     } finally {
       this.trimming = false;
     }

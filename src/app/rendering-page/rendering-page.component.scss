@@ -345,6 +345,39 @@
   }
 }
 
+// ── Segment stitching ───────────────────────────────────────────────────────
+.segment-group {
+  .btn-outline-secondary {
+    border-color: var(--tf-border);
+    color: var(--tf-text);
+
+    &:hover:not([disabled]) {
+      border-color: var(--tf-accent-1);
+      background: var(--tf-surface);
+      color: var(--tf-text);
+    }
+  }
+}
+
+.segment-list {
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--tf-border);
+    border-radius: 8px;
+    margin-bottom: 0.35rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.segment-remove {
+  color: #f87171;
+  text-decoration: none;
+  padding: 0 0.3rem;
+}
+
 // ── Progress + alerts ───────────────────────────────────────────────────────
 .progress {
   height: 1.1rem;
