@@ -205,6 +205,22 @@
 </details>
 <details class="control-section">
   <summary>Filters</summary>
+  <div class="look-row">
+    <span class="form-label d-block mb-1">One-click looks</span>
+    <div class="look-buttons">
+      <button
+        *ngFor="let key of page.lookKeys"
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [class.active]="page.appliedLook === key"
+        (click)="page.applyLook(key)"
+        [disabled]="page.trimming"
+        [attr.aria-pressed]="page.appliedLook === key"
+      >
+        {{ page.lookDefs[key].label }}
+      </button>
+    </div>
+  </div>
   <div class="filter-add">
     <label for="filterAddSelect" class="form-label d-block mb-1">
       Add a filter

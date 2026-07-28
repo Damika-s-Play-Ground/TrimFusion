@@ -38,17 +38,17 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-021 Filter: film grain (`noise` intensity; export-only)
 - [x] W3-022 Filter: pixelate (scale-down-up trick; export-only)
 - [x] W3-023 Filter: edge glow (`edgedetect` blend; export-only)
-- [ ] W3-024 Look preset: Cinematic teal-orange (curves)
-- [ ] W3-025 Look preset: Vintage fade (curves + grain)
-- [ ] W3-026 Look preset: Noir (grayscale + contrast + vignette)
-- [ ] W3-027 Look preset: Vivid pop (saturation + contrast)
-- [ ] W3-028 Look preset: Cool blue (colorbalance)
-- [ ] W3-029 Look preset: Warm sunset (colorbalance)
-- [ ] W3-030 Look preset: Dreamy soft (blur blend + brightness)
-- [ ] W3-031 Look preset: Matrix green (colorchannelmixer)
-- [ ] W3-032 Look preset: Bleach bypass (desat + contrast)
-- [ ] W3-033 Look preset: VHS (noise + chroma shift approx)
-- [ ] W3-034 Looks: preset row applies a canned stack (one click, editable after)
+- [x] W3-024 Look preset: Cinematic teal-orange (curves)
+- [x] W3-025 Look preset: Vintage fade (curves + grain)
+- [x] W3-026 Look preset: Noir (grayscale + contrast + vignette)
+- [x] W3-027 Look preset: Vivid pop (saturation + contrast)
+- [x] W3-028 Look preset: Cool blue (colorbalance)
+- [x] W3-029 Look preset: Warm sunset (colorbalance)
+- [x] W3-030 Look preset: Dreamy soft (blur blend + brightness)
+- [x] W3-031 Look preset: Matrix green (colorchannelmixer)
+- [x] W3-032 Look preset: Bleach bypass (desat + contrast)
+- [x] W3-033 Look preset: VHS (noise + chroma shift approx)
+- [x] W3-034 Looks: preset row applies a canned stack (one click, editable after)
 - [ ] W3-035 Saved custom looks: name + save current stack to localStorage
 - [ ] W3-036 Saved looks: apply/delete UI
 - [ ] W3-037 Stack chip in export summary ("3 filters") + command preview reflects stack
@@ -83,7 +83,7 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
 - [x] W3-061 Spec: gamma/exposure/temperature/tint snippets
 - [x] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
-- [ ] W3-063 Spec: each look preset expands to its expected stack
+- [x] W3-063 Spec: each look preset expands to its expected stack
 - [ ] W3-064 Spec: stack ↔ URL state round-trip
 - [x] W3-065 Spec: stack ↔ CSS preview mapping (approximable subset + badge flags)
 - [ ] W3-066 Spec: segments plan carries the stack into every step

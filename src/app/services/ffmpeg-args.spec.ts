@@ -3,6 +3,9 @@ import {
   buildSegmentsPlan,
   buildTrimPlan,
   extensionOf,
+  FILTER_DEFS,
+  LOOK_DEFS,
+  lookStack,
   normalizeSegments,
   TrimInput,
   TrimOptions,
@@ -441,6 +444,34 @@ describe('filter stack (W3 framework)', () => {
   it('skips unknown filter keys and empty stacks', () => {
     const p = plan({ filters: [{ key: 'nonexistent' }] });
     expect(p.args.join(' ')).toContain('-c copy');
+  });
+});
+
+describe('LOOK_DEFS (W3-063)', () => {
+  it('every look expands to a non-empty stack of known filters', () => {
+    for (const [key, look] of Object.entries(LOOK_DEFS)) {
+      expect(look.stack.length).withContext(key).toBeGreaterThan(0);
+      for (const entry of look.stack) {
+        expect(FILTER_DEFS[entry.key])
+          .withContext(`${key}:${entry.key}`)
+          .toBeDefined();
+      }
+    }
+  });
+
+  it('lookStack returns mutation-safe copies', () => {
+    const a = lookStack('noir');
+    a[0].intensity = 0.99;
+    expect(lookStack('noir')[0].intensity).not.toBe(0.99);
+  });
+
+  it('expands noir to its exact stack', () => {
+    expect(lookStack('noir')).toEqual([
+      { key: 'grayscale' },
+      { key: 'gamma', intensity: 0.42 },
+      { key: 'vignette', intensity: 0.55 },
+    ]);
+    expect(lookStack('unknown')).toEqual([]);
   });
 });
 

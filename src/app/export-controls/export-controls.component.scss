@@ -166,3 +166,19 @@ input[type='range'] {
     }
   }
 }
+
+.look-row {
+  margin-bottom: 0.6rem;
+}
+
+.look-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  .btn.active {
+    border-color: var(--tf-accent-1);
+    background: linear-gradient(135deg, var(--tf-accent-1), var(--tf-accent-2));
+    color: #fff;
+  }
+}

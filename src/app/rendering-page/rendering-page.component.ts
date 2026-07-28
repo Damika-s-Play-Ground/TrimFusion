@@ -23,6 +23,8 @@ import {
   extensionOf,
   FILTER_DEFS,
   FilterEntry,
+  LOOK_DEFS,
+  lookStack,
   SegmentRange,
   TrimOptions,
 } from '@services/ffmpeg-args';
@@ -846,6 +848,16 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
   readonly filterKeys = Object.keys(FILTER_DEFS);
   filterStack: FilterEntry[] = [];
   addFilterKey = this.filterKeys[0];
+
+  readonly lookDefs = LOOK_DEFS;
+  readonly lookKeys = Object.keys(LOOK_DEFS);
+  appliedLook: string | null = null;
+
+  /** Replace the stack with a look's canned stack (editable after). */
+  applyLook(key: string): void {
+    this.filterStack = lookStack(key);
+    this.appliedLook = key;
+  }
 
   addFilter(): void {
     const def = FILTER_DEFS[this.addFilterKey];

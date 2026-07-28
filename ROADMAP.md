@@ -658,3 +658,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   2–20×), edge paint (edgedetect colormix, threshold falls with intensity). Spec
   pins each snippet at representative intensities. Tests 137 → 138, gates green
   (2.55 MB). Wave 3: 30/100 — next: the ten one-click look presets.
+- _run 68_ (executor): W3-024..034, 063 (12 IDs, one coherent slice — the looks are
+  registry entries and shipping them without the row would leave them unreachable):
+  **ten one-click looks** — Cinematic, Vintage fade, Noir, Vivid pop, Cool blue,
+  Warm sunset, Dreamy soft, Matrix green, Bleach bypass, VHS — each a canned stack
+  over the 16-filter registry (approximations of the plan's curve-based recipes,
+  composed from our tested filters), applied via a chip row (highlighted, editable
+  after applying). Spec: every look expands to known filters, exact noir expansion,
+  and lookStack() returns mutation-safe copies. Tests 138 → 141, gates green
+  (2.55 MB). Wave 3: 42/100.

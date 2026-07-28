@@ -176,6 +176,90 @@ export const FILTER_DEFS: Record<string, FilterDef> = {
   },
 };
 
+// ── One-click looks: named, editable-after filter stacks ─────────────────────
+
+export interface LookDef {
+  label: string;
+  stack: FilterEntry[];
+}
+
+export const LOOK_DEFS: Record<string, LookDef> = {
+  cinematic: {
+    label: 'Cinematic',
+    stack: [
+      { key: 'temperature', intensity: 0.38 },
+      { key: 'tint', intensity: 0.45 },
+      { key: 'vignette', intensity: 0.35 },
+    ],
+  },
+  vintage: {
+    label: 'Vintage fade',
+    stack: [
+      { key: 'sepia' },
+      { key: 'grain', intensity: 0.25 },
+      { key: 'vignette', intensity: 0.4 },
+    ],
+  },
+  noir: {
+    label: 'Noir',
+    stack: [
+      { key: 'grayscale' },
+      { key: 'gamma', intensity: 0.42 },
+      { key: 'vignette', intensity: 0.55 },
+    ],
+  },
+  vivid: {
+    label: 'Vivid pop',
+    stack: [
+      { key: 'exposure', intensity: 0.56 },
+      { key: 'sharpen', intensity: 0.35 },
+    ],
+  },
+  coolblue: {
+    label: 'Cool blue',
+    stack: [{ key: 'temperature', intensity: 0.8 }],
+  },
+  sunset: {
+    label: 'Warm sunset',
+    stack: [
+      { key: 'temperature', intensity: 0.15 },
+      { key: 'exposure', intensity: 0.54 },
+    ],
+  },
+  dreamy: {
+    label: 'Dreamy soft',
+    stack: [
+      { key: 'blur', intensity: 0.15 },
+      { key: 'exposure', intensity: 0.55 },
+    ],
+  },
+  matrix: {
+    label: 'Matrix green',
+    stack: [{ key: 'grayscale' }, { key: 'tint', intensity: 0.08 }],
+  },
+  bleach: {
+    label: 'Bleach bypass',
+    stack: [
+      { key: 'gamma', intensity: 0.6 },
+      { key: 'grain', intensity: 0.15 },
+      { key: 'sharpen', intensity: 0.3 },
+    ],
+  },
+  vhs: {
+    label: 'VHS',
+    stack: [
+      { key: 'grain', intensity: 0.5 },
+      { key: 'blur', intensity: 0.12 },
+      { key: 'posterize', intensity: 0.25 },
+    ],
+  },
+};
+
+/** Fresh copy of a look's stack (safe to mutate after applying). */
+export function lookStack(key: string): FilterEntry[] {
+  return (LOOK_DEFS[key]?.stack ?? []).map((entry) => ({ ...entry }));
+}
+
 /** Expand a filter stack into vf snippets (unknown keys skipped). */
 export function buildFilterStack(
   filters: FilterEntry[] | undefined | null
