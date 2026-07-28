@@ -1,21 +1,68 @@
-<div
-  class="filmstrip"
-  *ngIf="filmstripLoading || filmstrip.length"
-  aria-hidden="true"
->
-  <ng-container *ngIf="filmstripLoading; else strip">
-    <span class="skeleton-cell" *ngFor="let cell of skeletonCells"></span>
-  </ng-container>
-  <ng-template #strip>
-    <img *ngFor="let frame of filmstrip" [src]="frame" alt="" />
-  </ng-template>
+<div class="strip-viewport">
+  <div
+    class="strip-track"
+    [style.width.%]="zoom * 100"
+    [style.transform]="stripTransform"
+  >
+    <div
+      class="filmstrip"
+      *ngIf="filmstripLoading || filmstrip.length"
+      aria-hidden="true"
+    >
+      <ng-container *ngIf="filmstripLoading; else strip">
+        <span class="skeleton-cell" *ngFor="let cell of skeletonCells"></span>
+      </ng-container>
+      <ng-template #strip>
+        <img *ngFor="let frame of filmstrip" [src]="frame" alt="" />
+      </ng-template>
+    </div>
+    <canvas
+      #waveCanvas
+      class="waveform"
+      *ngIf="waveform?.length"
+      aria-hidden="true"
+    ></canvas>
+  </div>
 </div>
-<canvas
-  #waveCanvas
-  class="waveform"
-  *ngIf="waveform?.length"
-  aria-hidden="true"
-></canvas>
+<div class="zoom-row">
+  <span class="zoom-label">Zoom</span>
+  <button
+    *ngFor="let level of zoomLevels"
+    type="button"
+    class="zoom-btn"
+    [class.active]="zoom === level"
+    (click)="setZoom(level)"
+    [attr.aria-pressed]="zoom === level"
+    [attr.aria-label]="'Zoom ' + level + 'x'"
+  >
+    {{ level }}×
+  </button>
+  <button
+    type="button"
+    class="zoom-btn"
+    (click)="pan(-1)"
+    [disabled]="zoom === 1"
+    aria-label="Pan timeline earlier"
+  >
+    ‹
+  </button>
+  <button
+    type="button"
+    class="zoom-btn"
+    (click)="pan(1)"
+    [disabled]="zoom === 1"
+    aria-label="Pan timeline later"
+  >
+    ›
+  </button>
+  <span class="zoom-window" *ngIf="zoom > 1">
+    {{ formatTime(viewFrom) }} – {{ formatTime(viewTo) }}
+  </span>
+  <label class="snap-toggle">
+    <input type="checkbox" [(ngModel)]="snap" />
+    Snap to seconds
+  </label>
+</div>
 <div class="timeline-container">
   <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -31,9 +78,9 @@
   </div>
   <div class="main-slider">
     <mat-slider
-      [min]="0"
-      [max]="max"
-      step="1"
+      [min]="viewFrom"
+      [max]="viewTo"
+      [step]="step"
       [displayWith]="formatTime"
       discrete
     >

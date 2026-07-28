@@ -5,6 +5,73 @@
   display: block;
 }
 
+// ── Zoomable strip viewport ─────────────────────────────────────────────────
+.strip-viewport {
+  overflow: hidden;
+}
+
+.strip-track {
+  transition: transform 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip-track {
+    transition: none;
+  }
+}
+
+// ── Zoom / snap controls ────────────────────────────────────────────────────
+.zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.35rem 0 0.5rem;
+  flex-wrap: wrap;
+}
+
+.zoom-label,
+.zoom-window,
+.snap-toggle {
+  font-size: 0.78rem;
+  color: var(--tf-muted);
+}
+
+.zoom-window {
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom-btn {
+  border: 1px solid var(--tf-border);
+  background: transparent;
+  color: var(--tf-text);
+  border-radius: 8px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &.active {
+    border-color: var(--tf-accent-1);
+    background: rgba(139, 92, 246, 0.18);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.snap-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+
+  input {
+    accent-color: var(--tf-accent-1);
+  }
+}
+
 // ── Filmstrip ───────────────────────────────────────────────────────────────
 .filmstrip {
   display: flex;

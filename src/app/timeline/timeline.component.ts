@@ -6,14 +6,16 @@ import {
   Input,
   OnChanges,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { formatTime } from '../shared/format-time';
+import { panWindow, snapSeconds, ZOOM_LEVELS, zoomWindow } from './zoom';
 
 /**
- * Trim timeline: filmstrip + waveform strips + range slider + time readouts.
- * Presentation-only — owns no export state; the parent binds [(start)] /
- * [(end)] and reacts to (rangeCommit) when a drag ends.
+ * Trim timeline: filmstrip + waveform strips, zoomable range slider and time
+ * readouts. Presentation-only — owns no export state; the parent binds
+ * [(start)] / [(end)] and reacts to (rangeCommit) when a drag ends.
  */
 @Component({
   selector: 'app-timeline',
@@ -40,23 +42,68 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   readonly formatTime = formatTime;
   readonly skeletonCells = Array.from({ length: 10 });
 
+  // ── Zoom / pan / snap ─────────────────────────────────────────────────────
+  readonly zoomLevels = ZOOM_LEVELS;
+  zoom = 1;
+  viewFrom = 0;
+  snap = true;
+
+  get viewTo(): number {
+    return Math.min(this.max, this.viewFrom + this.max / this.zoom);
+  }
+
+  /** Slider step: whole seconds when snapping, tenths otherwise. */
+  get step(): number {
+    return this.snap ? 1 : 0.1;
+  }
+
+  /** CSS transform shifting the zoomed strips to the visible window. */
+  get stripTransform(): string {
+    if (this.zoom <= 1 || this.max <= 0) {
+      return 'translateX(0)';
+    }
+    return `translateX(-${(this.viewFrom / this.max) * 100}%)`;
+  }
+
+  setZoom(level: number): void {
+    this.zoom = level;
+    const focus = (this.start + this.end) / 2;
+    this.viewFrom = zoomWindow(this.max, level, focus).from;
+    // Canvas width changes with the track width; redraw next frame.
+    setTimeout(() => this.drawWaveform());
+  }
+
+  pan(direction: -1 | 1): void {
+    const span = this.max / this.zoom;
+    this.viewFrom = panWindow(
+      { from: this.viewFrom, to: this.viewFrom + span },
+      (direction * span) / 4,
+      this.max
+    ).from;
+  }
+
   ngAfterViewInit(): void {
     this.drawWaveform();
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['max']) {
+      // New file: reset the view to the whole clip.
+      this.zoom = 1;
+      this.viewFrom = 0;
+    }
     // ViewChild is unset on first change; ngAfterViewInit covers that pass.
     this.drawWaveform();
   }
 
   onStartModel(value: number): void {
-    this.start = value;
-    this.startChange.emit(value);
+    this.start = snapSeconds(value, this.snap);
+    this.startChange.emit(this.start);
   }
 
   onEndModel(value: number): void {
-    this.end = value;
-    this.endChange.emit(value);
+    this.end = snapSeconds(value, this.snap);
+    this.endChange.emit(this.end);
   }
 
   private drawWaveform(): void {

@@ -451,3 +451,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   hidden), canvas bar render in TimelineComponent between filmstrip and slider,
   stale-result token guard on file swaps. Tests 70 → 76, gates green (2.46 MB).
   Wave 2: 10/100.
+- _run 43_ (executor): W2-010..013, 071, 084 (6 items — 084's snap spec shares the
+  zoom spec file, so it rode along): **zoomable timeline** — pure zoomWindow/panWindow/
+  snapSeconds math (7-case spec: centering, edge clamps, span preservation, snap
+  rounding), 1×/2×/4×/8× zoom buttons + ‹ › pan (span/4 steps) + visible-window
+  readout, strips slide via a transformed track (reduced-motion aware), slider
+  min/max ride the window, snap-to-seconds toggle switches slider step 1 s ↔ 0.1 s
+  and rounds emitted values; view resets on new file. Tests 76 → 83, gates green
+  (2.46 MB). Wave 2: 16/100.

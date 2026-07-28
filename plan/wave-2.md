@@ -19,10 +19,10 @@ specs; DOM work stays thin.
 - [x] W2-007 Waveform peaks: min/max bucket reduction (pure + spec)
 - [x] W2-008 Waveform canvas strip under the filmstrip
 - [x] W2-009 Waveform fallback when the file has no audio track
-- [ ] W2-010 Zoom state (1×/2×/4×/8×) + pure visible-window math (pure + spec)
-- [ ] W2-011 Zoomed viewport horizontal pan/scroll
-- [ ] W2-012 Zoom controls in UI (buttons + current level)
-- [ ] W2-013 Snap-to-second toggle (pure rounding helper)
+- [x] W2-010 Zoom state (1×/2×/4×/8×) + pure visible-window math (pure + spec)
+- [x] W2-011 Zoomed viewport horizontal pan/scroll
+- [x] W2-012 Zoom controls in UI (buttons + current level)
+- [x] W2-013 Snap-to-second toggle (pure rounding helper)
 - [ ] W2-014 Playhead marker synced to the player's currentTime
 - [ ] W2-015 Click on timeline seeks the player
 - [ ] W2-016 In/out markers rendered at start/end positions
@@ -86,7 +86,7 @@ specs; DOM work stays thin.
 
 ## E13 — Tests (15)
 
-- [ ] W2-071 Spec: zoom visible-window math
+- [x] W2-071 Spec: zoom visible-window math
 - [ ] W2-072 Spec: overlap detection/merge
 - [ ] W2-073 Spec: time-string parser edge cases
 - [x] W2-074 Spec: waveform peak bucketing
@@ -99,7 +99,7 @@ specs; DOM work stays thin.
 - [ ] W2-081 Component spec: cheat-sheet opens and closes
 - [ ] W2-082 Spec: preview sync mapping (rate/muted/volume values)
 - [ ] W2-083 Spec: responsive thumbnail-count function
-- [ ] W2-084 Spec: snap rounding helper
+- [x] W2-084 Spec: snap rounding helper
 - [ ] W2-085 Coverage report noted in ROADMAP (services ≥80% statements)
 
 ## E11 — Polish (15)
