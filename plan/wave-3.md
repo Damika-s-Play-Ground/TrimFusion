@@ -25,10 +25,10 @@ filter approximations where one exists (else the preview badge says
 - [x] W3-008 Filter: grayscale (`hue=s=0`; CSS grayscale)
 - [x] W3-009 Filter: sepia (colorchannelmixer preset; CSS sepia)
 - [x] W3-010 Filter: invert (`negate`; CSS invert)
-- [ ] W3-011 Filter: vignette (intensity → angle; export-only)
-- [ ] W3-012 Filter: blur (`boxblur` intensity; CSS blur approx)
-- [ ] W3-013 Filter: sharpen (`unsharp` intensity; export-only)
-- [ ] W3-014 Filter: denoise (`hqdn3d`; export-only)
+- [x] W3-011 Filter: vignette (intensity → angle; export-only)
+- [x] W3-012 Filter: blur (`boxblur` intensity; CSS blur approx)
+- [x] W3-013 Filter: sharpen (`unsharp` intensity; export-only)
+- [x] W3-014 Filter: denoise (`hqdn3d`; export-only)
 - [ ] W3-015 Filter: gamma (eq gamma; export-only)
 - [ ] W3-016 Filter: exposure (`exposure` filter; export-only)
 - [ ] W3-017 Filter: color temperature (colortemperature; export-only)
@@ -78,9 +78,9 @@ filter approximations where one exists (else the preview badge says
 
 - [ ] W3-056 Spec: FILTER_DEFS registry completeness (every key builds a snippet)
 - [x] W3-057 Spec: stack composes in order after eq
-- [ ] W3-058 Spec: intensity clamps per filter def
+- [x] W3-058 Spec: intensity clamps per filter def
 - [x] W3-059 Spec: grayscale/sepia/invert snippets
-- [ ] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
+- [x] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping
 - [ ] W3-061 Spec: gamma/exposure/temperature/tint snippets
 - [ ] W3-062 Spec: hue-rotate/posterize/grain/pixelate snippets
 - [ ] W3-063 Spec: each look preset expands to its expected stack

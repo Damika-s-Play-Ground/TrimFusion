@@ -639,3 +639,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   explicit snippet specs for the three seed filters and the CSS-mapping spec
   (unknown keys skipped, empty stacks). Tests 131 → 134, gates green (2.54 MB).
   Wave 3: 13/100.
+- _run 65_ (executor): W3-011..014, 058, 060 (6 items): **intensity-driven filters** —
+  vignette (angle grows with intensity, ffmpeg default at the midpoint), blur
+  (boxblur 0–10 with a CSS blur() live preview), sharpen (unsharp 5:5 amount 0–3),
+  denoise (hqdn3d 0–8) — the first defs exercising the per-filter intensity slider
+  end-to-end. Specs: exact snippet-per-intensity mappings and the clamp/default
+  behavior ([0,1] clamp, def default when omitted). Tests 134 → 136, gates green
+  (2.55 MB). Wave 3: 19/100.

@@ -64,6 +64,35 @@ export const FILTER_DEFS: Record<string, FilterDef> = {
     snippet: () => 'negate',
     css: () => 'invert(1)',
   },
+  vignette: {
+    label: 'Vignette',
+    hasIntensity: true,
+    defaultIntensity: 0.5,
+    // Angle grows with intensity; PI/5 at the default (ffmpeg's default).
+    snippet: (i) => `vignette=a=${((Math.PI / 5) * (0.5 + i)).toFixed(4)}`,
+    css: null,
+  },
+  blur: {
+    label: 'Blur',
+    hasIntensity: true,
+    defaultIntensity: 0.3,
+    snippet: (i) => `boxblur=${(i * 10).toFixed(1)}`,
+    css: (i) => `blur(${(i * 8).toFixed(1)}px)`,
+  },
+  sharpen: {
+    label: 'Sharpen',
+    hasIntensity: true,
+    defaultIntensity: 0.4,
+    snippet: (i) => `unsharp=5:5:${(i * 3).toFixed(2)}`,
+    css: null,
+  },
+  denoise: {
+    label: 'Denoise',
+    hasIntensity: true,
+    defaultIntensity: 0.4,
+    snippet: (i) => `hqdn3d=${(i * 8).toFixed(1)}`,
+    css: null,
+  },
 };
 
 /** Expand a filter stack into vf snippets (unknown keys skipped). */

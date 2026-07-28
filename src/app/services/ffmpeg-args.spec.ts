@@ -353,6 +353,41 @@ describe('filter stack (W3 framework)', () => {
     );
   });
 
+  // W3-060 (+ W3-011 vignette): intensity-driven snippet mappings.
+  it('maps intensity into vignette/blur/sharpen/denoise snippets', () => {
+    const vf = (over: Partial<TrimOptions>) => {
+      const p = plan(over);
+      return p.args[p.args.indexOf('-vf') + 1];
+    };
+    expect(vf({ filters: [{ key: 'blur', intensity: 0.5 }] })).toBe(
+      'boxblur=5.0'
+    );
+    expect(vf({ filters: [{ key: 'sharpen', intensity: 1 }] })).toBe(
+      'unsharp=5:5:3.00'
+    );
+    expect(vf({ filters: [{ key: 'denoise', intensity: 0.5 }] })).toBe(
+      'hqdn3d=4.0'
+    );
+    expect(vf({ filters: [{ key: 'vignette', intensity: 0.5 }] })).toBe(
+      `vignette=a=${((Math.PI / 5) * 1).toFixed(4)}`
+    );
+  });
+
+  // W3-058: intensities clamp to [0, 1] and default when omitted.
+  it('clamps intensity to [0,1] and applies defaults when omitted', () => {
+    const vf = (over: Partial<TrimOptions>) => {
+      const p = plan(over);
+      return p.args[p.args.indexOf('-vf') + 1];
+    };
+    expect(vf({ filters: [{ key: 'blur', intensity: 5 }] })).toBe(
+      'boxblur=10.0'
+    );
+    expect(vf({ filters: [{ key: 'blur', intensity: -3 }] })).toBe(
+      'boxblur=0.0'
+    );
+    expect(vf({ filters: [{ key: 'blur' }] })).toBe('boxblur=3.0');
+  });
+
   it('skips unknown filter keys and empty stacks', () => {
     const p = plan({ filters: [{ key: 'nonexistent' }] });
     expect(p.args.join(' ')).toContain('-c copy');
