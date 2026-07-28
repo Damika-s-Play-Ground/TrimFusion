@@ -5,6 +5,17 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 /** What the trim operation should produce. */
 export type TrimOutput = 'video' | 'audio' | 'gif';
 
+export type RotateOption = 'cw90' | 'cw180' | 'cw270' | 'hflip' | 'vflip';
+
+/** ffmpeg filter snippets for each rotation/flip option. */
+const ROTATE_FILTERS: Record<RotateOption, string> = {
+  cw90: 'transpose=1',
+  cw180: 'transpose=1,transpose=1',
+  cw270: 'transpose=2',
+  hflip: 'hflip',
+  vflip: 'vflip',
+};
+
 /**
  * Client-side video trimming via ffmpeg.wasm.
  *
@@ -108,6 +119,7 @@ export class FfmpegTrimService {
       mute?: boolean;
       scaleHeight?: number | null;
       preciseCut?: boolean;
+      rotate?: RotateOption | null;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
@@ -124,6 +136,9 @@ export class FfmpegTrimService {
       output === 'video' && options.scaleHeight && options.scaleHeight > 0
         ? Math.round(options.scaleHeight)
         : null;
+    // Rotation/flip applies to visual outputs only.
+    const rotate: RotateOption | null =
+      output !== 'audio' && options.rotate ? options.rotate : null;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
     // Cropping only applies to visual outputs.
@@ -136,10 +151,12 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      // Re-encode (crop, speed, scale, or precise cut) always yields MP4/H.264.
-      outExt = crop || speed !== 1 || scaleHeight || precise ? 'mp4' : inExt;
+      // Re-encode (crop, speed, scale, rotate, or precise cut) yields MP4/H.264.
+      outExt =
+        crop || speed !== 1 || scaleHeight || precise || rotate ? 'mp4' : inExt;
     }
-    const videoReencoded = crop || speed !== 1 || !!scaleHeight || precise;
+    const videoReencoded =
+      crop || speed !== 1 || !!scaleHeight || precise || !!rotate;
     const mimeByOutput: Record<TrimOutput, string> = {
       video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
@@ -162,6 +179,7 @@ export class FfmpegTrimService {
       args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
     } else if (output === 'gif') {
       const filters = [
+        ...(rotate ? [ROTATE_FILTERS[rotate]] : []),
         ...(crop ? [this.cropToAspectFilter(aspectRatio as number)] : []),
         'fps=12',
         'scale=480:-2:flags=lanczos',
@@ -171,9 +189,13 @@ export class FfmpegTrimService {
       // Video output. Re-encode only when we must (crop or speed change);
       // otherwise a fast, lossless stream copy.
       const changeSpeed = speed !== 1;
-      const needsReencode = crop || changeSpeed || !!scaleHeight || precise;
+      const needsReencode =
+        crop || changeSpeed || !!scaleHeight || precise || !!rotate;
       if (needsReencode) {
         const vfilters: string[] = [];
+        if (rotate) {
+          vfilters.push(ROTATE_FILTERS[rotate]);
+        }
         if (crop) {
           vfilters.push(this.cropToAspectFilter(aspectRatio as number));
         }

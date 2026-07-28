@@ -150,6 +150,30 @@ own small slice (all operate on the uploaded local file):
 
 ---
 
+## P5 — Next-Level Feature Set (user-requested, 2026-07-28: "keep looping, apply next
+## level set of features")
+
+Ordered backlog; each item is one loop-sized slice. All ffmpeg work must compose with
+the existing filter chain (rotate → crop → scale → setpts) and re-encode conditions.
+
+- [x] **Rotate / flip**: 90° right/left, 180°, horizontal (mirror) & vertical flip via
+      `transpose`/`hflip`/`vflip`; applies to video + GIF, first in the filter chain.
+- [ ] **Color filters**: brightness / contrast / saturation sliders via `eq=`.
+- [ ] **Volume gain**: audio volume slider (e.g. 0–200%) via `volume=`; applies to
+      video (when not muted) and MP3 export.
+- [ ] **Social presets**: one-click Shorts/Reels/TikTok bundle (9:16 crop + ≤60 s cap +
+      720p) that sets the existing controls.
+- [ ] **Multi-segment trim + concat** (flagship): mark multiple keep-ranges on the
+      timeline, export as one stitched clip (trim each + concat filter/demuxer).
+- [ ] **Drag & drop upload** onto the player + **keyboard shortcuts** (I/O = set
+      in/out at playhead, space = play/pause).
+- [ ] **PWA**: installable + offline app shell (@angular/pwa; note: new dep, allowed
+      per rules since noted here; ffmpeg core assets cached for offline use).
+- [ ] **Export summary**: recap of chosen settings + rough output-size estimate before
+      trimming.
+
+---
+
 ## Changelog (per run)
 
 - _init_: Created ROADMAP.md from priorities; documented observed baseline. Branch
@@ -290,3 +314,8 @@ own small slice (all operate on the uploaded local file):
   build PASS (2.30 MB), tests 18/18. This was the last real feature — LOOP STOPPED
   (cron 0a6f4d89 cancelled). Remaining work is only manual in-browser QA of the ffmpeg
   export paths, which can't be automated headless. Restart anytime with /loop.
+- _run 25_: User asked to keep looping with a "next level set of features" — added the
+  **P5 backlog** above and re-armed the loop (cron 6ddca538). Shipped P5 slice 1:
+  **Rotate/flip** (90° right/left, 180°, mirror, vertical) for video + GIF via
+  `transpose`/`hflip`/`vflip`, first in the filter chain; forces MP4 re-encode for
+  video. Lint clean, build PASS, tests 18/18. Next: color filters (eq).

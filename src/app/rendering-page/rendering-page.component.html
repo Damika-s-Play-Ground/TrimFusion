@@ -205,6 +205,22 @@
                     </option>
                   </select>
                 </div>
+                <div class="rotate-group mb-2">
+                  <label for="rotateSelect" class="form-label d-block mb-1">
+                    Rotate / flip
+                  </label>
+                  <select
+                    id="rotateSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedRotate"
+                    [disabled]="trimming || selectedOutput === 'audio'"
+                    aria-label="Rotate or flip video"
+                  >
+                    <option *ngFor="let r of rotatePresets" [ngValue]="r.value">
+                      {{ r.label }}
+                    </option>
+                  </select>
+                </div>
                 <div
                   class="scale-group mb-2"
                   *ngIf="selectedOutput === 'video'"

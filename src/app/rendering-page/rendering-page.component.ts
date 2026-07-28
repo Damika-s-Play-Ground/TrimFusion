@@ -5,7 +5,11 @@ import {
   SafeUrl,
 } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { FfmpegTrimService, TrimOutput } from '../services/ffmpeg-trim.service';
+import {
+  FfmpegTrimService,
+  RotateOption,
+  TrimOutput,
+} from '../services/ffmpeg-trim.service';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -143,6 +147,17 @@ export class RenderingPageComponent implements OnDestroy {
   // Frame-accurate cut (re-encode) vs. fast keyframe-aligned copy.
   preciseCut = false;
 
+  // Rotation/flip presets (visual outputs; null = none).
+  readonly rotatePresets: { label: string; value: RotateOption | null }[] = [
+    { label: 'No rotation', value: null },
+    { label: 'Rotate 90° right', value: 'cw90' },
+    { label: 'Rotate 180°', value: 'cw180' },
+    { label: 'Rotate 90° left', value: 'cw270' },
+    { label: 'Flip horizontal (mirror)', value: 'hflip' },
+    { label: 'Flip vertical', value: 'vflip' },
+  ];
+  selectedRotate: RotateOption | null = null;
+
   // Light/dark theme (persisted). Dark is the default.
   theme: 'dark' | 'light' = 'dark';
 
@@ -237,6 +252,7 @@ export class RenderingPageComponent implements OnDestroy {
         mute: this.muteAudio,
         scaleHeight: this.selectedScale,
         preciseCut: this.preciseCut,
+        rotate: this.selectedRotate,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);
