@@ -408,3 +408,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   user-facing summary), VERSION file + package.json 1.0.0 + git tag v1.0.0,
   `@services/*` tsconfig path alias (component imports switched), global
   ErrorHandler with contextual logging. Gates green (70/70). Wave 1: 94/100.
+- _run 38_ (executor): W1-085, 087, 088, 089 (4 items): Material snackbar toasts for
+  transient statuses (success recap, cancelled, diagnostics-copied) via a notify()
+  helper (+BrowserAnimations/MatSnackBar modules — bundle 2.33 → 2.45 MB, within
+  budget), storage-headroom warning via navigator.storage.estimate(), graceful
+  metadata-failure message (duration unreadable), preview codec-unsupported
+  detection on the <video> error event with honest "export may still work" note.
+  Gates green (70/70). Wave 1: 98/100 — remaining: 075 (component split), 100
+  (wave exit → wave-2 generation).

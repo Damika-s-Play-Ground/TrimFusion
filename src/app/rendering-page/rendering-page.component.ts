@@ -1,4 +1,5 @@
 import { Component, HostBinding, OnDestroy } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   DomSanitizer,
   SafeResourceUrl,
@@ -126,10 +127,32 @@ export class RenderingPageComponent implements OnDestroy {
     this.ffmpegTrim.cancel();
   }
 
+  /** Surface a transient status: inline note + snackbar toast. */
+  private notify(message: string): void {
+    this.infoMessage = message;
+    this.snackBar.open(message, 'OK', { duration: 5000 });
+  }
+
+  /** Warn (non-blocking) when browser storage headroom looks tight. */
+  private async checkStorageHeadroom(): Promise<void> {
+    try {
+      if (navigator.storage?.estimate) {
+        const { quota, usage } = await navigator.storage.estimate();
+        if (quota && usage !== undefined && quota - usage < 200 * 1024 * 1024) {
+          this.notify(
+            'Browser storage headroom is low — large exports may fail.'
+          );
+        }
+      }
+    } catch {
+      /* estimate() unsupported — nothing to check */
+    }
+  }
+
   /** Map a thrown export error onto the user-facing message table. */
   private handleExportError(err: unknown): void {
     if (err instanceof TrimError && err.code === 'CANCELLED') {
-      this.infoMessage = messageFor('CANCELLED');
+      this.notify(messageFor('CANCELLED'));
       return;
     }
     this.trimError =
@@ -428,7 +451,7 @@ export class RenderingPageComponent implements OnDestroy {
     };
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      this.infoMessage = 'Diagnostics copied to the clipboard.';
+      this.notify('Diagnostics copied to the clipboard.');
     } catch {
       this.trimError = 'Could not access the clipboard.';
     }
@@ -460,7 +483,8 @@ export class RenderingPageComponent implements OnDestroy {
   constructor(
     private sanitizer: DomSanitizer,
     private router: Router,
-    private ffmpegTrim: FfmpegTrimService
+    private ffmpegTrim: FfmpegTrimService,
+    private snackBar: MatSnackBar
   ) {
     try {
       const saved = localStorage.getItem('tf-theme');
@@ -535,6 +559,7 @@ export class RenderingPageComponent implements OnDestroy {
     this.trimProgress = 0;
     this.trimError = '';
     this.infoMessage = '';
+    void this.checkStorageHeadroom();
     try {
       const startedAt = performance.now();
       const onProgress = (percent: number) => (this.trimProgress = percent);
@@ -563,13 +588,14 @@ export class RenderingPageComponent implements OnDestroy {
       this.downloadBlob(result.blob, result.fileName);
       const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
       const dims = this.exportSummary;
-      this.infoMessage =
+      this.notify(
         `Downloaded ${result.fileName} — ` +
-        `${this.formatBytes(result.blob.size)} in ${seconds} s` +
-        (dims?.outWidth && dims.outHeight
-          ? `, ${dims.outWidth}×${dims.outHeight}`
-          : '') +
-        '.';
+          `${this.formatBytes(result.blob.size)} in ${seconds} s` +
+          (dims?.outWidth && dims.outHeight
+            ? `, ${dims.outWidth}×${dims.outHeight}`
+            : '') +
+          '.'
+      );
     } catch (err) {
       this.handleExportError(err);
     } finally {
@@ -694,7 +720,20 @@ export class RenderingPageComponent implements OnDestroy {
       this.maxSeconds = duration;
       this.startSeconds = 0;
       this.endSeconds = Math.min(60, duration);
+    } else {
+      // Metadata didn't yield a usable duration (corrupt/odd container).
+      this.errorMessage =
+        "Couldn't read this video's duration — the file may be damaged or " +
+        'in an unusual container. Exporting may still work.';
     }
+  }
+
+  /** The <video> element failed to decode the file (codec unsupported). */
+  onPreviewError(): void {
+    this.errorMessage =
+      "Your browser can't preview this codec. The editor below still " +
+      'works, and exporting may still succeed (ffmpeg supports more ' +
+      'formats than the player).';
   }
 
   /**

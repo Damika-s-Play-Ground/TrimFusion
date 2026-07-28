@@ -99,11 +99,11 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-082 Cancel path yields CANCELLED (info, not error, in UI)
 - [x] W1-083 Better invalid-file-type message (what was detected vs expected)
 - [x] W1-084 Empty/zero-length range validation before export
-- [ ] W1-085 Material snackbar/toast for transient statuses (done/cancelled/failed)
+- [x] W1-085 Material snackbar/toast for transient statuses (done/cancelled/failed)
 - [x] W1-086 Global ErrorHandler with contextual console logging
-- [ ] W1-087 `navigator.storage.estimate()` headroom check before heavy exports
-- [ ] W1-088 Handle metadata-load failure (duration NaN) gracefully
-- [ ] W1-089 Detect codec-unsupported-in-preview and explain (export may still work)
+- [x] W1-087 `navigator.storage.estimate()` headroom check before heavy exports
+- [x] W1-088 Handle metadata-load failure (duration NaN) gracefully
+- [x] W1-089 Detect codec-unsupported-in-preview and explain (export may still work)
 - [x] W1-090 Unit tests for error mapping table
 
 ## E17 — Export recap & diagnostics (10)
