@@ -27,6 +27,8 @@ import { formatTime as formatTimeFn } from '../shared/format-time';
 import {
   cropOverlayRect,
   OverlayRect,
+  playbackSync,
+  PlaybackSync,
   previewFilter,
   previewTransform,
 } from '../shared/preview-css';
@@ -134,18 +136,26 @@ export class RenderingPageComponent implements OnDestroy {
   waveform: number[] | null = null;
   private waveformToken = 0;
 
-  // Live preview of crop/filters/rotation on the player (W2-026..031).
+  // Live preview of crop/filters/rotation on the player (W2-026..034).
   livePreview = true;
+  /** True while "compare original" is active (bypasses the visual preview). */
+  comparing = false;
+
+  private get previewActive(): boolean {
+    return (
+      this.livePreview && !this.comparing && this.selectedOutput !== 'audio'
+    );
+  }
 
   get previewFilterCss(): string {
-    if (!this.livePreview || this.selectedOutput === 'audio') {
+    if (!this.previewActive) {
       return 'none';
     }
     return previewFilter(this.brightness, this.contrast, this.saturation);
   }
 
   get previewTransformCss(): string {
-    if (!this.livePreview || this.selectedOutput === 'audio') {
+    if (!this.previewActive) {
       return 'none';
     }
     return previewTransform(this.selectedRotate);
@@ -153,8 +163,7 @@ export class RenderingPageComponent implements OnDestroy {
 
   get cropOverlay(): OverlayRect | null {
     if (
-      !this.livePreview ||
-      this.selectedOutput === 'audio' ||
+      !this.previewActive ||
       !this.selectedAspect ||
       !this.localVideoWidth ||
       !this.localVideoHeight
@@ -165,6 +174,23 @@ export class RenderingPageComponent implements OnDestroy {
       this.localVideoWidth,
       this.localVideoHeight,
       this.selectedAspect
+    );
+  }
+
+  /** Whether any visual adjustment is active (drives the compare button). */
+  get hasVisualAdjustments(): boolean {
+    return this.colorsChanged || !!this.selectedRotate || !!this.selectedAspect;
+  }
+
+  /** Speed/mute/volume mirrored onto the player element. */
+  get playbackSyncValue(): PlaybackSync {
+    return playbackSync(
+      {
+        speed: this.selectedSpeed,
+        mute: this.muteAudio,
+        volume: this.volumeGain,
+      },
+      this.livePreview && this.selectedOutput === 'video'
     );
   }
 

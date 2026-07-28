@@ -92,6 +92,9 @@
                   (error)="onPreviewError()"
                   [style.filter]="previewFilterCss"
                   [style.transform]="previewTransformCss"
+                  [muted]="playbackSyncValue.muted"
+                  [volume]="playbackSyncValue.volume"
+                  [playbackRate]="playbackSyncValue.playbackRate"
                 ></video>
                 <div
                   class="crop-overlay"
@@ -136,6 +139,15 @@
                 <label for="livePreviewCheck" class="form-check-label">
                   Live preview of crop, colors &amp; rotation
                 </label>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary compare-btn"
+                  *ngIf="livePreview && hasVisualAdjustments"
+                  (click)="comparing = !comparing"
+                  [attr.aria-pressed]="comparing"
+                >
+                  {{ comparing ? 'Showing original' : 'Compare original' }}
+                </button>
               </div>
               <app-timeline
                 [max]="maxSeconds"

@@ -38,12 +38,12 @@ specs; DOM work stays thin.
 - [x] W2-026 Live crop overlay on the player (CSS mask for chosen aspect)
 - [x] W2-027 Live color preview via CSS filter mapping (brightness/contrast/saturate)
 - [x] W2-028 Preview-effects toggle (live preview on/off)
-- [ ] W2-029 Before/after comparison toggle for color preview
+- [x] W2-029 Before/after comparison toggle for color preview
 - [x] W2-030 Rotate preview via CSS transform
 - [x] W2-031 Mirror/flip preview via CSS transform
-- [ ] W2-032 Speed preview: sync video.playbackRate to the speed control
-- [ ] W2-033 Mute preview: sync video.muted
-- [ ] W2-034 Volume preview: sync video.volume
+- [x] W2-032 Speed preview: sync video.playbackRate to the speed control
+- [x] W2-033 Mute preview: sync video.muted
+- [x] W2-034 Volume preview: sync video.volume
 - [ ] W2-035 Hover tooltip with time on the timeline
 - [ ] W2-036 Current-time / total-duration readout row
 - [ ] W2-037 Frame-step buttons (±1 frame ≈ 1/30 s)
@@ -97,7 +97,7 @@ specs; DOM work stays thin.
 - [ ] W2-079 Component spec: timeline renders segment blocks
 - [ ] W2-080 Component spec: numeric time inputs validate/clamp
 - [ ] W2-081 Component spec: cheat-sheet opens and closes
-- [ ] W2-082 Spec: preview sync mapping (rate/muted/volume values)
+- [x] W2-082 Spec: preview sync mapping (rate/muted/volume values)
 - [ ] W2-083 Spec: responsive thumbnail-count function
 - [x] W2-084 Spec: snap rounding helper
 - [ ] W2-085 Coverage report noted in ROADMAP (services ≥80% statements)

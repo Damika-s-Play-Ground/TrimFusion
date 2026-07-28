@@ -459,3 +459,15 @@
   color: #fecaca;
   border-radius: 10px;
 }
+
+// Compare-original button sits beside the live-preview toggle.
+.compare-btn {
+  margin-left: 0.75rem;
+  border-color: var(--tf-border);
+  color: var(--tf-text);
+
+  &[aria-pressed='true'] {
+    border-color: var(--tf-accent-2);
+    background: rgba(236, 72, 153, 0.15);
+  }
+}

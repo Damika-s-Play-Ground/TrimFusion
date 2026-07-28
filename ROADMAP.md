@@ -492,3 +492,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   dashed-accent crop overlay with dimmed surround (box-shadow trick, clipped by the
   container), and a "Live preview" toggle. ffmpeg stays the export source of truth.
   Tests 88 → 93, gates green (2.48 MB). Wave 2: 35/100.
+- _run 48_ (executor): W2-029, 032..034, 082 (5 items): **playback-sync preview** —
+  pure playbackSync() mapping (speed→playbackRate with clamps, mute→muted,
+  volume→volume capped at 1.0 with the >100%-only-at-export limitation documented;
+  3-case spec) bound to the player element, plus a "Compare original" toggle
+  (aria-pressed) that bypasses filter/transform/crop-overlay while active, shown
+  only when visual adjustments exist. Tests 93 → 96, gates green (2.48 MB).
+  Wave 2: 40/100.

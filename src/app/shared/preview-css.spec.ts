@@ -1,5 +1,6 @@
 import {
   cropOverlayRect,
+  playbackSync,
   previewFilter,
   previewTransform,
 } from './preview-css';
@@ -20,6 +21,28 @@ describe('previewTransform', () => {
     expect(previewTransform('cw270')).toBe('rotate(-90deg) scale(0.5625)');
     expect(previewTransform('hflip')).toBe('scaleX(-1)');
     expect(previewTransform('vflip')).toBe('scaleY(-1)');
+  });
+});
+
+describe('playbackSync', () => {
+  // W2-082: preview sync mapping.
+  it('returns neutral values when preview is disabled', () => {
+    expect(playbackSync({ speed: 2, mute: true, volume: 0.2 }, false)).toEqual({
+      playbackRate: 1,
+      muted: false,
+      volume: 1,
+    });
+  });
+
+  it('maps speed/mute/volume through with clamps', () => {
+    expect(playbackSync({ speed: 1.5, mute: true, volume: 0.4 }, true)).toEqual(
+      { playbackRate: 1.5, muted: true, volume: 0.4 }
+    );
+    expect(playbackSync({ speed: 8 }, true).playbackRate).toBe(2);
+  });
+
+  it('caps volume preview at 1 (boosts only apply at export)', () => {
+    expect(playbackSync({ volume: 2 }, true).volume).toBe(1);
   });
 });
 

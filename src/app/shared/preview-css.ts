@@ -46,6 +46,31 @@ export function previewTransform(rotate: RotateOption | null): string {
   }
 }
 
+export interface PlaybackSync {
+  playbackRate: number;
+  muted: boolean;
+  volume: number;
+}
+
+/**
+ * Player-property sync for the speed/mute/volume controls. The element's
+ * volume caps at 1.0, so gains above 100% preview at full volume (the boost
+ * only applies in the export — documented limitation).
+ */
+export function playbackSync(
+  opts: { speed?: number; mute?: boolean; volume?: number },
+  enabled: boolean
+): PlaybackSync {
+  if (!enabled) {
+    return { playbackRate: 1, muted: false, volume: 1 };
+  }
+  return {
+    playbackRate: Math.min(2, Math.max(0.5, opts.speed ?? 1)),
+    muted: !!opts.mute,
+    volume: Math.min(1, Math.max(0, opts.volume ?? 1)),
+  };
+}
+
 export interface OverlayRect {
   left: number;
   top: number;
