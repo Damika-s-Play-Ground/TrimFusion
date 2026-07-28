@@ -225,6 +225,56 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     };
   }
 
+  // ── Hover tooltip / stepping / nudging ────────────────────────────────────
+  hoverTime: number | null = null;
+  hoverPercent = 0;
+
+  onTrackHover(event: PointerEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    if (!rect.width) {
+      return;
+    }
+    const ratio = Math.max(
+      0,
+      Math.min(1, (event.clientX - rect.left) / rect.width)
+    );
+    this.hoverPercent = ratio * 100;
+    this.hoverTime = this.viewFrom + ratio * (this.viewTo - this.viewFrom);
+  }
+
+  onTrackLeave(): void {
+    this.hoverTime = null;
+  }
+
+  /** Step the playhead by ±1 frame (~1/30 s); bypasses snapping. */
+  frameStep(direction: -1 | 1): void {
+    if (this.playhead === null) {
+      return;
+    }
+    this.seek.emit(
+      Math.max(0, Math.min(this.max, this.playhead + direction / 30))
+    );
+  }
+
+  /** Jump the playhead to the trim start/end. */
+  jumpTo(edge: 'start' | 'end'): void {
+    this.seek.emit(edge === 'start' ? this.start : this.end);
+  }
+
+  /** Nudge the trim start by ±1 s (clamped, committed). */
+  nudgeStart(delta: -1 | 1): void {
+    this.start = Math.max(0, Math.min(this.start + delta, this.end - 1));
+    this.startChange.emit(this.start);
+    this.rangeCommit.emit();
+  }
+
+  /** Nudge the trim end by ±1 s (clamped, committed). */
+  nudgeEnd(delta: -1 | 1): void {
+    this.end = Math.min(this.max, Math.max(this.end + delta, this.start + 1));
+    this.endChange.emit(this.end);
+    this.rangeCommit.emit();
+  }
+
   /** Arrow keys move the playhead (±1 s, Shift = ±5 s). */
   onTrackKeydown(event: KeyboardEvent): void {
     if (

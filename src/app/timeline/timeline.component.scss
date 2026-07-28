@@ -260,3 +260,42 @@
   background: var(--tf-surface-2);
   color: var(--tf-text);
 }
+
+// ── Hover tooltip + nudge buttons ───────────────────────────────────────────
+.hover-tooltip {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-50%);
+  background: var(--tf-surface-2);
+  border: 1px solid var(--tf-border);
+  border-radius: 6px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.72rem;
+  color: var(--tf-text);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.nudge-group {
+  display: inline-flex;
+  flex-direction: column;
+  margin: 0 0.15rem;
+  gap: 1px;
+}
+
+.nudge-btn {
+  border: 1px solid var(--tf-border);
+  background: transparent;
+  color: var(--tf-muted);
+  border-radius: 4px;
+  font-size: 0.6rem;
+  line-height: 1;
+  padding: 0.1rem 0.25rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--tf-text);
+    border-color: var(--tf-accent-1);
+  }
+}

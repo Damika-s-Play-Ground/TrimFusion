@@ -44,13 +44,13 @@ specs; DOM work stays thin.
 - [x] W2-032 Speed preview: sync video.playbackRate to the speed control
 - [x] W2-033 Mute preview: sync video.muted
 - [x] W2-034 Volume preview: sync video.volume
-- [ ] W2-035 Hover tooltip with time on the timeline
+- [x] W2-035 Hover tooltip with time on the timeline
 - [x] W2-036 Current-time / total-duration readout row
-- [ ] W2-037 Frame-step buttons (±1 frame ≈ 1/30 s)
-- [ ] W2-038 Jump-to-start / jump-to-end buttons
+- [x] W2-037 Frame-step buttons (±1 frame ≈ 1/30 s)
+- [x] W2-038 Jump-to-start / jump-to-end buttons
 - [x] W2-039 Editable numeric time inputs for start/end (validated)
 - [x] W2-040 Time-string parser "m:ss(.t)" → seconds (pure + spec)
-- [ ] W2-041 Nudge buttons ±1 s on start/end
+- [x] W2-041 Nudge buttons ±1 s on start/end
 - [x] W2-042 "Use full video" one-click range reset
 - [x] W2-043 Keyboard operability for timeline markers (arrows when focused)
 - [ ] W2-044 Timeline ARIA roles/labels pass

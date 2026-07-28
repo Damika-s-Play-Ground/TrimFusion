@@ -506,3 +506,8 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   reverts to the formatted value), playhead/total time readout in the control row,
   and a "Full range" one-click reset. Tests 96 → 101, gates green (2.48 MB).
   Wave 2: 45/100.
+- _run 50_ (executor): W2-035, 037, 038, 041 (4 items): **fine-control row** — hover
+  time tooltip tracking the pointer across the strips (zoom-window aware, clipped
+  inside the viewport), ±1-frame step buttons (~1/30 s, bypasses snap), jump-to-trim-
+  start/end buttons, and vertical ±1 s nudge buttons beside both time inputs
+  (clamped, committed). Gates green (101/101, 2.48 MB). Wave 2: 49/100.
