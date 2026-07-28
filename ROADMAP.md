@@ -565,3 +565,13 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   headless-testable; covered by the standing manual-QA note). Overall 49.6%
   (components dominate the uncovered remainder). Tests 122 → 128, gates green
   (2.49 MB). Wave 2: 85/100 — remaining: E11 polish 086..099 + wave exit 100.
+- _run 58_ (executor): W2-086, 087 (2 items — the wave's big refactor): **export
+  controls extracted** into ExportControlsComponent — all 16 control groups moved out
+  of rendering-page.html into four collapsible <details> sections (Basics open by
+  default: format/crop/resolution/quality/speed; Visual: rotate/colors/fps/effect/
+  fades; Audio: mute/volume/MP3; Advanced: precise/encode-preset/GIF), two-column
+  layout on wide screens, native-accessible summaries. Deliberate architecture note:
+  this is a TEMPLATE-level split — state stays on the page component (undo/URL
+  snapshots and trimOptions() read it there); the child renders against a required
+  `page` input. Carried-over W1-075 debt is now paid. Gates green first pass
+  (128/128, 2.50 MB). Wave 2: 87/100.

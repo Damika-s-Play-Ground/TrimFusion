@@ -1,0 +1,335 @@
+<details class="control-section" open>
+  <summary>Basics</summary>
+  <div class="export-group mb-2">
+    <label for="outputSelect" class="form-label d-block mb-1">
+      Export as
+    </label>
+    <select
+      id="outputSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedOutput"
+      [disabled]="page.trimming"
+      aria-label="Export format"
+    >
+      <option *ngFor="let fmt of page.outputFormats" [ngValue]="fmt.value">
+        {{ fmt.label }}
+      </option>
+    </select>
+  </div>
+  <div class="aspect-group mb-2">
+    <label for="aspectSelect" class="form-label d-block mb-1">
+      Crop to display size
+    </label>
+    <select
+      id="aspectSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedAspect"
+      [disabled]="page.trimming || page.selectedOutput === 'audio'"
+      aria-label="Crop to display size"
+    >
+      <option
+        *ngFor="let preset of page.aspectPresets"
+        [ngValue]="preset.value"
+      >
+        {{ preset.label }}
+      </option>
+    </select>
+  </div>
+  <div class="scale-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="scaleSelect" class="form-label d-block mb-1">
+      Resolution
+    </label>
+    <select
+      id="scaleSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedScale"
+      [disabled]="page.trimming"
+      aria-label="Output resolution"
+    >
+      <option *ngFor="let s of page.scalePresets" [ngValue]="s.value">
+        {{ s.label }}
+      </option>
+    </select>
+  </div>
+  <div class="quality-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="crfSelect" class="form-label d-block mb-1"> Quality </label>
+    <select
+      id="crfSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedCrf"
+      [disabled]="page.trimming"
+      aria-label="Encoding quality"
+    >
+      <option *ngFor="let c of page.crfPresets" [ngValue]="c.value">
+        {{ c.label }}
+      </option>
+    </select>
+  </div>
+  <div class="speed-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="speedSelect" class="form-label d-block mb-1">
+      Playback speed
+    </label>
+    <select
+      id="speedSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedSpeed"
+      [disabled]="page.trimming"
+      aria-label="Playback speed"
+    >
+      <option *ngFor="let s of page.speedPresets" [ngValue]="s.value">
+        {{ s.label }}
+      </option>
+    </select>
+  </div>
+</details>
+<details class="control-section">
+  <summary>Visual</summary>
+  <div class="rotate-group mb-2">
+    <label for="rotateSelect" class="form-label d-block mb-1">
+      Rotate / flip
+    </label>
+    <select
+      id="rotateSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedRotate"
+      [disabled]="page.trimming || page.selectedOutput === 'audio'"
+      aria-label="Rotate or flip video"
+    >
+      <option *ngFor="let r of page.rotatePresets" [ngValue]="r.value">
+        {{ r.label }}
+      </option>
+    </select>
+  </div>
+  <div class="color-group mb-2" *ngIf="page.selectedOutput !== 'audio'">
+    <label for="brightnessRange" class="form-label d-block mb-1">
+      Brightness ({{ page.brightness }})
+    </label>
+    <input
+      id="brightnessRange"
+      type="range"
+      class="form-range"
+      min="-0.5"
+      max="0.5"
+      step="0.05"
+      [ngModel]="page.brightness"
+      (ngModelChange)="page.brightness = +$event"
+      [disabled]="page.trimming"
+    />
+    <label for="contrastRange" class="form-label d-block mb-1">
+      Contrast ({{ page.contrast }})
+    </label>
+    <input
+      id="contrastRange"
+      type="range"
+      class="form-range"
+      min="0.5"
+      max="2"
+      step="0.05"
+      [ngModel]="page.contrast"
+      (ngModelChange)="page.contrast = +$event"
+      [disabled]="page.trimming"
+    />
+    <label for="saturationRange" class="form-label d-block mb-1">
+      Saturation ({{ page.saturation }})
+    </label>
+    <input
+      id="saturationRange"
+      type="range"
+      class="form-range"
+      min="0"
+      max="3"
+      step="0.1"
+      [ngModel]="page.saturation"
+      (ngModelChange)="page.saturation = +$event"
+      [disabled]="page.trimming"
+    />
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      *ngIf="page.colorsChanged"
+      (click)="page.resetColors()"
+      [disabled]="page.trimming"
+    >
+      Reset colors
+    </button>
+  </div>
+  <div class="fps-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="fpsSelect" class="form-label d-block mb-1"> Frame rate </label>
+    <select
+      id="fpsSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedFps"
+      [disabled]="page.trimming"
+      aria-label="Output frame rate"
+    >
+      <option *ngFor="let f of page.fpsPresets" [ngValue]="f.value">
+        {{ f.label }}
+      </option>
+    </select>
+  </div>
+  <div class="effect-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="effectSelect" class="form-label d-block mb-1"> Effect </label>
+    <select
+      id="effectSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedEffect"
+      [disabled]="page.trimming"
+      aria-label="Playback effect"
+    >
+      <option *ngFor="let e of page.effectPresets" [ngValue]="e.value">
+        {{ e.label }}
+      </option>
+    </select>
+  </div>
+  <div
+    class="fade-group form-check mb-2"
+    *ngIf="page.selectedOutput === 'video'"
+  >
+    <input
+      id="fadeInCheck"
+      type="checkbox"
+      class="form-check-input"
+      [(ngModel)]="page.fadeIn"
+      [disabled]="page.trimming"
+    />
+    <label for="fadeInCheck" class="form-check-label me-3"> Fade in </label>
+    <input
+      id="fadeOutCheck"
+      type="checkbox"
+      class="form-check-input"
+      [(ngModel)]="page.fadeOut"
+      [disabled]="page.trimming"
+    />
+    <label for="fadeOutCheck" class="form-check-label"> Fade out </label>
+  </div>
+</details>
+<details class="control-section">
+  <summary>Audio</summary>
+  <div
+    class="mute-group form-check mb-2"
+    *ngIf="page.selectedOutput === 'video'"
+  >
+    <input
+      id="muteCheck"
+      type="checkbox"
+      class="form-check-input"
+      [(ngModel)]="page.muteAudio"
+      [disabled]="page.trimming"
+    />
+    <label for="muteCheck" class="form-check-label">
+      Remove audio (mute)
+    </label>
+  </div>
+  <div class="volume-group mb-2" *ngIf="page.selectedOutput !== 'gif'">
+    <label for="volumeRange" class="form-label d-block mb-1">
+      Volume ({{ page.volumePercent }}%)
+    </label>
+    <input
+      id="volumeRange"
+      type="range"
+      class="form-range"
+      min="0"
+      max="2"
+      step="0.05"
+      [ngModel]="page.volumeGain"
+      (ngModelChange)="page.volumeGain = +$event"
+      [disabled]="
+        page.trimming || (page.selectedOutput === 'video' && page.muteAudio)
+      "
+    />
+  </div>
+  <div class="mp3-group mb-2" *ngIf="page.selectedOutput === 'audio'">
+    <label for="mp3BitrateSelect" class="form-label d-block mb-1">
+      MP3 bitrate
+    </label>
+    <select
+      id="mp3BitrateSelect"
+      class="form-select"
+      [(ngModel)]="page.mp3Bitrate"
+      [disabled]="page.trimming"
+      aria-label="MP3 bitrate"
+    >
+      <option *ngFor="let b of page.mp3BitratePresets" [ngValue]="b.value">
+        {{ b.label }}
+      </option>
+    </select>
+    <label for="mp3RateSelect" class="form-label d-block mb-1 mt-2">
+      Sample rate
+    </label>
+    <select
+      id="mp3RateSelect"
+      class="form-select"
+      [(ngModel)]="page.mp3SampleRate"
+      [disabled]="page.trimming"
+      aria-label="MP3 sample rate"
+    >
+      <option *ngFor="let r of page.mp3SampleRatePresets" [ngValue]="r.value">
+        {{ r.label }}
+      </option>
+    </select>
+  </div>
+</details>
+<details class="control-section">
+  <summary>Advanced</summary>
+  <div
+    class="precise-group form-check mb-2"
+    *ngIf="page.selectedOutput === 'video'"
+  >
+    <input
+      id="preciseCheck"
+      type="checkbox"
+      class="form-check-input"
+      [(ngModel)]="page.preciseCut"
+      [disabled]="page.trimming"
+    />
+    <label for="preciseCheck" class="form-check-label">
+      Precise cut (frame-accurate, slower)
+    </label>
+  </div>
+  <div class="encode-group mb-2" *ngIf="page.selectedOutput === 'video'">
+    <label for="encodeSelect" class="form-label d-block mb-1">
+      Encode speed
+    </label>
+    <select
+      id="encodeSelect"
+      class="form-select"
+      [(ngModel)]="page.selectedEncodePreset"
+      [disabled]="page.trimming"
+      aria-label="Encode speed preset"
+    >
+      <option *ngFor="let p of page.encodePresets" [ngValue]="p.value">
+        {{ p.label }}
+      </option>
+    </select>
+  </div>
+  <div class="gif-group mb-2" *ngIf="page.selectedOutput === 'gif'">
+    <label for="gifFpsSelect" class="form-label d-block mb-1">
+      GIF frame rate
+    </label>
+    <select
+      id="gifFpsSelect"
+      class="form-select"
+      [(ngModel)]="page.gifFps"
+      [disabled]="page.trimming"
+      aria-label="GIF frame rate"
+    >
+      <option *ngFor="let f of page.gifFpsPresets" [ngValue]="f">
+        {{ f }} fps
+      </option>
+    </select>
+    <label for="gifWidthSelect" class="form-label d-block mb-1 mt-2">
+      GIF width
+    </label>
+    <select
+      id="gifWidthSelect"
+      class="form-select"
+      [(ngModel)]="page.gifWidth"
+      [disabled]="page.trimming"
+      aria-label="GIF width"
+    >
+      <option *ngFor="let w of page.gifWidthPresets" [ngValue]="w">
+        {{ w }} px
+      </option>
+    </select>
+  </div>
+</details>

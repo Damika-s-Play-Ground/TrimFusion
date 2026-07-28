@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ExportControlsComponent } from './export-controls/export-controls.component';
 import { GlobalErrorHandler } from './global-error-handler';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { RenderingPageComponent } from './rendering-page/rendering-page.component';
@@ -20,6 +21,7 @@ import { TimelineComponent } from './timeline/timeline.component';
     RenderingPageComponent,
     NotFoundPageComponent,
     TimelineComponent,
+    ExportControlsComponent,
   ],
   imports: [
     BrowserModule,

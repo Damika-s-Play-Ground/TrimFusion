@@ -104,8 +104,8 @@ specs; DOM work stays thin.
 
 ## E11 — Polish (15)
 
-- [ ] W2-086 Extract `ExportControlsComponent` (carried from W1-075; do it as part of the section restructure)
-- [ ] W2-087 Collapsible control sections: Basics / Visual / Audio / Advanced
+- [x] W2-086 Extract `ExportControlsComponent` (carried from W1-075; do it as part of the section restructure)
+- [x] W2-087 Collapsible control sections: Basics / Visual / Audio / Advanced
 - [ ] W2-088 Sticky export button on small screens
 - [ ] W2-089 Extract design tokens (spacing/typography scale) in SCSS
 - [ ] W2-090 Focus-visible states for every interactive element

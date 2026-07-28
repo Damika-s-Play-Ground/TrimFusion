@@ -1,0 +1,112 @@
+// Export controls. Inherits --tf-* custom properties from the page host;
+// field/label styling is mirrored here because scoped styles don't cross
+// component boundaries (tokens extraction is W2-089).
+
+:host {
+  display: block;
+}
+
+// ── Collapsible sections ────────────────────────────────────────────────────
+.control-section {
+  border: 1px solid var(--tf-border);
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+  padding: 0.35rem 0.8rem;
+
+  summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--tf-muted);
+    padding: 0.35rem 0;
+    user-select: none;
+
+    &:hover {
+      color: var(--tf-text);
+    }
+  }
+
+  &[open] summary {
+    color: var(--tf-text);
+    margin-bottom: 0.35rem;
+  }
+}
+
+// ── Mirrored form styling ───────────────────────────────────────────────────
+.form-control,
+.form-select {
+  background-color: var(--tf-field);
+  border: 1px solid var(--tf-field-border);
+  color: var(--tf-text);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+
+  &:focus {
+    background-color: var(--tf-field);
+    color: var(--tf-text);
+    border-color: var(--tf-accent-1);
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tf-muted);
+}
+
+.text-muted {
+  color: var(--tf-muted) !important;
+}
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-outline-secondary {
+  border-color: var(--tf-border);
+  color: var(--tf-text);
+
+  &:hover:not([disabled]) {
+    border-color: var(--tf-accent-1);
+    background: var(--tf-surface);
+    color: var(--tf-text);
+  }
+}
+
+// Two-column layout for the selector groups on wider screens.
+.export-group,
+.aspect-group,
+.scale-group,
+.quality-group,
+.speed-group,
+.rotate-group,
+.fps-group,
+.effect-group,
+.encode-group {
+  display: inline-block;
+  width: 100%;
+
+  @media (min-width: 560px) {
+    width: calc(50% - 0.5rem);
+    margin-right: 0.5rem;
+  }
+}
+
+input[type='range'] {
+  accent-color: var(--tf-accent-1);
+  width: 100%;
+}
+
+.form-check-input {
+  accent-color: var(--tf-accent-1);
+}
