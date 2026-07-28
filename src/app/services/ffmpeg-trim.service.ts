@@ -16,6 +16,10 @@ export type { RotateOption, TrimOutput } from './ffmpeg-args';
 /** Progress callback shared by all export operations. */
 type ProgressFn = (percent: number) => void;
 
+/** Coarse pipeline stage, for user-facing progress labels. */
+export type ExportStage = 'engine' | 'encoding' | 'stitching';
+type StageFn = (stage: ExportStage) => void;
+
 /**
  * Client-side video trimming via ffmpeg.wasm.
  *
@@ -175,7 +179,7 @@ export class FfmpegTrimService {
    */
   async trim(
     file: File,
-    options: TrimOptions & { onProgress?: ProgressFn }
+    options: TrimOptions & { onProgress?: ProgressFn; onStage?: StageFn }
   ): Promise<{ blob: Blob; fileName: string }> {
     this.cancelRequested = false;
     const plan = buildTrimPlan(
@@ -183,7 +187,11 @@ export class FfmpegTrimService {
       options
     );
 
+    if (!this.ffmpeg) {
+      options.onStage?.('engine');
+    }
     const ffmpeg = await this.ensureLoaded(options.onProgress);
+    options.onStage?.('encoding');
     try {
       await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
       await ffmpeg.exec(plan.args);
@@ -210,13 +218,17 @@ export class FfmpegTrimService {
    */
   async trimSegments(
     file: File,
-    options: SegmentsOptions & { onProgress?: ProgressFn }
+    options: SegmentsOptions & { onProgress?: ProgressFn; onStage?: StageFn }
   ): Promise<{ blob: Blob; fileName: string }> {
     this.cancelRequested = false;
     const { onProgress } = options;
     const plan = buildSegmentsPlan({ ext: extensionOf(file.name) }, options);
 
+    if (!this.ffmpeg) {
+      options.onStage?.('engine');
+    }
     const ffmpeg = await this.ensureLoaded(onProgress);
+    options.onStage?.('encoding');
     await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
 
     // Segment encodes + the (fast) concat step share the progress bar.
@@ -240,6 +252,7 @@ export class FfmpegTrimService {
 
       await ffmpeg.writeFile(plan.listName, plan.listContent);
       this.progressCb = stepProgress(plan.steps.length);
+      options.onStage?.('stitching');
       await ffmpeg.exec(plan.concatArgs);
 
       const data = await ffmpeg.readFile(plan.outputName);

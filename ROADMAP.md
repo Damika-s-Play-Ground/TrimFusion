@@ -575,3 +575,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   snapshots and trimOptions() read it there); the child renders against a required
   `page` input. Carried-over W1-075 debt is now paid. Gates green first pass
   (128/128, 2.50 MB). Wave 2: 87/100.
+- _run 59_ (executor): W2-088..090, 092, 093 (5 items): **design tokens** extracted to
+  shared/_tokens.scss (theme palettes as mixins — single source consumed by the page
+  host — plus radius/spacing/typography scale vars), **sticky export button** on
+  ≤560 px screens, **shared focus-visible ring mixin** applied across all three
+  component stylesheets (consistent keyboard focus), and **pipeline stage labels**:
+  the service reports engine/encoding/stitching stages via onStage callbacks, the
+  progress bar now reads "Loading the video engine (first run, ~30 MB)… / Processing…
+  / Stitching segments…" with the percent — the first-export 30 MB download finally
+  explains itself. Gates green (128/128, 2.50 MB). Wave 2: 92/100.

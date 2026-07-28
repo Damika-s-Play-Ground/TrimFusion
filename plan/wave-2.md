@@ -106,12 +106,12 @@ specs; DOM work stays thin.
 
 - [x] W2-086 Extract `ExportControlsComponent` (carried from W1-075; do it as part of the section restructure)
 - [x] W2-087 Collapsible control sections: Basics / Visual / Audio / Advanced
-- [ ] W2-088 Sticky export button on small screens
-- [ ] W2-089 Extract design tokens (spacing/typography scale) in SCSS
-- [ ] W2-090 Focus-visible states for every interactive element
+- [x] W2-088 Sticky export button on small screens
+- [x] W2-089 Extract design tokens (spacing/typography scale) in SCSS
+- [x] W2-090 Focus-visible states for every interactive element
 - [ ] W2-091 Empty-state (no file loaded) content polish
-- [ ] W2-092 Engine-download skeleton/indicator (first export)
-- [ ] W2-093 Progress bar stage labels (loading engine / encoding / stitching)
+- [x] W2-092 Engine-download skeleton/indicator (first export)
+- [x] W2-093 Progress bar stage labels (loading engine / encoding / stitching)
 - [ ] W2-094 Replace emoji theme toggle with inline SVG icons
 - [ ] W2-095 Button hover/active micro-interaction audit
 - [ ] W2-096 Consistent select/checkbox visual pass

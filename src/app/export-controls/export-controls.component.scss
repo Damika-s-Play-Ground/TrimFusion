@@ -1,3 +1,5 @@
+@use '../shared/tokens' as tokens;
+
 // Export controls. Inherits --tf-* custom properties from the page host;
 // field/label styling is mirrored here because scoped styles don't cross
 // component boundaries (tokens extraction is W2-089).
@@ -110,3 +112,5 @@ input[type='range'] {
 .form-check-input {
   accent-color: var(--tf-accent-1);
 }
+
+@include tokens.tf-focus-visible;

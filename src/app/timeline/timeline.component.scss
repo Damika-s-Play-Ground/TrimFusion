@@ -1,3 +1,5 @@
+@use '../shared/tokens' as tokens;
+
 // Timeline component. Inherits the --tf-* theme custom properties from the
 // rendering-page host (custom properties cascade into child components).
 
@@ -308,3 +310,5 @@
     border-color: var(--tf-accent-1);
   }
 }
+
+@include tokens.tf-focus-visible;

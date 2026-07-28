@@ -1,0 +1,55 @@
+// TrimFusion design tokens — single source for the theme custom properties
+// plus spacing/radius/typography scale. Components @use this and include the
+// mixins on their hosts; child components inherit the custom properties.
+
+@mixin tf-dark-tokens {
+  --tf-bg-1: #0f172a; // slate-900
+  --tf-bg-2: #1e1b4b; // indigo-950
+  --tf-surface: rgba(255, 255, 255, 0.04);
+  --tf-surface-2: #0b1222;
+  --tf-border: rgba(255, 255, 255, 0.09);
+  --tf-text: #e2e8f0;
+  --tf-muted: #94a3b8;
+  --tf-field: #111a2e;
+  --tf-field-border: #334155;
+  --tf-accent-1: #8b5cf6; // violet-500
+  --tf-accent-2: #ec4899; // pink-500
+  @include tf-scale-tokens;
+}
+
+@mixin tf-light-tokens {
+  --tf-surface: rgba(255, 255, 255, 0.75);
+  --tf-surface-2: #eef2ff;
+  --tf-border: rgba(15, 23, 42, 0.12);
+  --tf-text: #1e293b;
+  --tf-muted: #64748b;
+  --tf-field: #ffffff;
+  --tf-field-border: #cbd5e1;
+}
+
+// Spacing / radius / typography scale (theme-independent).
+@mixin tf-scale-tokens {
+  --tf-radius-sm: 8px;
+  --tf-radius-md: 10px;
+  --tf-radius-lg: 14px;
+  --tf-radius-xl: 20px;
+  --tf-space-1: 0.35rem;
+  --tf-space-2: 0.6rem;
+  --tf-space-3: 1.1rem;
+  --tf-label-size: 0.8rem;
+  --tf-note-size: 0.85rem;
+}
+
+// Shared focus ring (W2-090): consistent, visible keyboard focus.
+@mixin tf-focus-visible {
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  a:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--tf-accent-1);
+    outline-offset: 2px;
+    border-radius: var(--tf-radius-sm);
+  }
+}

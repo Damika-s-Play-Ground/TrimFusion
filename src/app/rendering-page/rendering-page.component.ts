@@ -25,6 +25,7 @@ import {
   TrimOptions,
 } from '@services/ffmpeg-args';
 import {
+  ExportStage,
   FfmpegTrimService,
   RotateOption,
   TrimOutput,
@@ -582,6 +583,20 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
   trimming = false;
   trimProgress = 0;
   trimError = '';
+  exportStage: ExportStage | null = null;
+
+  /** User-facing label for the current pipeline stage. */
+  get exportStageLabel(): string {
+    switch (this.exportStage) {
+      case 'engine':
+        return 'Loading the video engine (first run, ~30 MB)…';
+      case 'stitching':
+        return 'Stitching segments…';
+      case 'encoding':
+      default:
+        return 'Processing…';
+    }
+  }
   // Non-error status (e.g. "Export cancelled.").
   infoMessage = '';
 
@@ -1042,6 +1057,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
     try {
       const startedAt = performance.now();
       const onProgress = (percent: number) => (this.trimProgress = percent);
+      const onStage = (stage: ExportStage) => (this.exportStage = stage);
       // Loop/boomerang effects are built by stitching segments.
       const stitched =
         this.selectedOutput === 'video' &&
@@ -1057,11 +1073,13 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
           ...this.trimOptions(),
           segments,
           onProgress,
+          onStage,
         });
       } else {
         result = await this.ffmpegTrim.trim(this.localFile, {
           ...this.trimOptions(),
           onProgress,
+          onStage,
         });
       }
       this.downloadBlob(result.blob, result.fileName);
@@ -1079,6 +1097,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
       this.handleExportError(err);
     } finally {
       this.trimming = false;
+      this.exportStage = null;
     }
   }
 
@@ -1101,6 +1120,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
       this.handleExportError(err);
     } finally {
       this.trimming = false;
+      this.exportStage = null;
     }
   }
 
@@ -1138,6 +1158,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
       this.handleExportError(err);
     } finally {
       this.trimming = false;
+      this.exportStage = null;
     }
   }
 
@@ -1281,6 +1302,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
       this.handleExportError(err);
     } finally {
       this.trimming = false;
+      this.exportStage = null;
     }
   }
 
