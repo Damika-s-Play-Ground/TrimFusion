@@ -162,8 +162,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
       sliders via `eq=`, applied to video + GIF after rotate/crop; only added to the
       filter chain (and only forces re-encode) when values differ from defaults.
       "Reset colors" button appears when adjusted.
-- [ ] **Volume gain**: audio volume slider (e.g. 0–200%) via `volume=`; applies to
-      video (when not muted) and MP3 export.
+- [x] **Volume gain**: 0–200% slider via `volume=`; applies to video (when not muted;
+      combined with `atempo` in one `-af` chain) and MP3 export. Non-default volume
+      forces the MP4 re-encode path (audio codecs can't be swapped safely in arbitrary
+      source containers). Hidden for GIF; disabled while muted.
 - [ ] **Social presets**: one-click Shorts/Reels/TikTok bundle (9:16 crop + ≤60 s cap +
       720p) that sets the existing controls.
 - [ ] **Multi-segment trim + concat** (flagship): mark multiple keep-ranges on the
@@ -326,3 +328,7 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   sliders (ffmpeg `eq`, video + GIF, after rotate/crop in the chain), no-op values
   stay on the fast copy path; "Reset colors" button. Lint clean, build PASS (2.30 MB),
   tests 18/18. Next: volume gain (`volume=`), then social presets.
+- _run 27_: P5 slice 3 — **volume gain** slider (0–200%, `volume=`), for video (merged
+  with `atempo` into a single `-af`) and MP3 export; hidden for GIF, disabled when
+  muted; non-default volume joins the MP4 re-encode conditions. Lint clean, build PASS
+  (2.30 MB), tests 18/18. Next: social presets (one-click Shorts/Reels/TikTok bundle).

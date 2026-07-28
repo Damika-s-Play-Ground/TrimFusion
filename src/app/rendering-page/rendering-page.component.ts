@@ -176,6 +176,13 @@ export class RenderingPageComponent implements OnDestroy {
     this.saturation = 1;
   }
 
+  // Audio gain, 0–2 (1 = unchanged). Not applicable to GIF or muted video.
+  volumeGain = 1;
+
+  get volumePercent(): number {
+    return Math.round(this.volumeGain * 100);
+  }
+
   // Light/dark theme (persisted). Dark is the default.
   theme: 'dark' | 'light' = 'dark';
 
@@ -274,6 +281,7 @@ export class RenderingPageComponent implements OnDestroy {
         brightness: this.brightness,
         contrast: this.contrast,
         saturation: this.saturation,
+        volume: this.volumeGain,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

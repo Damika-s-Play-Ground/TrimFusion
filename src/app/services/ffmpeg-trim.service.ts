@@ -123,6 +123,7 @@ export class FfmpegTrimService {
       brightness?: number;
       contrast?: number;
       saturation?: number;
+      volume?: number;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
@@ -152,6 +153,9 @@ export class FfmpegTrimService {
     if (saturation !== 1) eqParts.push(`saturation=${saturation}`);
     const colorFilter =
       output !== 'audio' && eqParts.length ? `eq=${eqParts.join(':')}` : null;
+    // Audio gain (1 = unchanged); irrelevant for GIF and for muted video.
+    const volume = Math.min(2, Math.max(0, options.volume ?? 1));
+    const volumeChanged = output !== 'gif' && !mute && volume !== 1;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
     // Cropping only applies to visual outputs.
@@ -164,9 +168,16 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      // Any filter/speed/precise option forces an MP4/H.264 re-encode.
+      // Any filter/speed/precise/volume option forces an MP4/H.264 re-encode
+      // (audio can't be safely re-encoded in an arbitrary source container).
       outExt =
-        crop || speed !== 1 || scaleHeight || precise || rotate || colorFilter
+        crop ||
+        speed !== 1 ||
+        scaleHeight ||
+        precise ||
+        rotate ||
+        colorFilter ||
+        volumeChanged
           ? 'mp4'
           : inExt;
     }
@@ -176,7 +187,8 @@ export class FfmpegTrimService {
       !!scaleHeight ||
       precise ||
       !!rotate ||
-      !!colorFilter;
+      !!colorFilter ||
+      volumeChanged;
     const mimeByOutput: Record<TrimOutput, string> = {
       video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
@@ -196,6 +208,9 @@ export class FfmpegTrimService {
       : ['-ss', String(start), '-i', inputName, '-t', String(duration)];
     if (output === 'audio') {
       // Strip video, encode audio to MP3.
+      if (volumeChanged) {
+        args.push('-af', `volume=${volume.toFixed(2)}`);
+      }
       args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
     } else if (output === 'gif') {
       const filters = [
@@ -216,7 +231,8 @@ export class FfmpegTrimService {
         !!scaleHeight ||
         precise ||
         !!rotate ||
-        !!colorFilter;
+        !!colorFilter ||
+        volumeChanged;
       if (needsReencode) {
         const vfilters: string[] = [];
         if (rotate) {
@@ -242,8 +258,15 @@ export class FfmpegTrimService {
         if (mute) {
           args.push('-an');
         } else {
+          const afilters: string[] = [];
           if (changeSpeed) {
-            args.push('-af', `atempo=${speed.toFixed(3)}`);
+            afilters.push(`atempo=${speed.toFixed(3)}`);
+          }
+          if (volumeChanged) {
+            afilters.push(`volume=${volume.toFixed(2)}`);
+          }
+          if (afilters.length) {
+            args.push('-af', afilters.join(','));
           }
           args.push('-c:a', 'aac');
         }
