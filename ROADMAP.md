@@ -171,7 +171,17 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
       cut), YouTube landscape (16:9 + 1080p). Presets just set the existing controls,
       so everything stays inspectable/overridable; active preset is highlighted.
 - [ ] **Multi-segment trim + concat** (flagship): mark multiple keep-ranges on the
-      timeline, export as one stitched clip (trim each + concat filter/demuxer).
+      timeline, export as one stitched clip.
+  - [x] Part 1 (service): `trimSegments()` — normalizes/sorts segments, cuts each
+        frame-accurately (output seeking) with identical libx264/aac settings + the
+        full filter chain (rotate/crop/color/scale/speed/volume/mute), then stitches
+        via the concat demuxer with stream copy; per-step progress mapping. Shared
+        filter-builders extracted (`buildVideoFilters`/`buildAudioFilters`/
+        `buildEqFilter`) and `trim()` rewired onto them. Also fixed a latent bug:
+        the ffmpeg progress handler captured only the FIRST call's onProgress —
+        now routed through a re-pointable `progressCb`.
+  - [ ] Part 2 (UI): segment list on the timeline (add current range as segment,
+        remove, clear), "Export stitched clip" button calling `trimSegments()`.
 - [ ] **Drag & drop upload** onto the player + **keyboard shortcuts** (I/O = set
       in/out at playhead, space = play/pause).
 - [ ] **PWA**: installable + offline app shell (@angular/pwa; note: new dep, allowed
@@ -339,3 +349,9 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   that configures the existing controls (crop/scale/duration/precise-cut) and highlights
   the active preset. Lint clean, build PASS (2.31 MB), tests 18/18. Next: multi-segment
   trim + concat (flagship) — likely needs 2 runs (service concat first, then timeline UI).
+- _run 29_: P5 slice 5a — **multi-segment service layer**: `trimSegments()` (frame-
+  accurate per-segment encode + concat-demuxer stitch, full option parity via new
+  shared filter-builder helpers; `trim()` refactored onto them — no behavior change).
+  Fixed latent progress-callback capture bug (first-call closure → re-pointable sink).
+  Lint clean, build PASS (2.31 MB), tests 18/18. Segment path not headless-verifiable
+  (wasm). Next: part 2 — segment-list timeline UI + "Export stitched clip".

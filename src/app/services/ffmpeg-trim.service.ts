@@ -29,6 +29,9 @@ const ROTATE_FILTERS: Record<RotateOption, string> = {
 export class FfmpegTrimService {
   private ffmpeg: FFmpeg | null = null;
   private loadPromise: Promise<void> | null = null;
+  // Current progress sink. The ffmpeg 'progress' handler is registered once,
+  // so multi-exec operations (segments + concat) re-point this per step.
+  private progressCb: ((percent: number) => void) | null = null;
 
   // Pinned versions (kept in sync with package.json's @ffmpeg/ffmpeg).
   private static readonly FFMPEG_VERSION = '0.12.15';
@@ -41,6 +44,7 @@ export class FfmpegTrimService {
   private async ensureLoaded(
     onProgress?: (percent: number) => void
   ): Promise<FFmpeg> {
+    this.progressCb = onProgress ?? null;
     if (this.ffmpeg && this.loadPromise) {
       await this.loadPromise;
       return this.ffmpeg;
@@ -50,10 +54,11 @@ export class FfmpegTrimService {
     this.ffmpeg = ffmpeg;
 
     ffmpeg.on('progress', ({ progress }) => {
-      if (onProgress) {
+      const cb = this.progressCb;
+      if (cb) {
         // ffmpeg fires this from a worker, outside Angular's zone.
         this.zone.run(() =>
-          onProgress(Math.max(0, Math.min(100, Math.round(progress * 100))))
+          cb(Math.max(0, Math.min(100, Math.round(progress * 100))))
         );
       }
     });
@@ -97,6 +102,62 @@ export class FfmpegTrimService {
       `crop=min(iw\\,ih*${R}):min(ih\\,iw/${R}),` +
       `crop=trunc(iw/2)*2:trunc(ih/2)*2`
     );
+  }
+
+  /** Clamped `eq=` color filter, or null when all values are defaults. */
+  private buildEqFilter(opts: {
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+  }): string | null {
+    const brightness = Math.min(0.5, Math.max(-0.5, opts.brightness ?? 0));
+    const contrast = Math.min(2, Math.max(0.5, opts.contrast ?? 1));
+    const saturation = Math.min(3, Math.max(0, opts.saturation ?? 1));
+    const parts: string[] = [];
+    if (brightness !== 0) parts.push(`brightness=${brightness}`);
+    if (contrast !== 1) parts.push(`contrast=${contrast}`);
+    if (saturation !== 1) parts.push(`saturation=${saturation}`);
+    return parts.length ? `eq=${parts.join(':')}` : null;
+  }
+
+  /** Video filter chain: rotate → crop → color → scale → speed. */
+  private buildVideoFilters(opts: {
+    rotate: RotateOption | null;
+    cropAspect: number | null;
+    colorFilter: string | null;
+    scaleHeight: number | null;
+    speed: number;
+  }): string[] {
+    const filters: string[] = [];
+    if (opts.rotate) {
+      filters.push(ROTATE_FILTERS[opts.rotate]);
+    }
+    if (opts.cropAspect) {
+      filters.push(this.cropToAspectFilter(opts.cropAspect));
+    }
+    if (opts.colorFilter) {
+      filters.push(opts.colorFilter);
+    }
+    if (opts.scaleHeight) {
+      // -2 keeps the aspect ratio with an even width (libx264-safe).
+      filters.push(`scale=-2:${opts.scaleHeight}`);
+    }
+    if (opts.speed !== 1) {
+      filters.push(`setpts=${(1 / opts.speed).toFixed(6)}*PTS`);
+    }
+    return filters;
+  }
+
+  /** Audio filter chain: tempo + gain (pass volume 1 for "unchanged"). */
+  private buildAudioFilters(speed: number, volume: number): string[] {
+    const filters: string[] = [];
+    if (speed !== 1) {
+      filters.push(`atempo=${speed.toFixed(3)}`);
+    }
+    if (volume !== 1) {
+      filters.push(`volume=${volume.toFixed(2)}`);
+    }
+    return filters;
   }
 
   /**
@@ -143,16 +204,8 @@ export class FfmpegTrimService {
     // Rotation/flip applies to visual outputs only.
     const rotate: RotateOption | null =
       output !== 'audio' && options.rotate ? options.rotate : null;
-    // Color adjustments (visual outputs; ffmpeg `eq` defaults are 0/1/1).
-    const brightness = Math.min(0.5, Math.max(-0.5, options.brightness ?? 0));
-    const contrast = Math.min(2, Math.max(0.5, options.contrast ?? 1));
-    const saturation = Math.min(3, Math.max(0, options.saturation ?? 1));
-    const eqParts: string[] = [];
-    if (brightness !== 0) eqParts.push(`brightness=${brightness}`);
-    if (contrast !== 1) eqParts.push(`contrast=${contrast}`);
-    if (saturation !== 1) eqParts.push(`saturation=${saturation}`);
-    const colorFilter =
-      output !== 'audio' && eqParts.length ? `eq=${eqParts.join(':')}` : null;
+    // Color adjustments (visual outputs only).
+    const colorFilter = output !== 'audio' ? this.buildEqFilter(options) : null;
     // Audio gain (1 = unchanged); irrelevant for GIF and for muted video.
     const volume = Math.min(2, Math.max(0, options.volume ?? 1));
     const volumeChanged = output !== 'gif' && !mute && volume !== 1;
@@ -214,9 +267,13 @@ export class FfmpegTrimService {
       args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
     } else if (output === 'gif') {
       const filters = [
-        ...(rotate ? [ROTATE_FILTERS[rotate]] : []),
-        ...(crop ? [this.cropToAspectFilter(aspectRatio as number)] : []),
-        ...(colorFilter ? [colorFilter] : []),
+        ...this.buildVideoFilters({
+          rotate,
+          cropAspect: crop ? (aspectRatio as number) : null,
+          colorFilter,
+          scaleHeight: null,
+          speed: 1,
+        }),
         'fps=12',
         'scale=480:-2:flags=lanczos',
       ].join(',');
@@ -234,23 +291,13 @@ export class FfmpegTrimService {
         !!colorFilter ||
         volumeChanged;
       if (needsReencode) {
-        const vfilters: string[] = [];
-        if (rotate) {
-          vfilters.push(ROTATE_FILTERS[rotate]);
-        }
-        if (crop) {
-          vfilters.push(this.cropToAspectFilter(aspectRatio as number));
-        }
-        if (colorFilter) {
-          vfilters.push(colorFilter);
-        }
-        if (scaleHeight) {
-          // -2 keeps the aspect ratio with an even width (libx264-safe).
-          vfilters.push(`scale=-2:${scaleHeight}`);
-        }
-        if (changeSpeed) {
-          vfilters.push(`setpts=${(1 / speed).toFixed(6)}*PTS`);
-        }
+        const vfilters = this.buildVideoFilters({
+          rotate,
+          cropAspect: crop ? (aspectRatio as number) : null,
+          colorFilter,
+          scaleHeight,
+          speed,
+        });
         if (vfilters.length) {
           args.push('-vf', vfilters.join(','));
         }
@@ -258,13 +305,10 @@ export class FfmpegTrimService {
         if (mute) {
           args.push('-an');
         } else {
-          const afilters: string[] = [];
-          if (changeSpeed) {
-            afilters.push(`atempo=${speed.toFixed(3)}`);
-          }
-          if (volumeChanged) {
-            afilters.push(`volume=${volume.toFixed(2)}`);
-          }
+          const afilters = this.buildAudioFilters(
+            speed,
+            volumeChanged ? volume : 1
+          );
           if (afilters.length) {
             args.push('-af', afilters.join(','));
           }
@@ -306,5 +350,149 @@ export class FfmpegTrimService {
       suffix = crop ? 'cropped' : 'trimmed';
     }
     return { blob, fileName: `${base}-${suffix}.${outExt}` };
+  }
+
+  /**
+   * Export multiple [start, end) second-ranges of `file` as ONE stitched MP4.
+   *
+   * Each segment is cut with output seeking (frame-accurate) and re-encoded
+   * with identical settings (libx264/aac), then the pieces are joined with
+   * the concat demuxer using stream copy — safe because every segment shares
+   * the same codecs and parameters. Progress is reported across all steps.
+   */
+  async trimSegments(
+    file: File,
+    options: {
+      segments: { start: number; end: number }[];
+      aspectRatio?: number | null;
+      speed?: number;
+      mute?: boolean;
+      scaleHeight?: number | null;
+      rotate?: RotateOption | null;
+      brightness?: number;
+      contrast?: number;
+      saturation?: number;
+      volume?: number;
+      onProgress?: (percent: number) => void;
+    }
+  ): Promise<{ blob: Blob; fileName: string }> {
+    const { onProgress } = options;
+    const segments = options.segments
+      .map((s) => ({
+        start: Math.max(0, Math.floor(s.start)),
+        end: Math.floor(s.end),
+      }))
+      .filter((s) => s.end > s.start)
+      .sort((a, b) => a.start - b.start);
+    if (!segments.length) {
+      throw new Error('No valid segments to export.');
+    }
+
+    const speed = Math.min(2, Math.max(0.5, options.speed ?? 1));
+    const mute = !!options.mute;
+    const volume = Math.min(2, Math.max(0, options.volume ?? 1));
+    const vfilters = this.buildVideoFilters({
+      rotate: options.rotate ?? null,
+      cropAspect:
+        options.aspectRatio && options.aspectRatio > 0
+          ? options.aspectRatio
+          : null,
+      colorFilter: this.buildEqFilter(options),
+      scaleHeight:
+        options.scaleHeight && options.scaleHeight > 0
+          ? Math.round(options.scaleHeight)
+          : null,
+      speed,
+    });
+    const afilters = this.buildAudioFilters(speed, mute ? 1 : volume);
+
+    const ffmpeg = await this.ensureLoaded(onProgress);
+    const inputName = `input.${this.extensionOf(file.name)}`;
+    await ffmpeg.writeFile(inputName, await fetchFile(file));
+
+    const listName = 'concat.txt';
+    const outputName = 'joined.mp4';
+    const segNames: string[] = [];
+    // Segment encodes + the (fast) concat step share the progress bar.
+    const totalSteps = segments.length + 1;
+    const stepProgress = (step: number) =>
+      onProgress
+        ? (p: number) =>
+            onProgress(
+              Math.max(
+                0,
+                Math.min(100, Math.round(((step + p / 100) / totalSteps) * 100))
+              )
+            )
+        : null;
+
+    try {
+      for (let i = 0; i < segments.length; i++) {
+        const seg = segments[i];
+        this.progressCb = stepProgress(i);
+        const segName = `seg_${i}.mp4`;
+        const args = [
+          '-i',
+          inputName,
+          '-ss',
+          String(seg.start),
+          '-t',
+          String(seg.end - seg.start),
+        ];
+        if (vfilters.length) {
+          args.push('-vf', vfilters.join(','));
+        }
+        args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23');
+        if (mute) {
+          args.push('-an');
+        } else {
+          if (afilters.length) {
+            args.push('-af', afilters.join(','));
+          }
+          args.push('-c:a', 'aac');
+        }
+        args.push(segName);
+        await ffmpeg.exec(args);
+        segNames.push(segName);
+      }
+
+      await ffmpeg.writeFile(
+        listName,
+        segNames.map((n) => `file '${n}'`).join('\n')
+      );
+      this.progressCb = stepProgress(segments.length);
+      await ffmpeg.exec([
+        '-f',
+        'concat',
+        '-safe',
+        '0',
+        '-i',
+        listName,
+        '-c',
+        'copy',
+        '-movflags',
+        '+faststart',
+        outputName,
+      ]);
+
+      const data = await ffmpeg.readFile(outputName);
+      const blob = new Blob([(data as Uint8Array).buffer], {
+        type: 'video/mp4',
+      });
+      if (onProgress) {
+        onProgress(100);
+      }
+      const base = file.name.replace(/\.[^.]+$/, '') || 'video';
+      return { blob, fileName: `${base}-stitched.mp4` };
+    } finally {
+      // Best-effort cleanup of the virtual FS (also on failure).
+      for (const name of [inputName, listName, outputName, ...segNames]) {
+        try {
+          await ffmpeg.deleteFile(name);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
   }
 }
