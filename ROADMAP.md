@@ -444,3 +444,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   a dedicated program effort, left open) and #17 admin-lte 3→4 (package is slated for
   removal in Wave 6, closed). Added dependabot ignores for both major streams.
   Gates green after bumps (lint 0, build 2.46 MB, tests 70/70).
+- _run 42_ (executor): W2-006..009, 074 (5 items): **audio waveform strip** — pure
+  peakBuckets() min/max-abs bucket reduction normalized to the loudest bucket (6-case
+  spec incl. silence and short-input edge cases), decodePeaks() via AudioContext.
+  decodeAudioData with null fallback for audio-less/undecodable files (strip simply
+  hidden), canvas bar render in TimelineComponent between filmstrip and slider,
+  stale-result token guard on file swaps. Tests 70 → 76, gates green (2.46 MB).
+  Wave 2: 10/100.

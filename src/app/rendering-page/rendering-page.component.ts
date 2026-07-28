@@ -25,6 +25,7 @@ import {
 import { messageFor, TrimError } from '@services/trim-error';
 import { formatTime as formatTimeFn } from '../shared/format-time';
 import { captureFilmstrip, FilmstripHandle } from '../timeline/filmstrip';
+import { decodePeaks } from '../timeline/waveform';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -121,6 +122,21 @@ export class RenderingPageComponent implements OnDestroy {
   filmstrip: string[] = [];
   filmstripLoading = false;
   private filmstripHandle: FilmstripHandle | null = null;
+
+  // Timeline waveform peaks (null = no decodable audio → strip hidden).
+  waveform: number[] | null = null;
+  private waveformToken = 0;
+
+  /** Decode the new file's audio peaks; stale results are dropped. */
+  private regenerateWaveform(file: File): void {
+    const token = ++this.waveformToken;
+    this.waveform = null;
+    decodePeaks(file, 120).then((peaks) => {
+      if (this.waveformToken === token) {
+        this.waveform = peaks;
+      }
+    });
+  }
 
   /** (Re)build the filmstrip for the current object URL, cancelling any
    *  in-flight capture. Cached implicitly: only regenerated on new files. */
@@ -568,6 +584,7 @@ export class RenderingPageComponent implements OnDestroy {
     );
     this.localFileName = file.name;
     this.regenerateFilmstrip();
+    this.regenerateWaveform(file);
   }
 
   /** Trigger a browser download for a produced blob. */

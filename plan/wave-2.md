@@ -15,10 +15,10 @@ specs; DOM work stays thin.
 - [x] W2-003 Filmstrip strip rendered under the slider
 - [x] W2-004 Filmstrip regenerates on new file; cached per object URL
 - [x] W2-005 Filmstrip loading skeleton state
-- [ ] W2-006 Waveform: decode audio to PCM via OfflineAudioContext (util)
-- [ ] W2-007 Waveform peaks: min/max bucket reduction (pure + spec)
-- [ ] W2-008 Waveform canvas strip under the filmstrip
-- [ ] W2-009 Waveform fallback when the file has no audio track
+- [x] W2-006 Waveform: decode audio to PCM via OfflineAudioContext (util)
+- [x] W2-007 Waveform peaks: min/max bucket reduction (pure + spec)
+- [x] W2-008 Waveform canvas strip under the filmstrip
+- [x] W2-009 Waveform fallback when the file has no audio track
 - [ ] W2-010 Zoom state (1×/2×/4×/8×) + pure visible-window math (pure + spec)
 - [ ] W2-011 Zoomed viewport horizontal pan/scroll
 - [ ] W2-012 Zoom controls in UI (buttons + current level)
@@ -89,7 +89,7 @@ specs; DOM work stays thin.
 - [ ] W2-071 Spec: zoom visible-window math
 - [ ] W2-072 Spec: overlap detection/merge
 - [ ] W2-073 Spec: time-string parser edge cases
-- [ ] W2-074 Spec: waveform peak bucketing
+- [x] W2-074 Spec: waveform peak bucketing
 - [ ] W2-075 Spec: shortcut map completeness + no duplicate bindings
 - [ ] W2-076 Spec: undo/redo stack behavior
 - [ ] W2-077 Spec: URL settings round-trip

@@ -10,6 +10,12 @@
     <img *ngFor="let frame of filmstrip" [src]="frame" alt="" />
   </ng-template>
 </div>
+<canvas
+  #waveCanvas
+  class="waveform"
+  *ngIf="waveform?.length"
+  aria-hidden="true"
+></canvas>
 <div class="timeline-container">
   <div class="input-group mb-3">
     <div class="input-group-prepend">
