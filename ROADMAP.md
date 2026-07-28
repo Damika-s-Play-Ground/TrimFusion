@@ -611,3 +611,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   plan/wave-3.md (Filters I + preview depth: E4×40 filter stack framework + 16
   filters + 10 look presets + saved looks, E2×15 preview depth, E13×25 specs,
   E11×20 themes/polish incl. theme picker with 5 themes).
+- _run 62_ (executor): W3-001..005, 057 (6 items; the framework spec ships with the
+  framework): **filter-stack engine + UI** — FILTER_DEFS registry (label/intensity/
+  snippet/CSS-approx per filter; seeded with grayscale, sepia, invert),
+  buildFilterStack() composing into the vfilter chain after eq (video, GIF and
+  segment plans; forces re-encode; unknown keys skipped), and a "Filters" controls
+  section: add-select, stacked list with per-filter intensity slider (when
+  meaningful), reorder ↑/↓, remove, and an "(export-only)" tag for filters without a
+  CSS preview. 3-case framework spec (order-after-eq, re-encode forcing, unknown-key
+  skip). Tests 128 → 131, gates green (2.51 MB). Wave 3: 6/100.

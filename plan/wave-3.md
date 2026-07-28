@@ -15,11 +15,11 @@ filter approximations where one exists (else the preview badge says
 
 ## E4 — Filter framework & first filters (40)
 
-- [ ] W3-001 Engine: `filters` stack option in TrimOptions + FILTER_DEFS registry (key → snippet builder, intensity range, CSS approx flag)
-- [ ] W3-002 Engine: stack composed into the vfilter chain (after eq, before scale); segments plan too
-- [ ] W3-003 UI: "Filters" section — add-filter select + stacked list (remove)
-- [ ] W3-004 UI: reorder stack entries (↑/↓)
-- [ ] W3-005 UI: per-filter intensity slider (when the def declares a range)
+- [x] W3-001 Engine: `filters` stack option in TrimOptions + FILTER_DEFS registry (key → snippet builder, intensity range, CSS approx flag)
+- [x] W3-002 Engine: stack composed into the vfilter chain (after eq, before scale); segments plan too
+- [x] W3-003 UI: "Filters" section — add-filter select + stacked list (remove)
+- [x] W3-004 UI: reorder stack entries (↑/↓)
+- [x] W3-005 UI: per-filter intensity slider (when the def declares a range)
 - [ ] W3-006 Preview: stack → CSS filter chain mapping in preview-css (approximable subset)
 - [ ] W3-007 Preview: "export-only" badge for non-approximable filters
 - [ ] W3-008 Filter: grayscale (`hue=s=0`; CSS grayscale)
@@ -77,7 +77,7 @@ filter approximations where one exists (else the preview badge says
 ## E13 — Specs (25)
 
 - [ ] W3-056 Spec: FILTER_DEFS registry completeness (every key builds a snippet)
-- [ ] W3-057 Spec: stack composes in order after eq
+- [x] W3-057 Spec: stack composes in order after eq
 - [ ] W3-058 Spec: intensity clamps per filter def
 - [ ] W3-059 Spec: grayscale/sepia/invert snippets
 - [ ] W3-060 Spec: blur/sharpen/denoise snippets + intensity mapping

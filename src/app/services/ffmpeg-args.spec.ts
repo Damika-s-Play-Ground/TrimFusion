@@ -316,6 +316,36 @@ describe('buildTrimPlan', () => {
   });
 });
 
+describe('filter stack (W3 framework)', () => {
+  // W3-057: stack composes in order, after the eq color filter.
+  it('composes stack snippets in order after eq', () => {
+    const p = plan({
+      brightness: 0.2,
+      filters: [{ key: 'grayscale' }, { key: 'invert' }],
+    });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    const order = [
+      vf.indexOf('eq='),
+      vf.indexOf('hue=s=0'),
+      vf.indexOf('negate'),
+    ];
+    expect(order.every((i) => i >= 0)).toBeTrue();
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  });
+
+  it('forces an MP4 re-encode on its own', () => {
+    const p = plan({ filters: [{ key: 'sepia' }] }, WEBM);
+    expect(p.outExt).toBe('mp4');
+    expect(p.args).toContain('libx264');
+    expect(p.args[p.args.indexOf('-vf') + 1]).toContain('colorchannelmixer');
+  });
+
+  it('skips unknown filter keys and empty stacks', () => {
+    const p = plan({ filters: [{ key: 'nonexistent' }] });
+    expect(p.args.join(' ')).toContain('-c copy');
+  });
+});
+
 describe('normalizeSegments', () => {
   // W1-048
   it('sorts, clamps and drops invalid segments', () => {

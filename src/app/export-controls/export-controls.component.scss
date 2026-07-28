@@ -114,3 +114,55 @@ input[type='range'] {
 }
 
 @include tokens.tf-focus-visible;
+
+// ── Filter stack ────────────────────────────────────────────────────────────
+.filter-add-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  .form-select {
+    flex: 1 1 auto;
+  }
+}
+
+.filter-stack {
+  margin: 0.6rem 0 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--tf-border);
+    border-radius: var(--tf-radius-sm);
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .filter-name {
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+
+    em {
+      color: var(--tf-muted);
+      font-style: normal;
+      font-size: 0.72rem;
+    }
+  }
+
+  .filter-intensity {
+    flex: 1 1 auto;
+    min-width: 60px;
+  }
+
+  .filter-actions {
+    margin-left: auto;
+    display: flex;
+
+    .btn {
+      color: var(--tf-muted);
+      text-decoration: none;
+      padding: 0 0.3rem;
+    }
+  }
+}

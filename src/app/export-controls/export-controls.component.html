@@ -204,6 +204,84 @@
   </div>
 </details>
 <details class="control-section">
+  <summary>Filters</summary>
+  <div class="filter-add">
+    <label for="filterAddSelect" class="form-label d-block mb-1">
+      Add a filter
+    </label>
+    <div class="filter-add-row">
+      <select
+        id="filterAddSelect"
+        class="form-select"
+        [(ngModel)]="page.addFilterKey"
+        [disabled]="page.trimming"
+        aria-label="Filter to add"
+      >
+        <option *ngFor="let key of page.filterKeys" [ngValue]="key">
+          {{ page.filterDefs[key].label }}
+        </option>
+      </select>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        (click)="page.addFilter()"
+        [disabled]="page.trimming"
+      >
+        Add
+      </button>
+    </div>
+  </div>
+  <ul class="filter-stack list-unstyled" *ngIf="page.filterStack.length">
+    <li *ngFor="let entry of page.filterStack; let i = index">
+      <span class="filter-name">
+        {{ i + 1 }}. {{ page.filterDefs[entry.key].label }}
+        <em *ngIf="!page.filterDefs[entry.key].css">(export-only)</em>
+      </span>
+      <input
+        *ngIf="page.filterDefs[entry.key].hasIntensity"
+        type="range"
+        class="form-range filter-intensity"
+        min="0"
+        max="1"
+        step="0.05"
+        [ngModel]="entry.intensity"
+        (ngModelChange)="page.setFilterIntensity(i, +$event)"
+        [disabled]="page.trimming"
+        [attr.aria-label]="page.filterDefs[entry.key].label + ' intensity'"
+      />
+      <span class="filter-actions">
+        <button
+          type="button"
+          class="btn btn-sm btn-link"
+          (click)="page.moveFilter(i, -1)"
+          [disabled]="page.trimming || i === 0"
+          [attr.aria-label]="'Move filter ' + (i + 1) + ' up'"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-link"
+          (click)="page.moveFilter(i, 1)"
+          [disabled]="page.trimming || i === page.filterStack.length - 1"
+          [attr.aria-label]="'Move filter ' + (i + 1) + ' down'"
+        >
+          ↓
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-link"
+          (click)="page.removeFilter(i)"
+          [disabled]="page.trimming"
+          [attr.aria-label]="'Remove filter ' + (i + 1)"
+        >
+          ✕
+        </button>
+      </span>
+    </li>
+  </ul>
+</details>
+<details class="control-section">
   <summary>Audio</summary>
   <div
     class="mute-group form-check mb-2"

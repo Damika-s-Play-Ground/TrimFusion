@@ -21,6 +21,69 @@ const ROTATE_FILTERS: Record<RotateOption, string> = {
   vflip: 'vflip',
 };
 
+// ── Filter stack (Wave 3) ────────────────────────────────────────────────────
+
+export interface FilterEntry {
+  key: string;
+  /** 0..1; omitted → the filter's default. */
+  intensity?: number;
+}
+
+export interface FilterDef {
+  label: string;
+  hasIntensity: boolean;
+  defaultIntensity: number;
+  /** ffmpeg vf snippet for a clamped 0..1 intensity. */
+  snippet: (intensity: number) => string;
+  /** CSS approximation for live preview; null = export-only. */
+  css: ((intensity: number) => string) | null;
+}
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+export const FILTER_DEFS: Record<string, FilterDef> = {
+  grayscale: {
+    label: 'Grayscale',
+    hasIntensity: false,
+    defaultIntensity: 1,
+    snippet: () => 'hue=s=0',
+    css: () => 'grayscale(1)',
+  },
+  sepia: {
+    label: 'Sepia',
+    hasIntensity: false,
+    defaultIntensity: 1,
+    snippet: () =>
+      'colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131',
+    css: () => 'sepia(1)',
+  },
+  invert: {
+    label: 'Invert',
+    hasIntensity: false,
+    defaultIntensity: 1,
+    snippet: () => 'negate',
+    css: () => 'invert(1)',
+  },
+};
+
+/** Expand a filter stack into vf snippets (unknown keys skipped). */
+export function buildFilterStack(
+  filters: FilterEntry[] | undefined | null
+): string[] {
+  if (!filters?.length) {
+    return [];
+  }
+  const out: string[] = [];
+  for (const entry of filters) {
+    const def = FILTER_DEFS[entry.key];
+    if (!def) {
+      continue;
+    }
+    out.push(def.snippet(clamp01(entry.intensity ?? def.defaultIntensity)));
+  }
+  return out;
+}
+
 export interface TrimOptions {
   startSeconds: number;
   endSeconds: number;
@@ -53,6 +116,8 @@ export interface TrimOptions {
   /** 0.5 s fades at the clip edges (video export only). */
   fadeIn?: boolean;
   fadeOut?: boolean;
+  /** Ordered filter stack (visual outputs). */
+  filters?: FilterEntry[];
 }
 
 export interface TrimInput {
@@ -109,11 +174,12 @@ function buildEqFilter(opts: {
   return parts.length ? `eq=${parts.join(':')}` : null;
 }
 
-/** Video filter chain: rotate → crop → color → scale → fps → speed. */
+/** Video filter chain: rotate → crop → color → stack → scale → fps → speed. */
 function buildVideoFilters(opts: {
   rotate: RotateOption | null;
   cropAspect: number | null;
   colorFilter: string | null;
+  stack: string[];
   scaleHeight: number | null;
   fps: number | null;
   speed: number;
@@ -128,6 +194,7 @@ function buildVideoFilters(opts: {
   if (opts.colorFilter) {
     filters.push(opts.colorFilter);
   }
+  filters.push(...opts.stack);
   if (opts.scaleHeight) {
     // -2 keeps the aspect ratio with an even width (libx264-safe).
     filters.push(`scale=-2:${opts.scaleHeight}`);
@@ -188,6 +255,8 @@ export function buildTrimPlan(
     output !== 'audio' && options.rotate ? options.rotate : null;
   // Color adjustments (visual outputs only).
   const colorFilter = output !== 'audio' ? buildEqFilter(options) : null;
+  // Filter stack (visual outputs only).
+  const stack = output !== 'audio' ? buildFilterStack(options.filters) : [];
   // Audio gain (1 = unchanged); irrelevant for GIF and for muted video.
   const volume = Math.min(2, Math.max(0, options.volume ?? 1));
   const volumeChanged = output !== 'gif' && !mute && volume !== 1;
@@ -229,7 +298,8 @@ export function buildTrimPlan(
       crf !== 23 ||
       reverse ||
       fadeIn ||
-      fadeOut
+      fadeOut ||
+      stack.length
         ? 'mp4'
         : input.ext;
   }
@@ -245,7 +315,8 @@ export function buildTrimPlan(
     crf !== 23 ||
     reverse ||
     fadeIn ||
-    fadeOut;
+    fadeOut ||
+    stack.length > 0;
   const mimeByOutput: Record<TrimOutput, string> = {
     video: videoReencoded ? 'video/mp4' : input.mimeType || 'video/mp4',
     audio: 'audio/mpeg',
@@ -283,6 +354,7 @@ export function buildTrimPlan(
         rotate,
         cropAspect: crop ? (aspectRatio as number) : null,
         colorFilter,
+        stack,
         scaleHeight: null,
         fps: null,
         speed: 1,
@@ -300,6 +372,7 @@ export function buildTrimPlan(
         rotate,
         cropAspect: crop ? (aspectRatio as number) : null,
         colorFilter,
+        stack,
         scaleHeight,
         fps,
         speed,
@@ -412,6 +485,7 @@ export interface SegmentsOptions {
   crf?: number;
   fps?: number | null;
   encodePreset?: 'veryfast' | 'medium';
+  filters?: FilterEntry[];
 }
 
 export interface SegmentStep {
@@ -463,6 +537,7 @@ export function buildSegmentsPlan(
         ? options.aspectRatio
         : null,
     colorFilter: buildEqFilter(options),
+    stack: buildFilterStack(options.filters),
     scaleHeight:
       options.scaleHeight && options.scaleHeight > 0
         ? Math.round(options.scaleHeight)

@@ -21,6 +21,8 @@ import {
 import {
   buildTrimPlan,
   extensionOf,
+  FILTER_DEFS,
+  FilterEntry,
   SegmentRange,
   TrimOptions,
 } from '@services/ffmpeg-args';
@@ -835,6 +837,47 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
   fadeIn = false;
   fadeOut = false;
 
+  // Ordered filter stack (W3-001..): applied after color, before scale.
+  readonly filterDefs = FILTER_DEFS;
+  readonly filterKeys = Object.keys(FILTER_DEFS);
+  filterStack: FilterEntry[] = [];
+  addFilterKey = this.filterKeys[0];
+
+  addFilter(): void {
+    const def = FILTER_DEFS[this.addFilterKey];
+    if (!def) {
+      return;
+    }
+    this.filterStack.push({
+      key: this.addFilterKey,
+      intensity: def.defaultIntensity,
+    });
+  }
+
+  removeFilter(index: number): void {
+    this.filterStack.splice(index, 1);
+  }
+
+  moveFilter(index: number, direction: -1 | 1): void {
+    const target = index + direction;
+    if (target < 0 || target >= this.filterStack.length) {
+      return;
+    }
+    [this.filterStack[index], this.filterStack[target]] = [
+      this.filterStack[target],
+      this.filterStack[index],
+    ];
+  }
+
+  setFilterIntensity(index: number, value: number): void {
+    if (this.filterStack[index]) {
+      this.filterStack[index] = {
+        ...this.filterStack[index],
+        intensity: value,
+      };
+    }
+  }
+
   // Split-into-N sequential clip downloads.
   readonly splitPresets = [2, 3, 4];
   splitCount = 2;
@@ -865,6 +908,7 @@ export class RenderingPageComponent implements DoCheck, OnDestroy {
       reverse: this.selectedEffect === 'reverse',
       fadeIn: this.fadeIn,
       fadeOut: this.fadeOut,
+      filters: this.filterStack,
     };
   }
 
