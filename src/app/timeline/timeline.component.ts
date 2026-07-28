@@ -35,6 +35,8 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   @Input() waveform: number[] | null = null;
   /** Player position in seconds; null hides the playhead layer. */
   @Input() playhead: number | null = null;
+  /** Whether media is loaded (drives the strip empty-state hint). */
+  @Input() hasMedia = false;
   /** Stitch segments to render as blocks on the lane below the strips. */
   @Input() segments: { start: number; end: number }[] = [];
   @Input() selectedSegment: number | null = null;

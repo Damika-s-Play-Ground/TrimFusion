@@ -519,3 +519,9 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   ~72 px/thumb), and a pure trailing-edge debounce with cancel wired to a
   window-resize waveform redraw (jasmine.clock spec). Tests 101 → 108, gates green
   (2.48 MB). Wave 2: 56/100 — E2 remaining: 049, 050.
+- _run 52_ (executor): W2-049..053 (5 items): **E2 closed + keyboard layer opened** —
+  timeline empty-state hint (dashed panel until media loads), README "Timeline
+  architecture" note documenting the pure-module split, pure shortcuts.ts key→action
+  map with a typing-target guard, global document:keydown scaffold (modifier-safe,
+  disabled while typing), first bindings live: Space play/pause, I/O set in/out at
+  the playhead. Gates green (108/108, 2.48 MB). Wave 2: 61/100.

@@ -74,6 +74,20 @@ tracked ~1000-item program:
 Every change lands through the same gates: `npm run verify` (format check,
 lint incl. accessibility rules, headless unit tests, production build).
 
+### Timeline architecture (Wave 2)
+
+The editor timeline is a presentation-only `TimelineComponent`
+(`src/app/timeline/`) that the page feeds via inputs and listens to via
+outputs — it owns no export state. Heavy logic lives in small pure modules,
+each with a spec: `zoom.ts` (visible-window math, panning, snapping),
+`filmstrip.ts` (thumbnail sampling + responsive count; canvas capture is the
+thin DOM layer), `waveform.ts` (peak bucketing; WebAudio decode is the thin
+layer), `segment-ops.ts` (overlap detection/merge), plus shared
+`parse-time.ts`, `format-time.ts`, `debounce.ts`, `preview-css.ts`
+(settings → live CSS preview) and `shortcuts.ts` (key → action map). The
+ffmpeg command surface stays in `services/ffmpeg-args.ts`, unit-tested
+against the full option matrix.
+
 ## Contributing
 
 Contributions are welcome — open an issue or PR. Please run `npm run verify`

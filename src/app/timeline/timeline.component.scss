@@ -18,6 +18,15 @@
   }
 }
 
+.empty-hint {
+  margin: 0;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.8rem;
+  color: var(--tf-muted);
+  border: 1px dashed var(--tf-border);
+  border-radius: 8px;
+}
+
 .track-overlay {
   position: absolute;
   inset: 0;

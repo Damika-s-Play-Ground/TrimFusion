@@ -8,6 +8,10 @@
   (pointermove)="onTrackHover($event)"
   (pointerleave)="onTrackLeave()"
 >
+  <p class="empty-hint" *ngIf="!hasMedia">
+    Load or upload a video — thumbnails, audio waveform and the playhead appear
+    here.
+  </p>
   <div
     class="strip-track"
     [style.width.%]="zoom * 100"

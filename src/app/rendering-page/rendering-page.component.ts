@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnDestroy } from '@angular/core';
+import { Component, HostBinding, HostListener, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   DomSanitizer,
@@ -32,6 +32,7 @@ import {
   previewFilter,
   previewTransform,
 } from '../shared/preview-css';
+import { actionForKey, isTypingTarget } from '../shared/shortcuts';
 import {
   captureFilmstrip,
   FilmstripHandle,
@@ -196,6 +197,53 @@ export class RenderingPageComponent implements OnDestroy {
       },
       this.livePreview && this.selectedOutput === 'video'
     );
+  }
+
+  // Keyboard shortcuts (W2-051..): global keydown, skipped while typing.
+  shortcutsEnabled = true;
+
+  @HostListener('document:keydown', ['$event'])
+  onGlobalKeydown(event: KeyboardEvent): void {
+    if (
+      !this.shortcutsEnabled ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey ||
+      isTypingTarget(event.target)
+    ) {
+      return;
+    }
+    const action = actionForKey(event.key);
+    if (!action || !this.localVideoUrl) {
+      return;
+    }
+    switch (action) {
+      case 'playPause':
+        event.preventDefault();
+        this.togglePlayback();
+        break;
+      case 'setIn':
+        this.setInAtPlayhead();
+        break;
+      case 'setOut':
+        this.setOutAtPlayhead();
+        break;
+      default:
+        // Remaining actions land with their wave items.
+        break;
+    }
+  }
+
+  togglePlayback(): void {
+    const video = this.localVideoEl;
+    if (!video) {
+      return;
+    }
+    if (video.paused) {
+      void video.play();
+    } else {
+      video.pause();
+    }
   }
 
   // Player position for the timeline playhead (null until a file plays).

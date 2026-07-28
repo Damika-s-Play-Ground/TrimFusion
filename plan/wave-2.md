@@ -58,14 +58,14 @@ specs; DOM work stays thin.
 - [x] W2-046 Persist zoom/snap preferences (localStorage)
 - [x] W2-047 Filmstrip thumbnail count adapts to container width
 - [x] W2-048 Debounce helper for heavy preview recomputes (pure + spec)
-- [ ] W2-049 Timeline empty/loading state polish
-- [ ] W2-050 Timeline architecture note in README (how the pieces fit)
+- [x] W2-049 Timeline empty/loading state polish
+- [x] W2-050 Timeline architecture note in README (how the pieces fit)
 
 ## E7 — Keyboard & power-user (20)
 
-- [ ] W2-051 Shortcut service scaffold: global keydown, ignores form fields
-- [ ] W2-052 Space = play/pause
-- [ ] W2-053 I / O = set in/out at playhead
+- [x] W2-051 Shortcut service scaffold: global keydown, ignores form fields
+- [x] W2-052 Space = play/pause
+- [x] W2-053 I / O = set in/out at playhead
 - [ ] W2-054 J / K / L = shuttle back / pause / forward
 - [ ] W2-055 Arrow keys seek ±1 s (Shift = ±5 s)
 - [ ] W2-056 , / . = frame step
