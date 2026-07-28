@@ -94,13 +94,13 @@ specs; DOM work stays thin.
 - [x] W2-076 Spec: undo/redo stack behavior
 - [x] W2-077 Spec: URL settings round-trip
 - [x] W2-078 Spec: debounce helper timing (fakeAsync)
-- [ ] W2-079 Component spec: timeline renders segment blocks
-- [ ] W2-080 Component spec: numeric time inputs validate/clamp
-- [ ] W2-081 Component spec: cheat-sheet opens and closes
+- [x] W2-079 Component spec: timeline renders segment blocks
+- [x] W2-080 Component spec: numeric time inputs validate/clamp
+- [x] W2-081 Component spec: cheat-sheet opens and closes
 - [x] W2-082 Spec: preview sync mapping (rate/muted/volume values)
 - [x] W2-083 Spec: responsive thumbnail-count function
 - [x] W2-084 Spec: snap rounding helper
-- [ ] W2-085 Coverage report noted in ROADMAP (services ≥80% statements)
+- [x] W2-085 Coverage report noted in ROADMAP (services ≥80% statements)
 
 ## E11 — Polish (15)
 

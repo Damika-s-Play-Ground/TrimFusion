@@ -555,3 +555,13 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   link" button, and fragment restore on load with a snackbar note. Tests 117 → 122,
   gates green (2.49 MB). Wave 2: 81/100 — remaining: E13 component specs (079/080/
   081/085) and the E11 polish block (086..100).
+- _run 57_ (executor): W2-079..081, 085 (4 items) — **E13 COMPLETE (all 15)**: DOM
+  component specs — timeline renders labeled segment blocks and hides them outside
+  the zoom window; typed time inputs apply/emit valid values, revert garbage, clamp
+  out-of-range ends; cheat-sheet opens via the header button, lists every documented
+  binding, closes on Escape and the ✕ button. COVERAGE (statements): ffmpeg-args
+  99.4%, trim-error 100%, export-summary 80.8%, shared 99.4% — every pure module
+  ≥80% target met; ffmpeg-trim.service.ts sits at 11% by design (wasm IO is not
+  headless-testable; covered by the standing manual-QA note). Overall 49.6%
+  (components dominate the uncovered remainder). Tests 122 → 128, gates green
+  (2.49 MB). Wave 2: 85/100 — remaining: E11 polish 086..099 + wave exit 100.
