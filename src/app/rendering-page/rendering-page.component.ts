@@ -9,19 +9,19 @@ import {
   capabilityReport,
   ExportSummary,
   summarizeExport,
-} from '../services/export-summary';
+} from '@services/export-summary';
 import {
   buildTrimPlan,
   extensionOf,
   SegmentRange,
   TrimOptions,
-} from '../services/ffmpeg-args';
+} from '@services/ffmpeg-args';
 import {
   FfmpegTrimService,
   RotateOption,
   TrimOutput,
-} from '../services/ffmpeg-trim.service';
-import { messageFor, TrimError } from '../services/trim-error';
+} from '@services/ffmpeg-trim.service';
+import { messageFor, TrimError } from '@services/trim-error';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a

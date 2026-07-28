@@ -404,3 +404,7 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   alphabetized import/order (autofixed 2 files), no-console (allow warn/error),
   max-lines warning (800) on components. Lint 0 errors 0 warnings, build PASS
   (2.33 MB), tests 70/70. Wave 1: 90/100.
+- _run 37_ (executor): W1-069, 070, 073, 086 (4 items): seeded CHANGELOG.md (1.0.0
+  user-facing summary), VERSION file + package.json 1.0.0 + git tag v1.0.0,
+  `@services/*` tsconfig path alias (component imports switched), global
+  ErrorHandler with contextual logging. Gates green (70/70). Wave 1: 94/100.

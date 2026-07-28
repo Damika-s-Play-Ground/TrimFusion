@@ -80,11 +80,11 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-066 dependabot.yml (npm weekly)
 - [x] W1-067 Issue template (bug + feature)
 - [x] W1-068 PR template with gate checklist
-- [ ] W1-069 Seed CHANGELOG.md from ROADMAP run history
-- [ ] W1-070 VERSION file + tag v1.0.0
+- [x] W1-069 Seed CHANGELOG.md from ROADMAP run history
+- [x] W1-070 VERSION file + tag v1.0.0
 - [x] W1-071 README: program section linking PLAN-NEXTLEVEL + wave files
 - [x] W1-072 build:stats script + bundle-analysis doc note
-- [ ] W1-073 tsconfig path alias `@services/*`
+- [x] W1-073 tsconfig path alias `@services/*`
 - [x] W1-074 ESLint max-lines warning on components (flag oversized rendering-page)
 - [ ] W1-075 Extract export-controls into `ExportControlsComponent` (shrink rendering-page)
 
@@ -100,7 +100,7 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-083 Better invalid-file-type message (what was detected vs expected)
 - [x] W1-084 Empty/zero-length range validation before export
 - [ ] W1-085 Material snackbar/toast for transient statuses (done/cancelled/failed)
-- [ ] W1-086 Global ErrorHandler with contextual console logging
+- [x] W1-086 Global ErrorHandler with contextual console logging
 - [ ] W1-087 `navigator.storage.estimate()` headroom check before heavy exports
 - [ ] W1-088 Handle metadata-load failure (duration NaN) gracefully
 - [ ] W1-089 Detect codec-unsupported-in-preview and explain (export may still work)

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { GlobalErrorHandler } from './global-error-handler';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { RenderingPageComponent } from './rendering-page/rendering-page.component';
 
@@ -21,7 +22,7 @@ import { RenderingPageComponent } from './rendering-page/rendering-page.componen
     MatIconModule,
     MatSliderModule,
   ],
-  providers: [],
+  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
