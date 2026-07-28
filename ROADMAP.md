@@ -525,3 +525,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   map with a typing-target guard, global document:keydown scaffold (modifier-safe,
   disabled while typing), first bindings live: Space play/pause, I/O set in/out at
   the playhead. Gates green (108/108, 2.48 MB). Wave 2: 61/100.
+- _run 53_ (executor): W2-054..058 (5 items): **full transport keyboard** — J/K/L
+  shuttle (halve/reset/double playbackRate 0.25×–4×, honestly documented as a
+  slow-motion adaptation since HTML video can't reverse; overrides the speed-control
+  sync until K or a new file resets it), arrow-key seeks ±1 s (Shift ±5 s, scroll
+  prevented, no double-fire with the focused strip via defaultPrevented guard),
+  , / . frame steps, M mute toggle, + / − timeline zoom via a new zoomStep() on the
+  timeline. Gates green (108/108, 2.49 MB). Wave 2: 66/100.

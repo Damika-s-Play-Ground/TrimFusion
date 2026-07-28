@@ -1,4 +1,10 @@
-import { Component, HostBinding, HostListener, OnDestroy } from '@angular/core';
+import {
+  Component,
+  HostBinding,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   DomSanitizer,
@@ -39,6 +45,7 @@ import {
   thumbCountForWidth,
 } from '../timeline/filmstrip';
 import { hasOverlap, mergeOverlapping } from '../timeline/segment-ops';
+import { TimelineComponent } from '../timeline/timeline.component';
 import { decodePeaks } from '../timeline/waveform';
 
 /**
@@ -189,7 +196,7 @@ export class RenderingPageComponent implements OnDestroy {
 
   /** Speed/mute/volume mirrored onto the player element. */
   get playbackSyncValue(): PlaybackSync {
-    return playbackSync(
+    const sync = playbackSync(
       {
         speed: this.selectedSpeed,
         mute: this.muteAudio,
@@ -197,10 +204,40 @@ export class RenderingPageComponent implements OnDestroy {
       },
       this.livePreview && this.selectedOutput === 'video'
     );
+    return this.shuttleRate !== null
+      ? { ...sync, playbackRate: this.shuttleRate }
+      : sync;
   }
 
   // Keyboard shortcuts (W2-051..): global keydown, skipped while typing.
   shortcutsEnabled = true;
+
+  @ViewChild(TimelineComponent) private timeline?: TimelineComponent;
+
+  /** Transient J/K/L shuttle rate; null = follow the speed control. */
+  shuttleRate: number | null = null;
+
+  /** JKL shuttle: slower / faster playback (K resets). HTML video can't
+   *  play in reverse, so J maps to slow-motion — documented adaptation. */
+  private shuttle(direction: -1 | 1): void {
+    const video = this.localVideoEl;
+    if (!video) {
+      return;
+    }
+    const current = this.shuttleRate ?? 1;
+    this.shuttleRate =
+      direction === 1 ? Math.min(4, current * 2) : Math.max(0.25, current / 2);
+    video.playbackRate = this.shuttleRate;
+    void video.play();
+  }
+
+  private seekBy(step: number): void {
+    const clamped = Math.max(
+      0,
+      Math.min(this.maxSeconds, (this.playhead ?? 0) + step)
+    );
+    this.onSeek(clamped);
+  }
 
   @HostListener('document:keydown', ['$event'])
   onGlobalKeydown(event: KeyboardEvent): void {
@@ -211,6 +248,10 @@ export class RenderingPageComponent implements OnDestroy {
       event.altKey ||
       isTypingTarget(event.target)
     ) {
+      return;
+    }
+    if (event.defaultPrevented) {
+      // e.g. the focused timeline strip already handled an arrow key.
       return;
     }
     const action = actionForKey(event.key);
@@ -227,6 +268,39 @@ export class RenderingPageComponent implements OnDestroy {
         break;
       case 'setOut':
         this.setOutAtPlayhead();
+        break;
+      case 'shuttleBack':
+        this.shuttle(-1);
+        break;
+      case 'pause':
+        this.localVideoEl?.pause();
+        this.shuttleRate = null;
+        break;
+      case 'shuttleForward':
+        this.shuttle(1);
+        break;
+      case 'seekBack':
+        event.preventDefault();
+        this.seekBy(event.shiftKey ? -5 : -1);
+        break;
+      case 'seekForward':
+        event.preventDefault();
+        this.seekBy(event.shiftKey ? 5 : 1);
+        break;
+      case 'frameBack':
+        this.seekBy(-1 / 30);
+        break;
+      case 'frameForward':
+        this.seekBy(1 / 30);
+        break;
+      case 'muteToggle':
+        this.muteAudio = !this.muteAudio;
+        break;
+      case 'zoomIn':
+        this.timeline?.zoomStep(1);
+        break;
+      case 'zoomOut':
+        this.timeline?.zoomStep(-1);
         break;
       default:
         // Remaining actions land with their wave items.
@@ -743,6 +817,7 @@ export class RenderingPageComponent implements OnDestroy {
       this.localObjectUrl
     );
     this.localFileName = file.name;
+    this.shuttleRate = null;
     this.regenerateFilmstrip();
     this.regenerateWaveform(file);
   }

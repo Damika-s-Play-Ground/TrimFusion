@@ -143,6 +143,17 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     setTimeout(() => this.drawWaveform());
   }
 
+  /** Move one step through the zoom levels (keyboard +/−). */
+  zoomStep(direction: -1 | 1): void {
+    const levels = this.zoomLevels as readonly number[];
+    const idx = Math.max(0, levels.indexOf(this.zoom));
+    const next =
+      levels[Math.max(0, Math.min(levels.length - 1, idx + direction))];
+    if (next !== this.zoom) {
+      this.setZoom(next);
+    }
+  }
+
   pan(direction: -1 | 1): void {
     const span = this.max / this.zoom;
     this.viewFrom = panWindow(

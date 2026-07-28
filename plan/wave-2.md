@@ -66,11 +66,11 @@ specs; DOM work stays thin.
 - [x] W2-051 Shortcut service scaffold: global keydown, ignores form fields
 - [x] W2-052 Space = play/pause
 - [x] W2-053 I / O = set in/out at playhead
-- [ ] W2-054 J / K / L = shuttle back / pause / forward
-- [ ] W2-055 Arrow keys seek ±1 s (Shift = ±5 s)
-- [ ] W2-056 , / . = frame step
-- [ ] W2-057 M = mute toggle
-- [ ] W2-058 + / − = timeline zoom
+- [x] W2-054 J / K / L = shuttle back / pause / forward
+- [x] W2-055 Arrow keys seek ±1 s (Shift = ±5 s)
+- [x] W2-056 , / . = frame step
+- [x] W2-057 M = mute toggle
+- [x] W2-058 + / − = timeline zoom
 - [ ] W2-059 S = add current range as segment
 - [ ] W2-060 E = start export
 - [ ] W2-061 ? = open the shortcut cheat-sheet
