@@ -272,6 +272,27 @@
   }
 }
 
+// ── Live preview ────────────────────────────────────────────────────────────
+.video-container video {
+  transition:
+    filter 0.12s ease,
+    transform 0.15s ease;
+}
+
+.crop-overlay {
+  position: absolute;
+  border: 2px dashed var(--tf-accent-2);
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+
+.preview-toggle {
+  margin: -0.4rem 0 0.6rem;
+  font-size: 0.85rem;
+}
+
 // ── Tool selectors (export / crop) ──────────────────────────────────────────
 .export-group,
 .aspect-group {

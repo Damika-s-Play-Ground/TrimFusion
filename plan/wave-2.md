@@ -35,12 +35,12 @@ specs; DOM work stays thin.
 - [x] W2-023 Overlap detection + merge helper (pure + spec)
 - [x] W2-024 Segment-total indicator vs platform caps (60 s Shorts etc.)
 - [x] W2-025 Per-segment preview (seek + play just that range)
-- [ ] W2-026 Live crop overlay on the player (CSS mask for chosen aspect)
-- [ ] W2-027 Live color preview via CSS filter mapping (brightness/contrast/saturate)
-- [ ] W2-028 Preview-effects toggle (live preview on/off)
+- [x] W2-026 Live crop overlay on the player (CSS mask for chosen aspect)
+- [x] W2-027 Live color preview via CSS filter mapping (brightness/contrast/saturate)
+- [x] W2-028 Preview-effects toggle (live preview on/off)
 - [ ] W2-029 Before/after comparison toggle for color preview
-- [ ] W2-030 Rotate preview via CSS transform
-- [ ] W2-031 Mirror/flip preview via CSS transform
+- [x] W2-030 Rotate preview via CSS transform
+- [x] W2-031 Mirror/flip preview via CSS transform
 - [ ] W2-032 Speed preview: sync video.playbackRate to the speed control
 - [ ] W2-033 Mute preview: sync video.muted
 - [ ] W2-034 Volume preview: sync video.volume

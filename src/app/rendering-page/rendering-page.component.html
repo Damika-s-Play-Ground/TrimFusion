@@ -90,7 +90,18 @@
                   (loadedmetadata)="onLocalMetadata(localVid)"
                   (timeupdate)="onTimeUpdate(localVid)"
                   (error)="onPreviewError()"
+                  [style.filter]="previewFilterCss"
+                  [style.transform]="previewTransformCss"
                 ></video>
+                <div
+                  class="crop-overlay"
+                  *ngIf="cropOverlay as rect"
+                  [style.left.%]="rect.left"
+                  [style.top.%]="rect.top"
+                  [style.width.%]="rect.width"
+                  [style.height.%]="rect.height"
+                  aria-hidden="true"
+                ></div>
                 <iframe
                   *ngIf="embedUrl && !localVideoUrl"
                   width="560"
@@ -114,6 +125,17 @@
                   alt="placeholder"
                   class="default-video-thumbnail"
                 />
+              </div>
+              <div class="preview-toggle form-check" *ngIf="localVideoUrl">
+                <input
+                  id="livePreviewCheck"
+                  type="checkbox"
+                  class="form-check-input"
+                  [(ngModel)]="livePreview"
+                />
+                <label for="livePreviewCheck" class="form-check-label">
+                  Live preview of crop, colors &amp; rotation
+                </label>
               </div>
               <app-timeline
                 [max]="maxSeconds"

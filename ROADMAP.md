@@ -484,3 +484,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   segment end, interval-watched, cleaned up on destroy). Lint 0 errors (1 max-lines
   warning on rendering-page — the W2-086 split signal), build 2.47 MB, tests 88/88.
   Wave 2: 30/100.
+- _run 47_ (executor): W2-026..028, 030, 031 (5 items): **live preview layer** — pure
+  preview-css mappings (eq→CSS filter with additive→multiplicative brightness note,
+  rotate/flip→transform with quarter-turns scaled 9/16 to stay in the contain box,
+  cropOverlayRect() computing the centered crop rect over the letterboxed content
+  area; 8-case spec) wired to the player: [style.filter]/[style.transform] bindings,
+  dashed-accent crop overlay with dimmed surround (box-shadow trick, clipped by the
+  container), and a "Live preview" toggle. ffmpeg stays the export source of truth.
+  Tests 88 → 93, gates green (2.48 MB). Wave 2: 35/100.

@@ -24,6 +24,12 @@ import {
 } from '@services/ffmpeg-trim.service';
 import { messageFor, TrimError } from '@services/trim-error';
 import { formatTime as formatTimeFn } from '../shared/format-time';
+import {
+  cropOverlayRect,
+  OverlayRect,
+  previewFilter,
+  previewTransform,
+} from '../shared/preview-css';
 import { captureFilmstrip, FilmstripHandle } from '../timeline/filmstrip';
 import { hasOverlap, mergeOverlapping } from '../timeline/segment-ops';
 import { decodePeaks } from '../timeline/waveform';
@@ -127,6 +133,40 @@ export class RenderingPageComponent implements OnDestroy {
   // Timeline waveform peaks (null = no decodable audio → strip hidden).
   waveform: number[] | null = null;
   private waveformToken = 0;
+
+  // Live preview of crop/filters/rotation on the player (W2-026..031).
+  livePreview = true;
+
+  get previewFilterCss(): string {
+    if (!this.livePreview || this.selectedOutput === 'audio') {
+      return 'none';
+    }
+    return previewFilter(this.brightness, this.contrast, this.saturation);
+  }
+
+  get previewTransformCss(): string {
+    if (!this.livePreview || this.selectedOutput === 'audio') {
+      return 'none';
+    }
+    return previewTransform(this.selectedRotate);
+  }
+
+  get cropOverlay(): OverlayRect | null {
+    if (
+      !this.livePreview ||
+      this.selectedOutput === 'audio' ||
+      !this.selectedAspect ||
+      !this.localVideoWidth ||
+      !this.localVideoHeight
+    ) {
+      return null;
+    }
+    return cropOverlayRect(
+      this.localVideoWidth,
+      this.localVideoHeight,
+      this.selectedAspect
+    );
+  }
 
   // Player position for the timeline playhead (null until a file plays).
   playhead: number | null = null;
