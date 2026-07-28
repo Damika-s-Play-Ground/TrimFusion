@@ -607,3 +607,25 @@
     transition: none;
   }
 }
+
+// ── ≤480 px layout audit (W2-097) ───────────────────────────────────────────
+@media (max-width: 480px) {
+  .content-header {
+    padding: 1.2rem 0.75rem 0.5rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .tf-header-actions {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-start;
+  }
+
+  .social-buttons .btn,
+  .tools-group .btn {
+    flex: 1 1 auto;
+  }
+}

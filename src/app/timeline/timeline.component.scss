@@ -334,3 +334,21 @@
     min-width: 24px;
   }
 }
+
+// ≤480 px: slider goes full-width above the stacked time inputs (W2-097).
+@media (max-width: 480px) {
+  .timeline-container {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+
+    .main-slider {
+      order: -1;
+      flex-basis: 100%;
+      padding: 0;
+    }
+
+    .input-group {
+      flex: 1 1 auto;
+    }
+  }
+}

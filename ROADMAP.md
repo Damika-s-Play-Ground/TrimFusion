@@ -592,3 +592,22 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   accent-colored checkboxes), and **coarse-pointer touch targets** (bigger zoom/nudge
   buttons, taller segment lane/blocks on touch devices). Gates green (128/128,
   2.50 MB). Wave 2: 97/100 — remaining: 097 mobile audit, 099 baseline doc, 100 exit.
+- _run 61_ (executor) — **WAVE 2 EXIT (100/100)**. Final items: ≤480 px layout audit
+  (slider reflows above stacked time inputs, header actions wrap, full-width action
+  buttons), visual-regression baseline doc (docs/visual-baseline.md — 12 states ×
+  2 viewports × 2 themes manual capture list; automated capture stays blocked on
+  interactive browser + disk), wave exit. RETRO: 100/100 items, zero deferred out.
+  Shipped: the full timeline pro (filmstrip, waveform, zoom/pan/snap, playhead layer,
+  draggable segment blocks with reorder/overlap-merge and honest arrangement-order
+  stitching), complete live preview (crop/color/rotate CSS + playback sync +
+  compare-original), full keyboard layer (transport + marking + zoom + cheat-sheet +
+  persisted toggle + preventDefault audit), undo/redo with burst coalescing,
+  shareable settings links, ExportControlsComponent with collapsible sections,
+  design tokens + focus rings + stage labels + mobile/touch polish. METRICS: tests
+  108 → 128 (this wave; 18 → 128 program-wide), bundle 2.48 → 2.50 MB (budget
+  2.6 MB), lint 0/0, coverage: all pure modules ≥80% statements. DEBT: standing
+  manual in-browser QA of ffmpeg paths; bundle diet in Wave 6; state remains on the
+  page component (template-level controls split) — revisit if it grows. Generated
+  plan/wave-3.md (Filters I + preview depth: E4×40 filter stack framework + 16
+  filters + 10 look presets + saved looks, E2×15 preview depth, E13×25 specs,
+  E11×20 themes/polish incl. theme picker with 5 themes).

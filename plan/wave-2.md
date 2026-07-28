@@ -115,7 +115,7 @@ specs; DOM work stays thin.
 - [x] W2-094 Replace emoji theme toggle with inline SVG icons
 - [x] W2-095 Button hover/active micro-interaction audit
 - [x] W2-096 Consistent select/checkbox visual pass
-- [ ] W2-097 ≤480 px layout audit (controls stack, no overflow)
+- [x] W2-097 ≤480 px layout audit (controls stack, no overflow)
 - [x] W2-098 Larger touch targets for timeline handles on mobile
-- [ ] W2-099 DEFER-FRIENDLY: visual-regression baseline doc (manual screenshots list)
-- [ ] W2-100 Wave-2 exit: retro + metrics + generate plan/wave-3.md
+- [x] W2-099 DEFER-FRIENDLY: visual-regression baseline doc (manual screenshots list)
+- [x] W2-100 Wave-2 exit: retro + metrics + generate plan/wave-3.md
