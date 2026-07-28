@@ -35,6 +35,24 @@ export interface TrimOptions {
   contrast?: number;
   saturation?: number;
   volume?: number;
+  /** x264 CRF (16–30, default 23). Non-default forces a re-encode. */
+  crf?: number;
+  /** Output frame rate for video export; null keeps the source rate. */
+  fps?: number | null;
+  /** GIF frame rate (default 12) and width (default 480). */
+  gifFps?: number;
+  gifWidth?: number;
+  /** x264 preset trade-off (default "veryfast"). */
+  encodePreset?: 'veryfast' | 'medium';
+  /** MP3 bitrate in kbps; null keeps VBR -q:a 2. */
+  mp3Bitrate?: number | null;
+  /** MP3 sample rate in Hz; null keeps the source rate. */
+  mp3SampleRate?: number | null;
+  /** Play the clip backwards (video export only). */
+  reverse?: boolean;
+  /** 0.5 s fades at the clip edges (video export only). */
+  fadeIn?: boolean;
+  fadeOut?: boolean;
 }
 
 export interface TrimInput {
@@ -91,12 +109,13 @@ function buildEqFilter(opts: {
   return parts.length ? `eq=${parts.join(':')}` : null;
 }
 
-/** Video filter chain: rotate → crop → color → scale → speed. */
+/** Video filter chain: rotate → crop → color → scale → fps → speed. */
 function buildVideoFilters(opts: {
   rotate: RotateOption | null;
   cropAspect: number | null;
   colorFilter: string | null;
   scaleHeight: number | null;
+  fps: number | null;
   speed: number;
 }): string[] {
   const filters: string[] = [];
@@ -113,10 +132,18 @@ function buildVideoFilters(opts: {
     // -2 keeps the aspect ratio with an even width (libx264-safe).
     filters.push(`scale=-2:${opts.scaleHeight}`);
   }
+  if (opts.fps) {
+    filters.push(`fps=${opts.fps}`);
+  }
   if (opts.speed !== 1) {
     filters.push(`setpts=${(1 / opts.speed).toFixed(6)}*PTS`);
   }
   return filters;
+}
+
+/** Compact decimal formatting for filter timestamps (19.5, not 19.500000). */
+function ts(n: number): string {
+  return String(Math.round(n * 100) / 100);
 }
 
 /** Audio filter chain: tempo + gain (pass volume 1 for "unchanged"). */
@@ -164,8 +191,21 @@ export function buildTrimPlan(
   // Audio gain (1 = unchanged); irrelevant for GIF and for muted video.
   const volume = Math.min(2, Math.max(0, options.volume ?? 1));
   const volumeChanged = output !== 'gif' && !mute && volume !== 1;
+  // Encoding quality knobs. Non-default CRF acts as a compress feature and
+  // forces a re-encode; the preset only shapes re-encodes that happen anyway.
+  const crf = Math.round(Math.min(30, Math.max(16, options.crf ?? 23)));
+  const preset: 'veryfast' | 'medium' = options.encodePreset ?? 'veryfast';
+  const fps =
+    output === 'video' && options.fps && options.fps > 0
+      ? Math.round(options.fps)
+      : null;
+  const reverse = output === 'video' && !!options.reverse;
+  const fadeIn = output === 'video' && !!options.fadeIn;
+  const fadeOut = output === 'video' && !!options.fadeOut;
   const start = Math.max(0, Math.floor(startSeconds));
   const duration = Math.max(1, Math.floor(endSeconds) - start);
+  // The clip's output-timeline duration (speed changes stretch/shrink it).
+  const outDuration = duration / speed;
   // Cropping only applies to visual outputs.
   const crop = output !== 'audio' && !!aspectRatio && aspectRatio > 0;
 
@@ -184,7 +224,12 @@ export function buildTrimPlan(
       precise ||
       rotate ||
       colorFilter ||
-      volumeChanged
+      volumeChanged ||
+      fps ||
+      crf !== 23 ||
+      reverse ||
+      fadeIn ||
+      fadeOut
         ? 'mp4'
         : input.ext;
   }
@@ -195,7 +240,12 @@ export function buildTrimPlan(
     precise ||
     !!rotate ||
     !!colorFilter ||
-    volumeChanged;
+    volumeChanged ||
+    !!fps ||
+    crf !== 23 ||
+    reverse ||
+    fadeIn ||
+    fadeOut;
   const mimeByOutput: Record<TrimOutput, string> = {
     video: videoReencoded ? 'video/mp4' : input.mimeType || 'video/mp4',
     audio: 'audio/mpeg',
@@ -214,18 +264,31 @@ export function buildTrimPlan(
     if (volumeChanged) {
       args.push('-af', `volume=${volume.toFixed(2)}`);
     }
-    args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2');
+    args.push('-vn', '-c:a', 'libmp3lame');
+    if (options.mp3Bitrate && options.mp3Bitrate > 0) {
+      args.push('-b:a', `${Math.round(options.mp3Bitrate)}k`);
+    } else {
+      args.push('-q:a', '2');
+    }
+    if (options.mp3SampleRate && options.mp3SampleRate > 0) {
+      args.push('-ar', String(Math.round(options.mp3SampleRate)));
+    }
   } else if (output === 'gif') {
+    const gifFps = Math.round(Math.min(30, Math.max(5, options.gifFps ?? 12)));
+    const gifWidth = Math.round(
+      Math.min(960, Math.max(120, options.gifWidth ?? 480))
+    );
     const filters = [
       ...buildVideoFilters({
         rotate,
         cropAspect: crop ? (aspectRatio as number) : null,
         colorFilter,
         scaleHeight: null,
+        fps: null,
         speed: 1,
       }),
-      'fps=12',
-      'scale=480:-2:flags=lanczos',
+      `fps=${gifFps}`,
+      `scale=${gifWidth}:-2:flags=lanczos`,
     ].join(',');
     args.push('-vf', filters);
   } else {
@@ -238,16 +301,40 @@ export function buildTrimPlan(
         cropAspect: crop ? (aspectRatio as number) : null,
         colorFilter,
         scaleHeight,
+        fps,
         speed,
       });
+      // Edge fades and reverse act on the OUTPUT timeline, after setpts.
+      if (fadeIn) {
+        vfilters.push('fade=t=in:st=0:d=0.5');
+      }
+      if (fadeOut) {
+        vfilters.push(
+          `fade=t=out:st=${ts(Math.max(0, outDuration - 0.5))}:d=0.5`
+        );
+      }
+      if (reverse) {
+        vfilters.push('reverse');
+      }
       if (vfilters.length) {
         args.push('-vf', vfilters.join(','));
       }
-      args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23');
+      args.push('-c:v', 'libx264', '-preset', preset, '-crf', String(crf));
       if (mute) {
         args.push('-an');
       } else {
         const afilters = buildAudioFilters(speed, volumeChanged ? volume : 1);
+        if (fadeIn) {
+          afilters.push('afade=t=in:st=0:d=0.5');
+        }
+        if (fadeOut) {
+          afilters.push(
+            `afade=t=out:st=${ts(Math.max(0, outDuration - 0.5))}:d=0.5`
+          );
+        }
+        if (reverse) {
+          afilters.push('areverse');
+        }
         if (afilters.length) {
           args.push('-af', afilters.join(','));
         }
@@ -286,14 +373,20 @@ export function buildTrimPlan(
 export interface SegmentRange {
   start: number;
   end: number;
+  /** Encode this piece reversed (used by the boomerang effect). */
+  reverse?: boolean;
 }
 
-/** Floor to whole seconds, clamp negatives, drop empty ranges, sort. */
+/**
+ * Floor to whole seconds, clamp negatives, drop empty ranges, sort.
+ * The sort is stable, so equal-start pieces (loop/boomerang) keep their order.
+ */
 export function normalizeSegments(segments: SegmentRange[]): SegmentRange[] {
   return segments
     .map((s) => ({
       start: Math.max(0, Math.floor(s.start)),
       end: Math.floor(s.end),
+      reverse: !!s.reverse,
     }))
     .filter((s) => s.end > s.start)
     .sort((a, b) => a.start - b.start);
@@ -310,6 +403,9 @@ export interface SegmentsOptions {
   contrast?: number;
   saturation?: number;
   volume?: number;
+  crf?: number;
+  fps?: number | null;
+  encodePreset?: 'veryfast' | 'medium';
 }
 
 export interface SegmentStep {
@@ -350,6 +446,8 @@ export function buildSegmentsPlan(
   const speed = Math.min(2, Math.max(0.5, options.speed ?? 1));
   const mute = !!options.mute;
   const volume = Math.min(2, Math.max(0, options.volume ?? 1));
+  const crf = Math.round(Math.min(30, Math.max(16, options.crf ?? 23)));
+  const preset: 'veryfast' | 'medium' = options.encodePreset ?? 'veryfast';
   const vfilters = buildVideoFilters({
     rotate: options.rotate ?? null,
     cropAspect:
@@ -361,6 +459,7 @@ export function buildSegmentsPlan(
       options.scaleHeight && options.scaleHeight > 0
         ? Math.round(options.scaleHeight)
         : null,
+    fps: options.fps && options.fps > 0 ? Math.round(options.fps) : null,
     speed,
   });
   const afilters = buildAudioFilters(speed, mute ? 1 : volume);
@@ -376,15 +475,18 @@ export function buildSegmentsPlan(
       '-t',
       String(seg.end - seg.start),
     ];
-    if (vfilters.length) {
-      args.push('-vf', vfilters.join(','));
+    // Reversed pieces (boomerang) append reverse after the shared chain.
+    const stepVf = seg.reverse ? [...vfilters, 'reverse'] : vfilters;
+    if (stepVf.length) {
+      args.push('-vf', stepVf.join(','));
     }
-    args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23');
+    args.push('-c:v', 'libx264', '-preset', preset, '-crf', String(crf));
     if (mute) {
       args.push('-an');
     } else {
-      if (afilters.length) {
-        args.push('-af', afilters.join(','));
+      const stepAf = seg.reverse ? [...afilters, 'areverse'] : afilters;
+      if (stepAf.length) {
+        args.push('-af', stepAf.join(','));
       }
       args.push('-c:a', 'aac');
     }
@@ -416,5 +518,32 @@ export function buildSegmentsPlan(
     outExt: 'mp4',
     mimeType: 'video/mp4',
     suffix: 'stitched',
+  };
+}
+
+export interface FramePlan {
+  inputName: string;
+  outputName: string;
+  outExt: 'png';
+  mimeType: 'image/png';
+  suffix: 'frame';
+  args: string[];
+}
+
+/** Extract the single frame at `timeSeconds` as a PNG (ffmpeg-exact). */
+export function buildFramePlan(
+  input: { ext: string },
+  timeSeconds: number
+): FramePlan {
+  const t = Math.max(0, timeSeconds);
+  const inputName = `input.${input.ext}`;
+  const outputName = 'frame.png';
+  return {
+    inputName,
+    outputName,
+    outExt: 'png',
+    mimeType: 'image/png',
+    suffix: 'frame',
+    args: ['-ss', ts(t), '-i', inputName, '-frames:v', '1', outputName],
   };
 }

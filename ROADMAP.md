@@ -371,3 +371,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   progress, and a 28-case unit suite over the full option matrix. Tests 18 → 46, lint
   clean, build PASS (2.31 MB). Loop re-armed to batch through the remaining items
   wave by wave.
+- _run 32_: Mega-batch W1-005..008, 013..025, 053..055 (20 items): CRF quality +
+  frame-rate + encode-preset controls, GIF fps/width, MP3 bitrate/sample-rate,
+  effects (reverse / loop ×2/×3 / boomerang via per-segment reverse), 0.5 s edge
+  fades (post-speed timeline), ffmpeg-exact frame export, split-range-into-N-clips,
+  and a live ffmpeg command preview. Component refactored onto a single
+  trimOptions() collector. Tests 46 → 59, lint clean, build PASS (2.33 MB).
+  Wave 1: 51/100.

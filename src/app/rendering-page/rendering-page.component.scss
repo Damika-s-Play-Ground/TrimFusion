@@ -345,6 +345,41 @@
   }
 }
 
+// ── Extra tools + command preview ───────────────────────────────────────────
+.tools-group {
+  .btn-outline-secondary {
+    border-color: var(--tf-border);
+    color: var(--tf-text);
+
+    &:hover:not([disabled]) {
+      border-color: var(--tf-accent-1);
+      background: var(--tf-surface);
+      color: var(--tf-text);
+    }
+  }
+}
+
+.command-preview {
+  summary {
+    cursor: pointer;
+    color: var(--tf-muted);
+    font-size: 0.8rem;
+  }
+
+  code {
+    display: block;
+    margin-top: 0.4rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--tf-border);
+    border-radius: 8px;
+    background: var(--tf-surface-2);
+    color: var(--tf-text);
+    font-size: 0.75rem;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+}
+
 // ── Segment stitching ───────────────────────────────────────────────────────
 .segment-group {
   .btn-outline-secondary {

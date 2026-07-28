@@ -2,6 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import {
+  buildFramePlan,
   buildSegmentsPlan,
   buildTrimPlan,
   extensionOf,
@@ -187,6 +188,30 @@ export class FfmpegTrimService {
         plan.outputName,
         ...plan.steps.map((s) => s.outputName),
       ]);
+    }
+  }
+
+  /** Extract the exact frame at `timeSeconds` as a PNG via ffmpeg. */
+  async exportFrame(
+    file: File,
+    timeSeconds: number,
+    onProgress?: ProgressFn
+  ): Promise<{ blob: Blob; fileName: string }> {
+    const plan = buildFramePlan({ ext: extensionOf(file.name) }, timeSeconds);
+    const ffmpeg = await this.ensureLoaded(onProgress);
+    await ffmpeg.writeFile(plan.inputName, await fetchFile(file));
+    try {
+      await ffmpeg.exec(plan.args);
+      const data = await ffmpeg.readFile(plan.outputName);
+      const blob = new Blob([(data as Uint8Array).buffer], {
+        type: plan.mimeType,
+      });
+      return {
+        blob,
+        fileName: `${this.baseNameOf(file)}-${plan.suffix}.${plan.outExt}`,
+      };
+    } finally {
+      await this.cleanup(ffmpeg, [plan.inputName, plan.outputName]);
     }
   }
 }

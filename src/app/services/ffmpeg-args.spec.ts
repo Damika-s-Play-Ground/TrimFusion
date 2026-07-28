@@ -1,4 +1,5 @@
 import {
+  buildFramePlan,
   buildSegmentsPlan,
   buildTrimPlan,
   extensionOf,
@@ -233,6 +234,79 @@ describe('buildTrimPlan', () => {
     expect(q.args[q.args.indexOf('-t') + 1]).toBe('8');
   });
 
+  // W1-053: CRF quality control.
+  it('keeps the copy path at default CRF but re-encodes for others', () => {
+    expect(plan({ crf: 23 }).args.join(' ')).toContain('-c copy');
+    const small = plan({ crf: 28 });
+    expect(small.args).toContain('-crf');
+    expect(small.args[small.args.indexOf('-crf') + 1]).toBe('28');
+    expect(small.outExt).toBe('mp4');
+    const high = plan({ crf: 18 });
+    expect(high.args[high.args.indexOf('-crf') + 1]).toBe('18');
+  });
+
+  // W1-054: frame-rate controls (video + GIF).
+  it('maps fps to an fps filter ordered after scale', () => {
+    const p = plan({ fps: 30, scaleHeight: 720 });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    expect(vf).toContain('fps=30');
+    expect(vf.indexOf('scale=-2:720')).toBeLessThan(vf.indexOf('fps=30'));
+  });
+
+  it('honors GIF fps and width controls', () => {
+    const p = plan({ output: 'gif', gifFps: 15, gifWidth: 320 });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    expect(vf).toContain('fps=15');
+    expect(vf).toContain('scale=320:-2:flags=lanczos');
+  });
+
+  // W1-055: fades on the output timeline.
+  it('produces edge fades for video and audio', () => {
+    const p = plan({ fadeIn: true, fadeOut: true });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    const af = p.args[p.args.indexOf('-af') + 1];
+    expect(vf).toContain('fade=t=in:st=0:d=0.5');
+    expect(vf).toContain('fade=t=out:st=19.5:d=0.5');
+    expect(af).toContain('afade=t=in:st=0:d=0.5');
+    expect(af).toContain('afade=t=out:st=19.5:d=0.5');
+  });
+
+  it('places the fade-out on the post-speed timeline', () => {
+    const p = plan({ fadeOut: true, speed: 2 });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    expect(vf).toContain('fade=t=out:st=9.5:d=0.5');
+  });
+
+  // W1-013: reverse effect.
+  it('appends reverse/areverse for the reverse effect', () => {
+    const p = plan({ reverse: true });
+    const vf = p.args[p.args.indexOf('-vf') + 1];
+    const af = p.args[p.args.indexOf('-af') + 1];
+    expect(vf).toContain('reverse');
+    expect(af).toContain('areverse');
+    expect(p.outExt).toBe('mp4');
+  });
+
+  // W1-019: encode preset.
+  it('passes the encode preset through', () => {
+    const p = plan({ crf: 28, encodePreset: 'medium' });
+    expect(p.args[p.args.indexOf('-preset') + 1]).toBe('medium');
+  });
+
+  // W1-020/021: MP3 bitrate + sample rate.
+  it('uses CBR bitrate and sample rate for MP3 when requested', () => {
+    const p = plan({ output: 'audio', mp3Bitrate: 192, mp3SampleRate: 48000 });
+    expect(p.args[p.args.indexOf('-b:a') + 1]).toBe('192k');
+    expect(p.args[p.args.indexOf('-ar') + 1]).toBe('48000');
+    expect(p.args).not.toContain('-q:a');
+  });
+
+  it('keeps VBR -q:a 2 for MP3 by default', () => {
+    const p = plan({ output: 'audio' });
+    expect(p.args.join(' ')).toContain('-q:a 2');
+    expect(p.args).not.toContain('-b:a');
+  });
+
   // W1-052: download suffixes.
   it('derives the download suffix per output', () => {
     expect(plan({}).suffix).toBe('trimmed');
@@ -253,8 +327,8 @@ describe('normalizeSegments', () => {
         { start: 5, end: 1 },
       ])
     ).toEqual([
-      { start: 0, end: 3 },
-      { start: 30, end: 40 },
+      { start: 0, end: 3, reverse: false },
+      { start: 30, end: 40, reverse: false },
     ]);
   });
 });
@@ -310,6 +384,63 @@ describe('buildSegmentsPlan', () => {
     expect(() =>
       buildSegmentsPlan({ ext: 'mp4' }, { segments: [{ start: 5, end: 5 }] })
     ).toThrow();
+  });
+
+  // W1-015: boomerang building block — per-segment reverse.
+  it('appends reverse only to reversed segments (boomerang)', () => {
+    const p = buildSegmentsPlan(
+      { ext: 'mp4' },
+      {
+        segments: [
+          { start: 0, end: 5 },
+          { start: 0, end: 5, reverse: true },
+        ],
+      }
+    );
+    expect(p.steps.length).toBe(2);
+    const first = p.steps[0].args.join(' ');
+    const second = p.steps[1].args.join(' ');
+    expect(first).not.toContain('reverse');
+    expect(second).toContain('reverse');
+    expect(second).toContain('areverse');
+  });
+
+  // W1-005/W1-019 shared knobs reach segment encodes.
+  it('passes crf and preset into every segment step', () => {
+    const p = buildSegmentsPlan(
+      { ext: 'mp4' },
+      {
+        segments: [{ start: 0, end: 5 }],
+        crf: 28,
+        encodePreset: 'medium',
+      }
+    );
+    const args = p.steps[0].args;
+    expect(args[args.indexOf('-crf') + 1]).toBe('28');
+    expect(args[args.indexOf('-preset') + 1]).toBe('medium');
+  });
+});
+
+describe('buildFramePlan', () => {
+  // W1-022/W1-024: exact-frame PNG export.
+  it('extracts a single PNG frame at the requested time', () => {
+    const p = buildFramePlan({ ext: 'webm' }, 12.75);
+    expect(p.args).toEqual([
+      '-ss',
+      '12.75',
+      '-i',
+      'input.webm',
+      '-frames:v',
+      '1',
+      'frame.png',
+    ]);
+    expect(p.mimeType).toBe('image/png');
+    expect(p.suffix).toBe('frame');
+  });
+
+  it('clamps negative times to zero', () => {
+    const p = buildFramePlan({ ext: 'mp4' }, -3);
+    expect(p.args[p.args.indexOf('-ss') + 1]).toBe('0');
   });
 });
 

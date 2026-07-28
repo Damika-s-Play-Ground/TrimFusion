@@ -10,27 +10,27 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-002 Extract pure `normalizeSegments()` + `buildSegmentsPlan()` (per-segment steps + concat list/args) into the same module
 - [x] W1-003 Rewire `FfmpegTrimService.trim()` onto `buildTrimPlan()` (service = load/IO/progress only)
 - [x] W1-004 Rewire `trimSegments()` onto `buildSegmentsPlan()`
-- [ ] W1-005 Quality control: CRF select (High 18 / Balanced 23 / Small 28) for re-encoded video
-- [ ] W1-006 FPS control for video export (Original/60/30/24)
-- [ ] W1-007 FPS control for GIF export (8/12/15/24)
-- [ ] W1-008 GIF width control (320/480/640)
+- [x] W1-005 Quality control: CRF select (High 18 / Balanced 23 / Small 28) for re-encoded video
+- [x] W1-006 FPS control for video export (Original/60/30/24)
+- [x] W1-007 FPS control for GIF export (8/12/15/24)
+- [x] W1-008 GIF width control (320/480/640)
 - [ ] W1-009 Cancel mid-export (ffmpeg.terminate + service re-init + Cancel button)
 - [ ] W1-010 Duration guardrail: warn (non-blocking) when export range > 10 min
 - [ ] W1-011 File-size guardrail: warn when input > 500 MB
 - [ ] W1-012 OOM detection: catch wasm abort → friendly "try lower resolution/shorter range" message
-- [ ] W1-013 Reverse-video option (`reverse`/`areverse`)
-- [ ] W1-014 Loop ×2/×3 option (concat same segment)
-- [ ] W1-015 Boomerang option (forward + reversed concat)
-- [ ] W1-016 Video fade-in option (`fade=t=in`)
-- [ ] W1-017 Video fade-out option (computed from range duration)
-- [ ] W1-018 Audio fades tied to video fades (`afade`)
-- [ ] W1-019 Encode-speed preset option (veryfast/medium)
-- [ ] W1-020 MP3 bitrate presets (128/192/320 kbps)
-- [ ] W1-021 MP3 sample-rate option (44.1/48 kHz)
-- [ ] W1-022 Poster-frame export: first frame of range as PNG via ffmpeg
-- [ ] W1-023 Split-into-N-clips export (sequential downloads)
-- [ ] W1-024 Frame-at-exact-time export via ffmpeg (complements canvas grab)
-- [ ] W1-025 Command preview: show the generated ffmpeg command in the UI (collapsible)
+- [x] W1-013 Reverse-video option (`reverse`/`areverse`)
+- [x] W1-014 Loop ×2/×3 option (concat same segment)
+- [x] W1-015 Boomerang option (forward + reversed concat)
+- [x] W1-016 Video fade-in option (`fade=t=in`)
+- [x] W1-017 Video fade-out option (computed from range duration)
+- [x] W1-018 Audio fades tied to video fades (`afade`)
+- [x] W1-019 Encode-speed preset option (veryfast/medium)
+- [x] W1-020 MP3 bitrate presets (128/192/320 kbps)
+- [x] W1-021 MP3 sample-rate option (44.1/48 kHz)
+- [x] W1-022 Poster-frame export: first frame of range as PNG via ffmpeg
+- [x] W1-023 Split-into-N-clips export (sequential downloads)
+- [x] W1-024 Frame-at-exact-time export via ffmpeg (complements canvas grab)
+- [x] W1-025 Command preview: show the generated ffmpeg command in the UI (collapsible)
 
 ## E13 — Test suite for the pure engine (30)
 
@@ -61,9 +61,9 @@ references its W1-IDs; gates (format/lint/build/test) before every commit._
 - [x] W1-050 Test: segment steps use output seeking + shared filters
 - [x] W1-051 Test: extensionOf edge cases (no ext, uppercase, multi-dot)
 - [x] W1-052 Test: suffix naming (trimmed/cropped/audio/clip/stitched)
-- [ ] W1-053 Test: CRF option maps to `-crf` values (after W1-005)
-- [ ] W1-054 Test: fps option maps to `fps=` / `-r` (after W1-006/007)
-- [ ] W1-055 Test: fade options produce fade/afade args (after W1-016..018)
+- [x] W1-053 Test: CRF option maps to `-crf` values (after W1-005)
+- [x] W1-054 Test: fps option maps to `fps=` / `-r` (after W1-006/007)
+- [x] W1-055 Test: fade options produce fade/afade args (after W1-016..018)
 
 ## E14 — Strict TS, CI & DX (20)
 

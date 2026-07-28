@@ -10,6 +10,12 @@ import {
   RotateOption,
   TrimOutput,
 } from '../services/ffmpeg-trim.service';
+import {
+  buildTrimPlan,
+  extensionOf,
+  SegmentRange,
+  TrimOptions,
+} from '../services/ffmpeg-args';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -230,6 +236,112 @@ export class RenderingPageComponent implements OnDestroy {
     return Math.round(this.volumeGain * 100);
   }
 
+  // Encoding quality (x264 CRF) + output frame rate (video export).
+  readonly crfPresets: { label: string; value: number }[] = [
+    { label: 'High quality (larger file)', value: 18 },
+    { label: 'Balanced (default)', value: 23 },
+    { label: 'Smaller file (compress)', value: 28 },
+  ];
+  selectedCrf = 23;
+  readonly fpsPresets: { label: string; value: number | null }[] = [
+    { label: 'Original frame rate', value: null },
+    { label: '60 fps', value: 60 },
+    { label: '30 fps', value: 30 },
+    { label: '24 fps (cinematic)', value: 24 },
+  ];
+  selectedFps: number | null = null;
+  readonly encodePresets: {
+    label: string;
+    value: 'veryfast' | 'medium';
+  }[] = [
+    { label: 'Fast encode (default)', value: 'veryfast' },
+    { label: 'Better compression (slower)', value: 'medium' },
+  ];
+  selectedEncodePreset: 'veryfast' | 'medium' = 'veryfast';
+
+  // GIF-specific knobs.
+  readonly gifFpsPresets = [8, 12, 15, 24];
+  gifFps = 12;
+  readonly gifWidthPresets = [320, 480, 640];
+  gifWidth = 480;
+
+  // MP3-specific knobs.
+  readonly mp3BitratePresets: { label: string; value: number | null }[] = [
+    { label: 'VBR high (default)', value: null },
+    { label: '128 kbps', value: 128 },
+    { label: '192 kbps', value: 192 },
+    { label: '320 kbps', value: 320 },
+  ];
+  mp3Bitrate: number | null = null;
+  readonly mp3SampleRatePresets: { label: string; value: number | null }[] = [
+    { label: 'Original sample rate', value: null },
+    { label: '44.1 kHz', value: 44100 },
+    { label: '48 kHz', value: 48000 },
+  ];
+  mp3SampleRate: number | null = null;
+
+  // Playback effects (video export only). Loop/boomerang stitch segments.
+  readonly effectPresets: { label: string; value: string }[] = [
+    { label: 'None', value: 'none' },
+    { label: 'Reverse', value: 'reverse' },
+    { label: 'Loop ×2', value: 'loop2' },
+    { label: 'Loop ×3', value: 'loop3' },
+    { label: 'Boomerang', value: 'boomerang' },
+  ];
+  selectedEffect = 'none';
+
+  // Edge fades (0.5 s, video export only).
+  fadeIn = false;
+  fadeOut = false;
+
+  // Split-into-N sequential clip downloads.
+  readonly splitPresets = [2, 3, 4];
+  splitCount = 2;
+
+  /** Collect every active control into one ffmpeg options object. */
+  private trimOptions(): TrimOptions {
+    return {
+      startSeconds: this.startSeconds,
+      endSeconds: this.endSeconds,
+      aspectRatio: this.selectedAspect,
+      output: this.selectedOutput,
+      speed: this.selectedSpeed,
+      mute: this.muteAudio,
+      scaleHeight: this.selectedScale,
+      preciseCut: this.preciseCut,
+      rotate: this.selectedRotate,
+      brightness: this.brightness,
+      contrast: this.contrast,
+      saturation: this.saturation,
+      volume: this.volumeGain,
+      crf: this.selectedCrf,
+      fps: this.selectedFps,
+      gifFps: this.gifFps,
+      gifWidth: this.gifWidth,
+      encodePreset: this.selectedEncodePreset,
+      mp3Bitrate: this.mp3Bitrate,
+      mp3SampleRate: this.mp3SampleRate,
+      reverse: this.selectedEffect === 'reverse',
+      fadeIn: this.fadeIn,
+      fadeOut: this.fadeOut,
+    };
+  }
+
+  /** The exact ffmpeg command the current settings produce (education/debug). */
+  get commandPreview(): string {
+    if (!this.localFile) {
+      return '';
+    }
+    const plan = buildTrimPlan(
+      {
+        ext: extensionOf(this.localFile.name),
+        mimeType: this.localFile.type,
+      },
+      this.trimOptions()
+    );
+    return `ffmpeg ${plan.args.join(' ')}`;
+  }
+
   // Light/dark theme (persisted). Dark is the default.
   theme: 'dark' | 'light' = 'dark';
 
@@ -325,28 +437,96 @@ export class RenderingPageComponent implements OnDestroy {
     this.trimProgress = 0;
     this.trimError = '';
     try {
-      const { blob, fileName } = await this.ffmpegTrim.trim(this.localFile, {
-        startSeconds: this.startSeconds,
-        endSeconds: this.endSeconds,
-        aspectRatio: this.selectedAspect,
-        output: this.selectedOutput,
-        speed: this.selectedSpeed,
-        mute: this.muteAudio,
-        scaleHeight: this.selectedScale,
-        preciseCut: this.preciseCut,
-        rotate: this.selectedRotate,
-        brightness: this.brightness,
-        contrast: this.contrast,
-        saturation: this.saturation,
-        volume: this.volumeGain,
-        onProgress: (percent) => (this.trimProgress = percent),
-      });
-      this.downloadBlob(blob, fileName);
+      const onProgress = (percent: number) => (this.trimProgress = percent);
+      // Loop/boomerang effects are built by stitching segments.
+      const stitched =
+        this.selectedOutput === 'video' &&
+        ['loop2', 'loop3', 'boomerang'].includes(this.selectedEffect);
+      let result: { blob: Blob; fileName: string };
+      if (stitched) {
+        const range = { start: this.startSeconds, end: this.endSeconds };
+        const segments: SegmentRange[] =
+          this.selectedEffect === 'boomerang'
+            ? [range, { ...range, reverse: true }]
+            : Array(this.selectedEffect === 'loop3' ? 3 : 2).fill(range);
+        result = await this.ffmpegTrim.trimSegments(this.localFile, {
+          ...this.trimOptions(),
+          segments,
+          onProgress,
+        });
+      } else {
+        result = await this.ffmpegTrim.trim(this.localFile, {
+          ...this.trimOptions(),
+          onProgress,
+        });
+      }
+      this.downloadBlob(result.blob, result.fileName);
     } catch (err) {
       this.trimError =
         'Trimming failed. This runs entirely in your browser and can be ' +
         'memory-heavy for large files — try a shorter range or smaller file.';
       console.error('ffmpeg trim failed', err);
+    } finally {
+      this.trimming = false;
+    }
+  }
+
+  /** Save the exact frame at the trim start as a PNG (ffmpeg-precise). */
+  async exportFrameExact(): Promise<void> {
+    if (!this.localFile || this.trimming) {
+      return;
+    }
+    this.trimming = true;
+    this.trimProgress = 0;
+    this.trimError = '';
+    try {
+      const { blob, fileName } = await this.ffmpegTrim.exportFrame(
+        this.localFile,
+        this.startSeconds,
+        (percent) => (this.trimProgress = percent)
+      );
+      this.downloadBlob(blob, fileName);
+    } catch (err) {
+      this.trimError = 'Frame export failed — try a different position.';
+      console.error('ffmpeg frame export failed', err);
+    } finally {
+      this.trimming = false;
+    }
+  }
+
+  /** Split the selected range into N equal clips, downloaded sequentially. */
+  async splitAndDownload(): Promise<void> {
+    if (!this.localFile || this.trimming) {
+      return;
+    }
+    const total = this.endSeconds - this.startSeconds;
+    if (total < this.splitCount) {
+      this.trimError = 'Range is too short to split into that many clips.';
+      return;
+    }
+    this.trimming = true;
+    this.trimProgress = 0;
+    this.trimError = '';
+    try {
+      const step = Math.floor(total / this.splitCount);
+      for (let i = 0; i < this.splitCount; i++) {
+        const start = this.startSeconds + i * step;
+        const end = i === this.splitCount - 1 ? this.endSeconds : start + step;
+        const { blob, fileName } = await this.ffmpegTrim.trim(this.localFile, {
+          ...this.trimOptions(),
+          startSeconds: start,
+          endSeconds: end,
+          output: 'video',
+          onProgress: (percent) => (this.trimProgress = percent),
+        });
+        this.downloadBlob(
+          blob,
+          fileName.replace(/(\.[^.]+)$/, `-part${i + 1}$1`)
+        );
+      }
+    } catch (err) {
+      this.trimError = 'Splitting failed. Try fewer parts or a smaller range.';
+      console.error('ffmpeg split failed', err);
     } finally {
       this.trimming = false;
     }
@@ -386,16 +566,8 @@ export class RenderingPageComponent implements OnDestroy {
       const { blob, fileName } = await this.ffmpegTrim.trimSegments(
         this.localFile,
         {
+          ...this.trimOptions(),
           segments: this.segments,
-          aspectRatio: this.selectedAspect,
-          speed: this.selectedSpeed,
-          mute: this.muteAudio,
-          scaleHeight: this.selectedScale,
-          rotate: this.selectedRotate,
-          brightness: this.brightness,
-          contrast: this.contrast,
-          saturation: this.saturation,
-          volume: this.volumeGain,
           onProgress: (percent) => (this.trimProgress = percent),
         }
       );

@@ -356,6 +356,176 @@
                   </select>
                 </div>
                 <div
+                  class="quality-group mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <label for="crfSelect" class="form-label d-block mb-1">
+                    Quality
+                  </label>
+                  <select
+                    id="crfSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedCrf"
+                    [disabled]="trimming"
+                    aria-label="Encoding quality"
+                  >
+                    <option *ngFor="let c of crfPresets" [ngValue]="c.value">
+                      {{ c.label }}
+                    </option>
+                  </select>
+                </div>
+                <div class="fps-group mb-2" *ngIf="selectedOutput === 'video'">
+                  <label for="fpsSelect" class="form-label d-block mb-1">
+                    Frame rate
+                  </label>
+                  <select
+                    id="fpsSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedFps"
+                    [disabled]="trimming"
+                    aria-label="Output frame rate"
+                  >
+                    <option *ngFor="let f of fpsPresets" [ngValue]="f.value">
+                      {{ f.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="effect-group mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <label for="effectSelect" class="form-label d-block mb-1">
+                    Effect
+                  </label>
+                  <select
+                    id="effectSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedEffect"
+                    [disabled]="trimming"
+                    aria-label="Playback effect"
+                  >
+                    <option *ngFor="let e of effectPresets" [ngValue]="e.value">
+                      {{ e.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="encode-group mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <label for="encodeSelect" class="form-label d-block mb-1">
+                    Encode speed
+                  </label>
+                  <select
+                    id="encodeSelect"
+                    class="form-select"
+                    [(ngModel)]="selectedEncodePreset"
+                    [disabled]="trimming"
+                    aria-label="Encode speed preset"
+                  >
+                    <option *ngFor="let p of encodePresets" [ngValue]="p.value">
+                      {{ p.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="fade-group form-check mb-2"
+                  *ngIf="selectedOutput === 'video'"
+                >
+                  <input
+                    id="fadeInCheck"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="fadeIn"
+                    [disabled]="trimming"
+                  />
+                  <label for="fadeInCheck" class="form-check-label me-3">
+                    Fade in
+                  </label>
+                  <input
+                    id="fadeOutCheck"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="fadeOut"
+                    [disabled]="trimming"
+                  />
+                  <label for="fadeOutCheck" class="form-check-label">
+                    Fade out
+                  </label>
+                </div>
+                <div class="gif-group mb-2" *ngIf="selectedOutput === 'gif'">
+                  <label for="gifFpsSelect" class="form-label d-block mb-1">
+                    GIF frame rate
+                  </label>
+                  <select
+                    id="gifFpsSelect"
+                    class="form-select"
+                    [(ngModel)]="gifFps"
+                    [disabled]="trimming"
+                    aria-label="GIF frame rate"
+                  >
+                    <option *ngFor="let f of gifFpsPresets" [ngValue]="f">
+                      {{ f }} fps
+                    </option>
+                  </select>
+                  <label
+                    for="gifWidthSelect"
+                    class="form-label d-block mb-1 mt-2"
+                  >
+                    GIF width
+                  </label>
+                  <select
+                    id="gifWidthSelect"
+                    class="form-select"
+                    [(ngModel)]="gifWidth"
+                    [disabled]="trimming"
+                    aria-label="GIF width"
+                  >
+                    <option *ngFor="let w of gifWidthPresets" [ngValue]="w">
+                      {{ w }} px
+                    </option>
+                  </select>
+                </div>
+                <div class="mp3-group mb-2" *ngIf="selectedOutput === 'audio'">
+                  <label for="mp3BitrateSelect" class="form-label d-block mb-1">
+                    MP3 bitrate
+                  </label>
+                  <select
+                    id="mp3BitrateSelect"
+                    class="form-select"
+                    [(ngModel)]="mp3Bitrate"
+                    [disabled]="trimming"
+                    aria-label="MP3 bitrate"
+                  >
+                    <option
+                      *ngFor="let b of mp3BitratePresets"
+                      [ngValue]="b.value"
+                    >
+                      {{ b.label }}
+                    </option>
+                  </select>
+                  <label
+                    for="mp3RateSelect"
+                    class="form-label d-block mb-1 mt-2"
+                  >
+                    Sample rate
+                  </label>
+                  <select
+                    id="mp3RateSelect"
+                    class="form-select"
+                    [(ngModel)]="mp3SampleRate"
+                    [disabled]="trimming"
+                    aria-label="MP3 sample rate"
+                  >
+                    <option
+                      *ngFor="let r of mp3SampleRatePresets"
+                      [ngValue]="r.value"
+                    >
+                      {{ r.label }}
+                    </option>
+                  </select>
+                </div>
+                <div
                   class="mute-group form-check mb-2"
                   *ngIf="selectedOutput === 'video'"
                 >
@@ -384,6 +554,41 @@
                   <label for="preciseCheck" class="form-check-label">
                     Precise cut (frame-accurate, slower)
                   </label>
+                </div>
+                <div class="tools-group mb-2">
+                  <span class="form-label d-block mb-1">Extra tools</span>
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="exportFrameExact()"
+                      [disabled]="trimming"
+                    >
+                      Save frame at start (PNG)
+                    </button>
+                    <select
+                      class="form-select form-select-sm w-auto"
+                      [(ngModel)]="splitCount"
+                      [disabled]="trimming"
+                      aria-label="Number of clips to split into"
+                    >
+                      <option *ngFor="let n of splitPresets" [ngValue]="n">
+                        {{ n }} parts
+                      </option>
+                    </select>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      (click)="splitAndDownload()"
+                      [disabled]="trimming"
+                    >
+                      Split range into clips
+                    </button>
+                  </div>
+                  <details class="command-preview mt-2">
+                    <summary>ffmpeg command preview</summary>
+                    <code>{{ commandPreview }}</code>
+                  </details>
                 </div>
                 <div class="segment-group mb-2">
                   <span class="form-label d-block mb-1">
