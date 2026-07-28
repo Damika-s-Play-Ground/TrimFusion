@@ -80,9 +80,9 @@ specs; DOM work stays thin.
 - [x] W2-065 Shortcuts on/off toggle in the UI
 - [x] W2-066 Persist the shortcuts preference
 - [x] W2-067 Undo/redo stack for control state (pure + spec)
-- [ ] W2-068 Ctrl/Cmd+Z and Shift+Ctrl/Cmd+Z wired to undo/redo
-- [ ] W2-069 Serialize settings state into a shareable URL fragment
-- [ ] W2-070 Parse/apply URL settings on load (round-trip with 069)
+- [x] W2-068 Ctrl/Cmd+Z and Shift+Ctrl/Cmd+Z wired to undo/redo
+- [x] W2-069 Serialize settings state into a shareable URL fragment
+- [x] W2-070 Parse/apply URL settings on load (round-trip with 069)
 
 ## E13 — Tests (15)
 
@@ -92,7 +92,7 @@ specs; DOM work stays thin.
 - [x] W2-074 Spec: waveform peak bucketing
 - [x] W2-075 Spec: shortcut map completeness + no duplicate bindings
 - [x] W2-076 Spec: undo/redo stack behavior
-- [ ] W2-077 Spec: URL settings round-trip
+- [x] W2-077 Spec: URL settings round-trip
 - [x] W2-078 Spec: debounce helper timing (fakeAsync)
 - [ ] W2-079 Component spec: timeline renders segment blocks
 - [ ] W2-080 Component spec: numeric time inputs validate/clamp

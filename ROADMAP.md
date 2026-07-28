@@ -546,3 +546,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   bounded **HistoryStack** (push clears redo branch, oldest-trim at limit, clear();
   5-case spec) ready for the Ctrl+Z wiring next run. Tests 112 → 117, gates green
   (2.49 MB). Wave 2: 77/100.
+- _run 56_ (executor): W2-068..070, 077 (4 items) — **E7 COMPLETE (all 20)**:
+  Ctrl/Cmd+Z undo + Shift redo over full EditorState snapshots (ngDoCheck transition
+  detection with 500 ms burst coalescing so slider drags become one step; history
+  suppressed during restores), **shareable settings links** — serializeState/
+  parseState with stable compact keys, only-non-defaults, tolerant parsing that
+  drops garbage numbers and invalid enums (5-case round-trip spec), "Copy settings
+  link" button, and fragment restore on load with a snackbar note. Tests 117 → 122,
+  gates green (2.49 MB). Wave 2: 81/100 — remaining: E13 component specs (079/080/
+  081/085) and the E11 polish block (086..100).

@@ -1,5 +1,6 @@
 import {
   Component,
+  DoCheck,
   HostBinding,
   HostListener,
   OnDestroy,
@@ -30,6 +31,7 @@ import {
 } from '@services/ffmpeg-trim.service';
 import { messageFor, TrimError } from '@services/trim-error';
 import { formatTime as formatTimeFn } from '../shared/format-time';
+import { HistoryStack } from '../shared/history';
 import {
   cropOverlayRect,
   OverlayRect,
@@ -39,6 +41,12 @@ import {
   previewTransform,
 } from '../shared/preview-css';
 import { actionForKey, isTypingTarget } from '../shared/shortcuts';
+import {
+  DEFAULT_STATE,
+  EditorState,
+  parseState,
+  serializeState,
+} from '../shared/url-state';
 import {
   captureFilmstrip,
   FilmstripHandle,
@@ -125,7 +133,7 @@ export function extractVideoId(input: string): string | null {
   templateUrl: './rendering-page.component.html',
   styleUrls: ['./rendering-page.component.scss'],
 })
-export class RenderingPageComponent implements OnDestroy {
+export class RenderingPageComponent implements DoCheck, OnDestroy {
   youtubeUrl = '';
   embedUrl = '';
   sanitizedUrl!: SafeResourceUrl;
@@ -213,6 +221,121 @@ export class RenderingPageComponent implements OnDestroy {
   shortcutsEnabled = true;
   showCheatSheet = false;
 
+  // ── Undo/redo (W2-067/068) + shareable URL state (W2-069/070) ────────────
+  private readonly history = new HistoryStack<EditorState>();
+  private lastStateKey: string | null = null;
+  private lastState: EditorState | null = null;
+  private lastPushAt = 0;
+  private suppressHistory = false;
+
+  /** Snapshot every editor control (the URL/undo state). */
+  private collectState(): EditorState {
+    return {
+      start: this.startSeconds,
+      end: this.endSeconds,
+      output: this.selectedOutput,
+      aspect: this.selectedAspect,
+      rotate: this.selectedRotate,
+      brightness: this.brightness,
+      contrast: this.contrast,
+      saturation: this.saturation,
+      speed: this.selectedSpeed,
+      mute: this.muteAudio,
+      volume: this.volumeGain,
+      scale: this.selectedScale,
+      precise: this.preciseCut,
+      crf: this.selectedCrf,
+      fps: this.selectedFps,
+      encodePreset: this.selectedEncodePreset,
+      gifFps: this.gifFps,
+      gifWidth: this.gifWidth,
+      mp3Bitrate: this.mp3Bitrate,
+      mp3SampleRate: this.mp3SampleRate,
+      effect: this.selectedEffect,
+      fadeIn: this.fadeIn,
+      fadeOut: this.fadeOut,
+    };
+  }
+
+  private applyState(state: Partial<EditorState>): void {
+    this.suppressHistory = true;
+    const merged = { ...this.collectState(), ...state };
+    this.startSeconds = merged.start;
+    this.endSeconds = merged.end;
+    this.selectedOutput = merged.output;
+    this.selectedAspect = merged.aspect;
+    this.selectedRotate = merged.rotate;
+    this.brightness = merged.brightness;
+    this.contrast = merged.contrast;
+    this.saturation = merged.saturation;
+    this.selectedSpeed = merged.speed;
+    this.muteAudio = merged.mute;
+    this.volumeGain = merged.volume;
+    this.selectedScale = merged.scale;
+    this.preciseCut = merged.precise;
+    this.selectedCrf = merged.crf;
+    this.selectedFps = merged.fps;
+    this.selectedEncodePreset = merged.encodePreset;
+    this.gifFps = merged.gifFps;
+    this.gifWidth = merged.gifWidth;
+    this.mp3Bitrate = merged.mp3Bitrate;
+    this.mp3SampleRate = merged.mp3SampleRate;
+    this.selectedEffect = merged.effect;
+    this.fadeIn = merged.fadeIn;
+    this.fadeOut = merged.fadeOut;
+  }
+
+  /** Change detection tick: record state transitions (bursts coalesced). */
+  ngDoCheck(): void {
+    const state = this.collectState();
+    const key = `${state.start}|${state.end}|${serializeState(state)}`;
+    if (this.lastStateKey === null || this.suppressHistory) {
+      this.lastStateKey = key;
+      this.lastState = state;
+      this.suppressHistory = false;
+      return;
+    }
+    if (key !== this.lastStateKey) {
+      const now = performance.now();
+      // Coalesce rapid bursts (slider drags) into one undo step.
+      if (now - this.lastPushAt > 500 && this.lastState) {
+        this.history.push(this.lastState);
+        this.lastPushAt = now;
+      }
+      this.lastStateKey = key;
+      this.lastState = state;
+    }
+  }
+
+  undoSettings(): void {
+    const previous = this.history.undo(this.collectState());
+    if (previous) {
+      this.applyState(previous);
+      this.notify('Settings change undone.');
+    }
+  }
+
+  redoSettings(): void {
+    const next = this.history.redo(this.collectState());
+    if (next) {
+      this.applyState(next);
+      this.notify('Settings change redone.');
+    }
+  }
+
+  /** Copy a link that reproduces the current settings (no file). */
+  async copyShareLink(): Promise<void> {
+    const fragment = serializeState(this.collectState());
+    const url =
+      location.origin + location.pathname + (fragment ? '#' + fragment : '');
+    try {
+      await navigator.clipboard.writeText(url);
+      this.notify('Settings link copied — send it to reproduce this setup.');
+    } catch {
+      this.trimError = 'Could not access the clipboard.';
+    }
+  }
+
   setShortcutsEnabled(value: boolean): void {
     this.shortcutsEnabled = value;
     try {
@@ -232,6 +355,7 @@ export class RenderingPageComponent implements OnDestroy {
     { keys: '+ / −', label: 'Timeline zoom' },
     { keys: 'S', label: 'Add current range as a segment' },
     { keys: 'E', label: 'Export' },
+    { keys: 'Ctrl/\u2318+Z', label: 'Undo settings change (Shift: redo)' },
     { keys: '?', label: 'Show this cheat-sheet' },
     { keys: 'Esc', label: 'Close the cheat-sheet' },
   ];
@@ -265,6 +389,20 @@ export class RenderingPageComponent implements OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onGlobalKeydown(event: KeyboardEvent): void {
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      !event.altKey &&
+      event.key.toLowerCase() === 'z' &&
+      !isTypingTarget(event.target)
+    ) {
+      event.preventDefault();
+      if (event.shiftKey) {
+        this.redoSettings();
+      } else {
+        this.undoSettings();
+      }
+      return;
+    }
     if (
       !this.shortcutsEnabled ||
       event.ctrlKey ||
@@ -822,6 +960,14 @@ export class RenderingPageComponent implements OnDestroy {
       }
     } catch {
       /* ignore storage errors */
+    }
+    // Apply shared settings from the URL fragment (W2-070).
+    if (location.hash.length > 1) {
+      const shared = parseState(location.hash);
+      if (Object.keys(shared).length) {
+        this.applyState({ ...DEFAULT_STATE, ...shared });
+        this.notify('Settings restored from the shared link.');
+      }
     }
   }
 

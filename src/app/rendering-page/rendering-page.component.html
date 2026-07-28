@@ -599,6 +599,15 @@
                     <button
                       type="button"
                       class="btn btn-sm btn-outline-secondary"
+                      (click)="copyShareLink()"
+                      [disabled]="trimming"
+                      title="Copy a link that reproduces the current settings"
+                    >
+                      Copy settings link
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
                       (click)="copyDiagnostics()"
                       [disabled]="trimming"
                       title="Copy settings, command and browser capabilities for bug reports"
