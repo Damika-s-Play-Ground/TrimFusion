@@ -584,3 +584,11 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   progress bar now reads "Loading the video engine (first run, ~30 MB)… / Processing…
   / Stitching segments…" with the percent — the first-export 30 MB download finally
   explains itself. Gates green (128/128, 2.50 MB). Wave 2: 92/100.
+- _run 60_ (executor): W2-091, 094..096, 098 (5 items): **designed empty state**
+  (inline film-icon SVG + guidance copy replaces the old placeholder JPEG, which is
+  deleted), **SVG header icons** (sun/moon theme toggle, keyboard icon — emoji gone),
+  **micro-interaction pass** (consistent hover/active transitions with a pressed
+  translate, reduced-motion-safe), **control consistency** (custom SVG select chevron,
+  accent-colored checkboxes), and **coarse-pointer touch targets** (bigger zoom/nudge
+  buttons, taller segment lane/blocks on touch devices). Gates green (128/128,
+  2.50 MB). Wave 2: 97/100 — remaining: 097 mobile audit, 099 baseline doc, 100 exit.

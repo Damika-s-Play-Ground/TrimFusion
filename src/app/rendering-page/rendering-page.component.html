@@ -23,7 +23,32 @@
               "
               [attr.aria-pressed]="theme === 'light'"
             >
-              {{ theme === 'dark' ? '☀️ Light' : '🌙 Dark' }}
+              <svg
+                *ngIf="theme === 'dark'"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path
+                  d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"
+                />
+              </svg>
+              <svg
+                *ngIf="theme === 'light'"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+              </svg>
+              {{ theme === 'dark' ? 'Light' : 'Dark' }}
             </button>
             <button
               type="button"
@@ -32,7 +57,19 @@
               aria-label="Show keyboard shortcuts"
               [attr.aria-expanded]="showCheatSheet"
             >
-              ⌨ Keys
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                aria-hidden="true"
+              >
+                <rect x="2" y="7" width="20" height="11" rx="2" />
+                <path d="M6 11h1M10 11h1M14 11h1M18 11h0M7 14.5h10" />
+              </svg>
+              Keys
             </button>
           </div>
         </div>
@@ -131,12 +168,24 @@
                   "
                   allowfullscreen
                 ></iframe>
-                <img
-                  *ngIf="!embedUrl && !localVideoUrl"
-                  src="assets/default-video-thumbnail.jpg"
-                  alt="placeholder"
-                  class="default-video-thumbnail"
-                />
+                <div class="empty-media" *ngIf="!embedUrl && !localVideoUrl">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="44"
+                    height="44"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    aria-hidden="true"
+                  >
+                    <rect x="2" y="5" width="20" height="14" rx="3" />
+                    <path d="M10 9.5v5l4.5-2.5L10 9.5z" fill="currentColor" />
+                  </svg>
+                  <p>
+                    No video yet — paste a YouTube link to preview, or upload a
+                    file to edit &amp; export locally.
+                  </p>
+                </div>
               </div>
               <div class="preview-toggle form-check" *ngIf="localVideoUrl">
                 <input

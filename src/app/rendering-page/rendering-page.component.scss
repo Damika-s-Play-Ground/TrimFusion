@@ -541,3 +541,69 @@
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
   }
 }
+
+// ── Empty state (W2-091) ────────────────────────────────────────────────────
+.empty-media {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  color: var(--tf-muted);
+  padding: 1.5rem;
+  text-align: center;
+
+  svg {
+    color: var(--tf-accent-1);
+    opacity: 0.8;
+  }
+
+  p {
+    margin: 0;
+    max-width: 34ch;
+    font-size: var(--tf-note-size);
+  }
+}
+
+// ── Header toggle icons (W2-094) ────────────────────────────────────────────
+.tf-theme-toggle svg {
+  vertical-align: -2px;
+  margin-right: 0.3rem;
+}
+
+// ── Micro-interactions (W2-095) + control consistency (W2-096) ──────────────
+.btn,
+.zoom-btn,
+.tf-theme-toggle {
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.06s ease;
+
+  &:active:not([disabled]) {
+    transform: translateY(1px);
+  }
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2394a3b8'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 14px;
+  padding-right: 2rem;
+}
+
+.form-check-input {
+  accent-color: var(--tf-accent-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .zoom-btn,
+  .tf-theme-toggle {
+    transition: none;
+  }
+}

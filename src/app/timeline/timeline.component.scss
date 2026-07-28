@@ -312,3 +312,25 @@
 }
 
 @include tokens.tf-focus-visible;
+
+// ── Touch targets on coarse pointers (W2-098) ───────────────────────────────
+@media (pointer: coarse) {
+  .zoom-btn {
+    min-width: 40px;
+    min-height: 34px;
+  }
+
+  .nudge-btn {
+    min-width: 30px;
+    min-height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .segment-lane {
+    height: 26px;
+  }
+
+  .segment-block {
+    min-width: 24px;
+  }
+}

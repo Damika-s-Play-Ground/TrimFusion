@@ -109,13 +109,13 @@ specs; DOM work stays thin.
 - [x] W2-088 Sticky export button on small screens
 - [x] W2-089 Extract design tokens (spacing/typography scale) in SCSS
 - [x] W2-090 Focus-visible states for every interactive element
-- [ ] W2-091 Empty-state (no file loaded) content polish
+- [x] W2-091 Empty-state (no file loaded) content polish
 - [x] W2-092 Engine-download skeleton/indicator (first export)
 - [x] W2-093 Progress bar stage labels (loading engine / encoding / stitching)
-- [ ] W2-094 Replace emoji theme toggle with inline SVG icons
-- [ ] W2-095 Button hover/active micro-interaction audit
-- [ ] W2-096 Consistent select/checkbox visual pass
+- [x] W2-094 Replace emoji theme toggle with inline SVG icons
+- [x] W2-095 Button hover/active micro-interaction audit
+- [x] W2-096 Consistent select/checkbox visual pass
 - [ ] W2-097 ≤480 px layout audit (controls stack, no overflow)
-- [ ] W2-098 Larger touch targets for timeline handles on mobile
+- [x] W2-098 Larger touch targets for timeline handles on mobile
 - [ ] W2-099 DEFER-FRIENDLY: visual-regression baseline doc (manual screenshots list)
 - [ ] W2-100 Wave-2 exit: retro + metrics + generate plan/wave-3.md
