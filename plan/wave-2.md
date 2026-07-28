@@ -10,11 +10,11 @@ specs; DOM work stays thin.
 
 ## E2 — Timeline & preview (50)
 
-- [ ] W2-001 `TimelineComponent` scaffold: extract the timeline zone (slider + readouts) from rendering-page into `src/app/timeline/`
-- [ ] W2-002 Filmstrip util: capture N thumbnails via hidden-video canvas seeks (async generator, cancellable)
-- [ ] W2-003 Filmstrip strip rendered under the slider
-- [ ] W2-004 Filmstrip regenerates on new file; cached per object URL
-- [ ] W2-005 Filmstrip loading skeleton state
+- [x] W2-001 `TimelineComponent` scaffold: extract the timeline zone (slider + readouts) from rendering-page into `src/app/timeline/`
+- [x] W2-002 Filmstrip util: capture N thumbnails via hidden-video canvas seeks (async generator, cancellable)
+- [x] W2-003 Filmstrip strip rendered under the slider
+- [x] W2-004 Filmstrip regenerates on new file; cached per object URL
+- [x] W2-005 Filmstrip loading skeleton state
 - [ ] W2-006 Waveform: decode audio to PCM via OfflineAudioContext (util)
 - [ ] W2-007 Waveform peaks: min/max bucket reduction (pure + spec)
 - [ ] W2-008 Waveform canvas strip under the filmstrip

@@ -272,35 +272,6 @@
   }
 }
 
-// ── Trim timeline ───────────────────────────────────────────────────────────
-.timeline-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 1.1rem 0;
-
-  .input-group {
-    width: auto;
-    margin-bottom: 0 !important;
-    flex: 0 0 auto;
-
-    .form-control {
-      width: 84px;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-    }
-  }
-}
-
-.main-slider {
-  flex: 1 1 auto;
-  padding: 0 0.5rem;
-
-  mat-slider {
-    width: 100%;
-  }
-}
-
 // ── Tool selectors (export / crop) ──────────────────────────────────────────
 .export-group,
 .aspect-group {

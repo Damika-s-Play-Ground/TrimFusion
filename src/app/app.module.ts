@@ -12,9 +12,15 @@ import { AppComponent } from './app.component';
 import { GlobalErrorHandler } from './global-error-handler';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { RenderingPageComponent } from './rendering-page/rendering-page.component';
+import { TimelineComponent } from './timeline/timeline.component';
 
 @NgModule({
-  declarations: [AppComponent, RenderingPageComponent, NotFoundPageComponent],
+  declarations: [
+    AppComponent,
+    RenderingPageComponent,
+    NotFoundPageComponent,
+    TimelineComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

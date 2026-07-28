@@ -1,0 +1,62 @@
+<div
+  class="filmstrip"
+  *ngIf="filmstripLoading || filmstrip.length"
+  aria-hidden="true"
+>
+  <ng-container *ngIf="filmstripLoading; else strip">
+    <span class="skeleton-cell" *ngFor="let cell of skeletonCells"></span>
+  </ng-container>
+  <ng-template #strip>
+    <img *ngFor="let frame of filmstrip" [src]="frame" alt="" />
+  </ng-template>
+</div>
+<div class="timeline-container">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <button type="button" class="btn btn-warning">start</button>
+    </div>
+    <input
+      type="text"
+      class="form-control"
+      [value]="formatTime(start)"
+      aria-label="Trim start time"
+      disabled
+    />
+  </div>
+  <div class="main-slider">
+    <mat-slider
+      [min]="0"
+      [max]="max"
+      step="1"
+      [displayWith]="formatTime"
+      discrete
+    >
+      <input
+        matSliderStartThumb
+        [ngModel]="start"
+        (ngModelChange)="onStartModel($event)"
+        (dragEnd)="rangeCommit.emit()"
+        aria-label="Trim start"
+      />
+      <input
+        matSliderEndThumb
+        [ngModel]="end"
+        (ngModelChange)="onEndModel($event)"
+        (dragEnd)="rangeCommit.emit()"
+        aria-label="Trim end"
+      />
+    </mat-slider>
+  </div>
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control"
+      [value]="formatTime(end)"
+      aria-label="Trim end time"
+      disabled
+    />
+    <span class="input-group-append">
+      <button type="button" class="btn btn-success btn-flat">end</button>
+    </span>
+  </div>
+</div>

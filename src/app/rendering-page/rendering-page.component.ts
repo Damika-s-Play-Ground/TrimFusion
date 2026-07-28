@@ -23,6 +23,8 @@ import {
   TrimOutput,
 } from '@services/ffmpeg-trim.service';
 import { messageFor, TrimError } from '@services/trim-error';
+import { formatTime as formatTimeFn } from '../shared/format-time';
+import { captureFilmstrip, FilmstripHandle } from '../timeline/filmstrip';
 
 /**
  * Extracts an 11-character YouTube video ID from any common URL shape, or a
@@ -114,6 +116,37 @@ export class RenderingPageComponent implements OnDestroy {
   private localObjectUrl: string | null = null;
   private localFile: File | null = null;
   private localVideoEl: HTMLVideoElement | null = null;
+
+  // Timeline filmstrip (thumbnails for the current file).
+  filmstrip: string[] = [];
+  filmstripLoading = false;
+  private filmstripHandle: FilmstripHandle | null = null;
+
+  /** (Re)build the filmstrip for the current object URL, cancelling any
+   *  in-flight capture. Cached implicitly: only regenerated on new files. */
+  private regenerateFilmstrip(): void {
+    this.filmstripHandle?.cancel();
+    this.filmstrip = [];
+    if (!this.localObjectUrl) {
+      this.filmstripLoading = false;
+      return;
+    }
+    this.filmstripLoading = true;
+    const handle = captureFilmstrip(this.localObjectUrl, 10);
+    this.filmstripHandle = handle;
+    handle.promise
+      .then((frames) => {
+        if (this.filmstripHandle === handle) {
+          this.filmstrip = frames;
+          this.filmstripLoading = false;
+        }
+      })
+      .catch(() => {
+        if (this.filmstripHandle === handle) {
+          this.filmstripLoading = false;
+        }
+      });
+  }
 
   // Client-side trim (ffmpeg.wasm) state.
   trimming = false;
@@ -534,6 +567,7 @@ export class RenderingPageComponent implements OnDestroy {
       this.localObjectUrl
     );
     this.localFileName = file.name;
+    this.regenerateFilmstrip();
   }
 
   /** Trigger a browser download for a produced blob. */
@@ -820,14 +854,7 @@ export class RenderingPageComponent implements OnDestroy {
   }
 
   /** Format a number of seconds as HH:MM:SS (or MM:SS under an hour). */
-  formatTime = (value: number): string => {
-    const total = Math.max(0, Math.floor(value));
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
-  };
+  formatTime = formatTimeFn;
 
   cropVideo() {
     this.openOnYouTube();

@@ -1,0 +1,111 @@
+// Timeline component. Inherits the --tf-* theme custom properties from the
+// rendering-page host (custom properties cascade into child components).
+
+:host {
+  display: block;
+}
+
+// ── Filmstrip ───────────────────────────────────────────────────────────────
+.filmstrip {
+  display: flex;
+  gap: 2px;
+  margin: 0.9rem 0 0.35rem;
+  border: 1px solid var(--tf-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--tf-surface-2);
+
+  img,
+  .skeleton-cell {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 44px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .skeleton-cell {
+    background: linear-gradient(
+      100deg,
+      var(--tf-surface-2) 40%,
+      var(--tf-border) 50%,
+      var(--tf-surface-2) 60%
+    );
+    background-size: 200% 100%;
+    animation: filmstrip-shimmer 1.2s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filmstrip .skeleton-cell {
+    animation: none;
+  }
+}
+
+@keyframes filmstrip-shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -80% 0;
+  }
+}
+
+// ── Slider row (moved from rendering-page) ──────────────────────────────────
+.timeline-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.35rem 0 1.1rem;
+
+  .input-group {
+    width: auto;
+    margin-bottom: 0 !important;
+    flex: 0 0 auto;
+
+    .form-control {
+      width: 84px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+.main-slider {
+  flex: 1 1 auto;
+  padding: 0 0.5rem;
+
+  mat-slider {
+    width: 100%;
+  }
+}
+
+// Themed field/button styling for the moved markup (scoped styles don't
+// cross component boundaries, so the relevant rules are mirrored here).
+.form-control {
+  background-color: var(--tf-field);
+  border: 1px solid var(--tf-field-border);
+  color: var(--tf-text);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-success {
+  border: none;
+  background: linear-gradient(135deg, var(--tf-accent-1), var(--tf-accent-2));
+}
+
+.btn-warning {
+  border: none;
+  background: var(--tf-surface-2);
+  color: var(--tf-text);
+}

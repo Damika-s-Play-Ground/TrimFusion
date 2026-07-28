@@ -429,3 +429,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   DEBT/NOTES: ffmpeg runtime paths still need one manual in-browser QA pass (standing);
   bundle diet is Wave 6's job. Generated plan/wave-2.md (Timeline pro: E2×50 timeline/
   preview, E7×20 shortcuts, E13×15 tests, E11×15 polish incl. carried W2-086).
+- _run 40_ (executor): W2-001..005 (5 items, Wave 2 begins): `TimelineComponent`
+  extracted (slider + readouts moved out of rendering-page; two-way [(start)]/[(end)]
+  + rangeCommit), shared formatTime util, cancellable canvas **filmstrip** capture
+  util (10 thumbnails via hidden-video seeks) rendered under the slider with a
+  shimmer skeleton (reduced-motion aware), regenerated per new file with in-flight
+  cancel. Dead timeline styles removed from rendering-page. Gates green (70/70,
+  2.46 MB). Wave 2: 5/100.
