@@ -47,6 +47,12 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
   @Output() setOut = new EventEmitter<void>();
   /** A segment block was clicked (index into `segments`). */
   @Output() segmentSelect = new EventEmitter<number>();
+  /** A segment block was dragged (moved or edge-resized). */
+  @Output() segmentChange = new EventEmitter<{
+    index: number;
+    start: number;
+    end: number;
+  }>();
 
   @ViewChild('waveCanvas')
   private waveCanvas?: ElementRef<HTMLCanvasElement>;
@@ -115,6 +121,87 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     const ratio = (event.clientX - rect.left) / rect.width;
     const span = this.viewTo - this.viewFrom;
     this.seek.emit(snapSeconds(this.viewFrom + ratio * span, this.snap));
+  }
+
+  // ── Segment drag (move / edge-resize) ─────────────────────────────────────
+  private drag: {
+    index: number;
+    mode: 'move' | 'start' | 'end';
+    startX: number;
+    origStart: number;
+    origEnd: number;
+    laneWidth: number;
+    moved: boolean;
+  } | null = null;
+  private suppressClick = false;
+
+  onBlockPointerDown(event: PointerEvent, index: number): void {
+    const seg = this.segments[index];
+    const el = event.currentTarget as HTMLElement;
+    if (!seg || !el.parentElement) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    const edge = 7;
+    const mode =
+      event.clientX - rect.left <= edge
+        ? 'start'
+        : rect.right - event.clientX <= edge
+          ? 'end'
+          : 'move';
+    this.drag = {
+      index,
+      mode,
+      startX: event.clientX,
+      origStart: seg.start,
+      origEnd: seg.end,
+      laneWidth: el.parentElement.getBoundingClientRect().width,
+      moved: false,
+    };
+    el.setPointerCapture(event.pointerId);
+  }
+
+  onBlockPointerMove(event: PointerEvent): void {
+    const d = this.drag;
+    if (!d || !d.laneWidth) {
+      return;
+    }
+    if (Math.abs(event.clientX - d.startX) > 3) {
+      d.moved = true;
+    }
+    const span = this.viewTo - this.viewFrom;
+    const deltaSec = ((event.clientX - d.startX) / d.laneWidth) * span;
+    const clamp = (v: number, lo: number, hi: number) =>
+      Math.max(lo, Math.min(hi, v));
+    let start = d.origStart;
+    let end = d.origEnd;
+    if (d.mode === 'move') {
+      const length = end - start;
+      start = clamp(d.origStart + deltaSec, 0, this.max - length);
+      end = start + length;
+    } else if (d.mode === 'start') {
+      start = clamp(d.origStart + deltaSec, 0, end - 1);
+    } else {
+      end = clamp(d.origEnd + deltaSec, start + 1, this.max);
+    }
+    this.segmentChange.emit({
+      index: d.index,
+      start: snapSeconds(start, this.snap),
+      end: snapSeconds(end, this.snap),
+    });
+  }
+
+  onBlockPointerUp(): void {
+    this.suppressClick = this.drag?.moved ?? false;
+    this.drag = null;
+  }
+
+  onBlockClick(index: number): void {
+    if (this.suppressClick) {
+      this.suppressClick = false;
+      return;
+    }
+    this.segmentSelect.emit(index);
   }
 
   /** Clamped left/width percents for a segment block, null when off-window. */

@@ -475,3 +475,12 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   gained sortByStart param) so reordering genuinely changes the stitched output;
   spec updated to assert order preservation. Tests 83 → 88, gates green (2.47 MB).
   Wave 2: 26/100.
+- _run 46_ (executor): W2-020, 021, 024, 025 (4 items): **draggable segment blocks** —
+  pointer-capture drag with edge zones (7 px) for start/end resize vs body move,
+  snap-aware, clamped to clip bounds with 1 s minimum length, click-vs-drag
+  suppression (3 px threshold), grab/grabbing cursors + touch-action none;
+  **platform-cap indicator** on the stitch totals (fits/exceeds Shorts-Reels-TikTok
+  60 s, 10 min general note); **per-segment ▶ preview** (seek + play + auto-pause at
+  segment end, interval-watched, cleaned up on destroy). Lint 0 errors (1 max-lines
+  warning on rendering-page — the W2-086 split signal), build 2.47 MB, tests 88/88.
+  Wave 2: 30/100.

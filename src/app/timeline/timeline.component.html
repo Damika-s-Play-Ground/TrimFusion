@@ -57,7 +57,11 @@
       [class.selected]="selectedSegment === i"
       [style.left.%]="style.left"
       [style.width.%]="style.width"
-      (click)="segmentSelect.emit(i)"
+      (click)="onBlockClick(i)"
+      (pointerdown)="onBlockPointerDown($event, i)"
+      (pointermove)="onBlockPointerMove($event)"
+      (pointerup)="onBlockPointerUp()"
+      (pointercancel)="onBlockPointerUp()"
       [attr.aria-label]="
         'Segment ' +
         (i + 1) +

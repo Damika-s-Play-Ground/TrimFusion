@@ -29,12 +29,12 @@ specs; DOM work stays thin.
 - [x] W2-017 "Set in/out at playhead" buttons
 - [x] W2-018 Segment blocks rendered on the timeline from the segments list
 - [x] W2-019 Segment block selection/highlight
-- [ ] W2-020 Drag segment edges to resize (pointer events)
-- [ ] W2-021 Drag segment body to move
+- [x] W2-020 Drag segment edges to resize (pointer events)
+- [x] W2-021 Drag segment body to move
 - [x] W2-022 Reorder segments (up/down controls in the list)
 - [x] W2-023 Overlap detection + merge helper (pure + spec)
-- [ ] W2-024 Segment-total indicator vs platform caps (60 s Shorts etc.)
-- [ ] W2-025 Per-segment preview (seek + play just that range)
+- [x] W2-024 Segment-total indicator vs platform caps (60 s Shorts etc.)
+- [x] W2-025 Per-segment preview (seek + play just that range)
 - [ ] W2-026 Live crop overlay on the player (CSS mask for chosen aspect)
 - [ ] W2-027 Live color preview via CSS filter mapping (brightness/contrast/saturate)
 - [ ] W2-028 Preview-effects toggle (live preview on/off)

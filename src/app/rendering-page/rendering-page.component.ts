@@ -586,6 +586,7 @@ export class RenderingPageComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stopSegmentPreview();
     this.revokeLocalUrl();
   }
 
@@ -807,6 +808,58 @@ export class RenderingPageComponent implements OnDestroy {
 
   get segmentsOverlap(): boolean {
     return hasOverlap(this.segments);
+  }
+
+  /** Timeline drag moved/resized a segment. */
+  onSegmentChange(change: { index: number; start: number; end: number }): void {
+    if (this.segments[change.index]) {
+      this.segments[change.index] = {
+        start: change.start,
+        end: change.end,
+      };
+    }
+  }
+
+  /** How the stitched total relates to platform duration caps. */
+  get segmentCapNote(): string | null {
+    const total = this.segmentsTotalSeconds;
+    if (total <= 0) {
+      return null;
+    }
+    if (total > 600) {
+      return 'over 10 min — exceeds most platform limits';
+    }
+    if (total > 60) {
+      return 'over 60 s — too long for Shorts/Reels/TikTok';
+    }
+    return 'fits Shorts/Reels/TikTok (≤60 s)';
+  }
+
+  // Per-segment preview: play just one segment in the player.
+  private segmentPreviewTimer: ReturnType<typeof setInterval> | null = null;
+
+  previewSegment(index: number): void {
+    const seg = this.segments[index];
+    const video = this.localVideoEl;
+    if (!seg || !video) {
+      return;
+    }
+    this.stopSegmentPreview();
+    video.currentTime = seg.start;
+    void video.play();
+    this.segmentPreviewTimer = setInterval(() => {
+      if (video.currentTime >= seg.end || video.ended) {
+        video.pause();
+        this.stopSegmentPreview();
+      }
+    }, 100);
+  }
+
+  private stopSegmentPreview(): void {
+    if (this.segmentPreviewTimer !== null) {
+      clearInterval(this.segmentPreviewTimer);
+      this.segmentPreviewTimer = null;
+    }
   }
 
   /** Replace the list with its chronological overlap-free merge. */

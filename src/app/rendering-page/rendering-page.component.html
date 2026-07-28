@@ -130,6 +130,7 @@
                 [segments]="segments"
                 [selectedSegment]="selectedSegmentIndex"
                 (segmentSelect)="selectSegment($event)"
+                (segmentChange)="onSegmentChange($event)"
               ></app-timeline>
 
               <!-- Local upload: real client-side trim + download -->
@@ -600,6 +601,15 @@
                         <button
                           type="button"
                           class="btn btn-sm btn-link"
+                          (click)="previewSegment(i)"
+                          [disabled]="trimming"
+                          [attr.aria-label]="'Preview segment ' + (i + 1)"
+                        >
+                          ▶
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-link"
                           (click)="moveSegment(i, -1)"
                           [disabled]="trimming || i === 0"
                           [attr.aria-label]="
@@ -650,6 +660,9 @@
                   <small *ngIf="segments.length" class="text-muted d-block">
                     {{ segments.length }} segment(s) · total
                     {{ formatTime(segmentsTotalSeconds) }} · exports as MP4
+                    <ng-container *ngIf="segmentCapNote">
+                      · {{ segmentCapNote }}
+                    </ng-container>
                     <button
                       type="button"
                       class="btn btn-sm btn-link"
