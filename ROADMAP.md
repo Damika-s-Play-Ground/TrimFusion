@@ -539,3 +539,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   shortcut-map spec (every action bound, no accidental duplicates — only +/= share
   zoomIn — case-insensitive resolution, typing-target detection). Tests 108 → 112,
   gates green (2.49 MB). Wave 2: 72/100.
+- _run 55_ (executor): W2-064..067, 076 (5 items): **preventDefault audit** (Space no
+  longer steals activation from focused buttons; '?' suppresses browser quick-find;
+  arrows/space already covered), **shortcuts on/off toggle** inside the cheat-sheet
+  with the preference persisted to localStorage and restored at startup, and a pure
+  bounded **HistoryStack** (push clears redo branch, oldest-trim at limit, clear();
+  5-case spec) ready for the Ctrl+Z wiring next run. Tests 112 → 117, gates green
+  (2.49 MB). Wave 2: 77/100.

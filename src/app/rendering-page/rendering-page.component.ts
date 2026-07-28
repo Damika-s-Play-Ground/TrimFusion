@@ -213,6 +213,15 @@ export class RenderingPageComponent implements OnDestroy {
   shortcutsEnabled = true;
   showCheatSheet = false;
 
+  setShortcutsEnabled(value: boolean): void {
+    this.shortcutsEnabled = value;
+    try {
+      localStorage.setItem('tf-shortcuts', String(value));
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
   readonly shortcutHelp: { keys: string; label: string }[] = [
     { keys: 'Space', label: 'Play / pause' },
     { keys: 'I / O', label: 'Set start / end at the playhead' },
@@ -273,6 +282,11 @@ export class RenderingPageComponent implements OnDestroy {
       this.showCheatSheet = false;
       return;
     }
+    // preventDefault audit (W2-064): Space on a focused button must keep
+    // activating that button, not toggle playback over it.
+    if (event.key === ' ' && event.target instanceof HTMLButtonElement) {
+      return;
+    }
     const action = actionForKey(event.key);
     if (!action || !this.localVideoUrl) {
       return;
@@ -330,6 +344,8 @@ export class RenderingPageComponent implements OnDestroy {
         }
         break;
       case 'cheatSheet':
+        // '?' opens quick-find in some browsers.
+        event.preventDefault();
         this.showCheatSheet = !this.showCheatSheet;
         break;
     }
@@ -799,6 +815,10 @@ export class RenderingPageComponent implements OnDestroy {
       const saved = localStorage.getItem('tf-theme');
       if (saved === 'light' || saved === 'dark') {
         this.theme = saved;
+      }
+      const shortcuts = localStorage.getItem('tf-shortcuts');
+      if (shortcuts !== null) {
+        this.shortcutsEnabled = shortcuts === 'true';
       }
     } catch {
       /* ignore storage errors */

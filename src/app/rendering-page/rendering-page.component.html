@@ -853,6 +853,18 @@
         ✕
       </button>
     </div>
+    <div class="form-check cheatsheet-toggle">
+      <input
+        id="shortcutsCheck"
+        type="checkbox"
+        class="form-check-input"
+        [ngModel]="shortcutsEnabled"
+        (ngModelChange)="setShortcutsEnabled($event)"
+      />
+      <label for="shortcutsCheck" class="form-check-label">
+        Enable keyboard shortcuts
+      </label>
+    </div>
     <dl class="cheatsheet-list">
       <ng-container *ngFor="let item of shortcutHelp">
         <dt>
