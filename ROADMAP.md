@@ -620,3 +620,14 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   meaningful), reorder ↑/↓, remove, and an "(export-only)" tag for filters without a
   CSS preview. 3-case framework spec (order-after-eq, re-encode forcing, unknown-key
   skip). Tests 128 → 131, gates green (2.51 MB). Wave 3: 6/100.
+- _run 63_: **Branch cleanup per user request ("merge all branches to main")** — 16 bot
+  branches triaged. MERGED: tech-stack-file (techstack.yml/md docs). LANDED as direct
+  bumps (single coherent install; literal merges would have fought over package-lock
+  15 times): @angular/* 16.2.12/.14 minors + devkit/CLI 16.2.16 (covers the dependabot
+  group + snyk cdk/material/youtube-player branches), admin-lte 3.2.0, bootstrap 5.3.2,
+  karma 6.4.4, TypeScript 4.9 → 5.1.6. SKIPPED with reasons: eslint 10 (toolchain
+  peers cap at 8 — modernization effort), zone.js 0.14 (needs Angular 17+), four snyk
+  @angular 19.2.x partial bumps (v19 pieces in a 16 app — superseded by the tracked
+  upgrade), jquery 3.7.1 (jquery no longer a dependency). All 16 remote branches
+  deleted after landing/supersession. Gates green on the new toolchain (131/131,
+  2.54 MB ≤ 2.6 budget).
