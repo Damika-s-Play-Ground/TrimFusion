@@ -128,6 +128,18 @@
   >
     Set end here ⇥
   </button>
+  <button
+    type="button"
+    class="zoom-btn"
+    (click)="useFullRange()"
+    [disabled]="max <= 0"
+    aria-label="Select the whole video"
+  >
+    Full range
+  </button>
+  <span class="zoom-window" *ngIf="max > 0" aria-live="off">
+    {{ formatTime(playhead ?? 0) }} / {{ formatTime(max) }}
+  </span>
   <label class="snap-toggle">
     <input type="checkbox" [(ngModel)]="snap" />
     Snap to seconds
@@ -142,8 +154,9 @@
       type="text"
       class="form-control"
       [value]="formatTime(start)"
-      aria-label="Trim start time"
-      disabled
+      (change)="onStartInput($event)"
+      aria-label="Trim start time (e.g. 1:23)"
+      title="Type a time like 90, 1:30 or 1:23.5"
     />
   </div>
   <div class="main-slider">
@@ -175,8 +188,9 @@
       type="text"
       class="form-control"
       [value]="formatTime(end)"
-      aria-label="Trim end time"
-      disabled
+      (change)="onEndInput($event)"
+      aria-label="Trim end time (e.g. 2:00)"
+      title="Type a time like 90, 1:30 or 1:23.5"
     />
     <span class="input-group-append">
       <button type="button" class="btn btn-success btn-flat">end</button>

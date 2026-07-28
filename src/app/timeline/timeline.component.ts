@@ -10,6 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { formatTime } from '../shared/format-time';
+import { parseTimeString } from '../shared/parse-time';
 import { panWindow, snapSeconds, ZOOM_LEVELS, zoomWindow } from './zoom';
 
 /**
@@ -250,6 +251,49 @@ export class TimelineComponent implements AfterViewInit, OnChanges {
     }
     // ViewChild is unset on first change; ngAfterViewInit covers that pass.
     this.drawWaveform();
+  }
+
+  /** Typed start time: parse, clamp to [0, end-1], commit (or revert). */
+  onStartInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const parsed = parseTimeString(input.value);
+    if (parsed === null) {
+      input.value = formatTime(this.start);
+      return;
+    }
+    this.start = snapSeconds(
+      Math.max(0, Math.min(parsed, this.end - 1)),
+      this.snap
+    );
+    input.value = formatTime(this.start);
+    this.startChange.emit(this.start);
+    this.rangeCommit.emit();
+  }
+
+  /** Typed end time: parse, clamp to [start+1, max], commit (or revert). */
+  onEndInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const parsed = parseTimeString(input.value);
+    if (parsed === null) {
+      input.value = formatTime(this.end);
+      return;
+    }
+    this.end = snapSeconds(
+      Math.min(this.max, Math.max(parsed, this.start + 1)),
+      this.snap
+    );
+    input.value = formatTime(this.end);
+    this.endChange.emit(this.end);
+    this.rangeCommit.emit();
+  }
+
+  /** One-click reset to the whole clip. */
+  useFullRange(): void {
+    this.start = 0;
+    this.end = this.max;
+    this.startChange.emit(this.start);
+    this.endChange.emit(this.end);
+    this.rangeCommit.emit();
   }
 
   onStartModel(value: number): void {

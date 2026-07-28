@@ -499,3 +499,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   (aria-pressed) that bypasses filter/transform/crop-overlay while active, shown
   only when visual adjustments exist. Tests 93 → 96, gates green (2.48 MB).
   Wave 2: 40/100.
+- _run 49_ (executor): W2-036, 039, 040, 042, 073 (5 items): **precision time entry** —
+  pure parseTimeString() ("90" / "1:30" / "1:02:03" / "1:23.5"; rejects ≥60
+  sexagesimal digits and malformed shapes; 5-group spec), start/end readouts became
+  EDITABLE inputs (parse → clamp to valid range → snap → commit, invalid input
+  reverts to the formatted value), playhead/total time readout in the control row,
+  and a "Full range" one-click reset. Tests 96 → 101, gates green (2.48 MB).
+  Wave 2: 45/100.

@@ -45,13 +45,13 @@ specs; DOM work stays thin.
 - [x] W2-033 Mute preview: sync video.muted
 - [x] W2-034 Volume preview: sync video.volume
 - [ ] W2-035 Hover tooltip with time on the timeline
-- [ ] W2-036 Current-time / total-duration readout row
+- [x] W2-036 Current-time / total-duration readout row
 - [ ] W2-037 Frame-step buttons (±1 frame ≈ 1/30 s)
 - [ ] W2-038 Jump-to-start / jump-to-end buttons
-- [ ] W2-039 Editable numeric time inputs for start/end (validated)
-- [ ] W2-040 Time-string parser "m:ss(.t)" → seconds (pure + spec)
+- [x] W2-039 Editable numeric time inputs for start/end (validated)
+- [x] W2-040 Time-string parser "m:ss(.t)" → seconds (pure + spec)
 - [ ] W2-041 Nudge buttons ±1 s on start/end
-- [ ] W2-042 "Use full video" one-click range reset
+- [x] W2-042 "Use full video" one-click range reset
 - [x] W2-043 Keyboard operability for timeline markers (arrows when focused)
 - [ ] W2-044 Timeline ARIA roles/labels pass
 - [ ] W2-045 Respect prefers-reduced-motion in timeline animations
@@ -88,7 +88,7 @@ specs; DOM work stays thin.
 
 - [x] W2-071 Spec: zoom visible-window math
 - [x] W2-072 Spec: overlap detection/merge
-- [ ] W2-073 Spec: time-string parser edge cases
+- [x] W2-073 Spec: time-string parser edge cases
 - [x] W2-074 Spec: waveform peak bucketing
 - [ ] W2-075 Spec: shortcut map completeness + no duplicate bindings
 - [ ] W2-076 Spec: undo/redo stack behavior
