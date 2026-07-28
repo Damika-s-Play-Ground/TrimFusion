@@ -158,7 +158,10 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
 
 - [x] **Rotate / flip**: 90° right/left, 180°, horizontal (mirror) & vertical flip via
       `transpose`/`hflip`/`vflip`; applies to video + GIF, first in the filter chain.
-- [ ] **Color filters**: brightness / contrast / saturation sliders via `eq=`.
+- [x] **Color filters**: brightness (−0.5…0.5) / contrast (0.5…2) / saturation (0…3)
+      sliders via `eq=`, applied to video + GIF after rotate/crop; only added to the
+      filter chain (and only forces re-encode) when values differ from defaults.
+      "Reset colors" button appears when adjusted.
 - [ ] **Volume gain**: audio volume slider (e.g. 0–200%) via `volume=`; applies to
       video (when not muted) and MP3 export.
 - [ ] **Social presets**: one-click Shorts/Reels/TikTok bundle (9:16 crop + ≤60 s cap +
@@ -319,3 +322,7 @@ the existing filter chain (rotate → crop → scale → setpts) and re-encode c
   **Rotate/flip** (90° right/left, 180°, mirror, vertical) for video + GIF via
   `transpose`/`hflip`/`vflip`, first in the filter chain; forces MP4 re-encode for
   video. Lint clean, build PASS, tests 18/18. Next: color filters (eq).
+- _run 26_: P5 slice 2 — **color filters**: brightness/contrast/saturation range
+  sliders (ffmpeg `eq`, video + GIF, after rotate/crop in the chain), no-op values
+  stay on the fast copy path; "Reset colors" button. Lint clean, build PASS (2.30 MB),
+  tests 18/18. Next: volume gain (`volume=`), then social presets.

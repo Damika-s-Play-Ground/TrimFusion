@@ -158,6 +158,24 @@ export class RenderingPageComponent implements OnDestroy {
   ];
   selectedRotate: RotateOption | null = null;
 
+  // Color adjustments (ffmpeg `eq` semantics: brightness 0, contrast/saturation
+  // 1 mean "unchanged"). Applied to visual outputs only.
+  brightness = 0;
+  contrast = 1;
+  saturation = 1;
+
+  get colorsChanged(): boolean {
+    return (
+      this.brightness !== 0 || this.contrast !== 1 || this.saturation !== 1
+    );
+  }
+
+  resetColors(): void {
+    this.brightness = 0;
+    this.contrast = 1;
+    this.saturation = 1;
+  }
+
   // Light/dark theme (persisted). Dark is the default.
   theme: 'dark' | 'light' = 'dark';
 
@@ -253,6 +271,9 @@ export class RenderingPageComponent implements OnDestroy {
         scaleHeight: this.selectedScale,
         preciseCut: this.preciseCut,
         rotate: this.selectedRotate,
+        brightness: this.brightness,
+        contrast: this.contrast,
+        saturation: this.saturation,
         onProgress: (percent) => (this.trimProgress = percent),
       });
       const url = URL.createObjectURL(blob);

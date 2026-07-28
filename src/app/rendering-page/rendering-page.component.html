@@ -222,6 +222,62 @@
                   </select>
                 </div>
                 <div
+                  class="color-group mb-2"
+                  *ngIf="selectedOutput !== 'audio'"
+                >
+                  <label for="brightnessRange" class="form-label d-block mb-1">
+                    Brightness ({{ brightness }})
+                  </label>
+                  <input
+                    id="brightnessRange"
+                    type="range"
+                    class="form-range"
+                    min="-0.5"
+                    max="0.5"
+                    step="0.05"
+                    [ngModel]="brightness"
+                    (ngModelChange)="brightness = +$event"
+                    [disabled]="trimming"
+                  />
+                  <label for="contrastRange" class="form-label d-block mb-1">
+                    Contrast ({{ contrast }})
+                  </label>
+                  <input
+                    id="contrastRange"
+                    type="range"
+                    class="form-range"
+                    min="0.5"
+                    max="2"
+                    step="0.05"
+                    [ngModel]="contrast"
+                    (ngModelChange)="contrast = +$event"
+                    [disabled]="trimming"
+                  />
+                  <label for="saturationRange" class="form-label d-block mb-1">
+                    Saturation ({{ saturation }})
+                  </label>
+                  <input
+                    id="saturationRange"
+                    type="range"
+                    class="form-range"
+                    min="0"
+                    max="3"
+                    step="0.1"
+                    [ngModel]="saturation"
+                    (ngModelChange)="saturation = +$event"
+                    [disabled]="trimming"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    *ngIf="colorsChanged"
+                    (click)="resetColors()"
+                    [disabled]="trimming"
+                  >
+                    Reset colors
+                  </button>
+                </div>
+                <div
                   class="scale-group mb-2"
                   *ngIf="selectedOutput === 'video'"
                 >

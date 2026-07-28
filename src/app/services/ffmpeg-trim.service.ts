@@ -120,6 +120,9 @@ export class FfmpegTrimService {
       scaleHeight?: number | null;
       preciseCut?: boolean;
       rotate?: RotateOption | null;
+      brightness?: number;
+      contrast?: number;
+      saturation?: number;
       onProgress?: (percent: number) => void;
     }
   ): Promise<{ blob: Blob; fileName: string }> {
@@ -139,6 +142,16 @@ export class FfmpegTrimService {
     // Rotation/flip applies to visual outputs only.
     const rotate: RotateOption | null =
       output !== 'audio' && options.rotate ? options.rotate : null;
+    // Color adjustments (visual outputs; ffmpeg `eq` defaults are 0/1/1).
+    const brightness = Math.min(0.5, Math.max(-0.5, options.brightness ?? 0));
+    const contrast = Math.min(2, Math.max(0.5, options.contrast ?? 1));
+    const saturation = Math.min(3, Math.max(0, options.saturation ?? 1));
+    const eqParts: string[] = [];
+    if (brightness !== 0) eqParts.push(`brightness=${brightness}`);
+    if (contrast !== 1) eqParts.push(`contrast=${contrast}`);
+    if (saturation !== 1) eqParts.push(`saturation=${saturation}`);
+    const colorFilter =
+      output !== 'audio' && eqParts.length ? `eq=${eqParts.join(':')}` : null;
     const start = Math.max(0, Math.floor(startSeconds));
     const duration = Math.max(1, Math.floor(endSeconds) - start);
     // Cropping only applies to visual outputs.
@@ -151,12 +164,19 @@ export class FfmpegTrimService {
     } else if (output === 'gif') {
       outExt = 'gif';
     } else {
-      // Re-encode (crop, speed, scale, rotate, or precise cut) yields MP4/H.264.
+      // Any filter/speed/precise option forces an MP4/H.264 re-encode.
       outExt =
-        crop || speed !== 1 || scaleHeight || precise || rotate ? 'mp4' : inExt;
+        crop || speed !== 1 || scaleHeight || precise || rotate || colorFilter
+          ? 'mp4'
+          : inExt;
     }
     const videoReencoded =
-      crop || speed !== 1 || !!scaleHeight || precise || !!rotate;
+      crop ||
+      speed !== 1 ||
+      !!scaleHeight ||
+      precise ||
+      !!rotate ||
+      !!colorFilter;
     const mimeByOutput: Record<TrimOutput, string> = {
       video: videoReencoded ? 'video/mp4' : file.type || 'video/mp4',
       audio: 'audio/mpeg',
@@ -181,6 +201,7 @@ export class FfmpegTrimService {
       const filters = [
         ...(rotate ? [ROTATE_FILTERS[rotate]] : []),
         ...(crop ? [this.cropToAspectFilter(aspectRatio as number)] : []),
+        ...(colorFilter ? [colorFilter] : []),
         'fps=12',
         'scale=480:-2:flags=lanczos',
       ].join(',');
@@ -190,7 +211,12 @@ export class FfmpegTrimService {
       // otherwise a fast, lossless stream copy.
       const changeSpeed = speed !== 1;
       const needsReencode =
-        crop || changeSpeed || !!scaleHeight || precise || !!rotate;
+        crop ||
+        changeSpeed ||
+        !!scaleHeight ||
+        precise ||
+        !!rotate ||
+        !!colorFilter;
       if (needsReencode) {
         const vfilters: string[] = [];
         if (rotate) {
@@ -198,6 +224,9 @@ export class FfmpegTrimService {
         }
         if (crop) {
           vfilters.push(this.cropToAspectFilter(aspectRatio as number));
+        }
+        if (colorFilter) {
+          vfilters.push(colorFilter);
         }
         if (scaleHeight) {
           // -2 keeps the aspect ratio with an even width (libx264-safe).
